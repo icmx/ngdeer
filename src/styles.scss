@@ -1,1 +1,35 @@
-/* You can add global styles to this file, and also import other style files */
+html {
+  --font-family: system-ui, sans-serif;
+  --font-size: 1rem;
+  --line-height: 1.5;
+
+  --color: #fffffe;
+  --background-color: #271c19;
+
+  --color-mute: #fff3ec;
+
+  --a-color: #e78fb3;
+
+  --card-border-radius: 8px;
+  --card-background-color: #55423d;
+}
+
+body {
+  margin: 0;
+
+  font-family: var(--font-family);
+  font-size: var(--font-size);
+  line-height: var(--line-height);
+
+  color: var(--color);
+  background-color: var(--background-color);
+}
+
+a {
+  color: var(--a-color);
+}
+
+time,
+span {
+  color: var(--color-mute);
+}

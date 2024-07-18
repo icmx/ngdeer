@@ -1,0 +1,13 @@
+:host {
+  display: block;
+  padding: 1rem;
+  text-align: center;
+
+  animation: blink 0.5s infinite linear;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0.25;
+  }
+}

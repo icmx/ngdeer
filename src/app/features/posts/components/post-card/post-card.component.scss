@@ -1,0 +1,26 @@
+:host {
+  display: block;
+  padding: 1rem;
+  margin: 10px 0;
+
+  background-color: var(--card-background-color);
+  border-radius: var(--card-border-radius);
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+
+  margin-bottom: 0.75rem;
+}
+
+section {
+  white-space: pre-line;
+}
+
+footer {
+  display: flex;
+  justify-content: space-between;
+
+  margin-top: 0.75rem;
+}

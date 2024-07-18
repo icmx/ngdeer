@@ -1,0 +1,30 @@
+:host {
+  display: grid;
+  grid-template-rows: auto 1fr;
+
+  margin: 0 auto;
+
+  max-width: 800px;
+  min-height: 100vh;
+}
+
+header {
+  position: sticky;
+  top: 0;
+
+  display: flex;
+  gap: 1rem;
+
+  padding: 1rem;
+
+  white-space: nowrap;
+  overflow-y: auto;
+
+  font-weight: 600;
+
+  background-color: var(--background-color);
+}
+
+header a {
+  text-decoration: none;
+}

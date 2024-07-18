@@ -1,0 +1,9 @@
+<div class="search-results" infiniteScroll (scrolled)="handleScrolled()">
+  @for (post of posts$ | async; track post.id) {
+    <ngd-post-card [post]="post" />
+  }
+
+  @if (isLoading$ | async) {
+    <ngd-loading-stub />
+  }
+</div>
