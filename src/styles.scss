@@ -10,8 +10,24 @@ html {
 
   --a-color: #e78fb3;
 
-  --card-border-radius: 8px;
+  --card-border-radius: 12px;
   --card-background-color: #55423d;
+
+  --button-font-family: system-ui, sans-serif;
+  --button-font-size: 1rem;
+  --button-font-weight: 600;
+
+  --button-color: #ffffff;
+
+  --button-default-border-radius: 12px;
+  --button-default-background-color: #418af4;
+
+  --button-default-hover-background-color: #598fde;
+
+  --button-icon-hover-background-color: #444444;
+
+  --button-section-border-radius: 12px;
+  --button-section-hover-background-color: #444444;
 }
 
 body {

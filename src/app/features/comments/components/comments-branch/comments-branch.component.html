@@ -1,0 +1,23 @@
+<ngd-comment-card [comment]="rootComment" />
+
+@if (rootComment.branch) {
+  <section>
+    @for (childComment of childComments$ | async; track childComment.id) {
+      <ngd-comment-card [comment]="childComment" />
+    }
+
+    @if (showLoadMoreButton$ | async) {
+      <button
+        ngd-button
+        appearance="section"
+        (click)="handleLoadMoreButtonClick()"
+      >
+        Загрузить ветку
+      </button>
+    }
+
+    @if (isLoading$ | async) {
+      <ngd-loading-stub />
+    }
+  </section>
+}

@@ -1,5 +1,9 @@
 <header>
-  <span>#{{ post.id }}</span>
+  @if (post.commentsCount > 0) {
+    <a [routerLink]="post.commentsLink">#{{ post.id }}</a>
+  } @else {
+    <span>#{{ post.id }}</span>
+  }
   <time [timestamp]="post.timestamp"></time>
 </header>
 <section>

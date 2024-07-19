@@ -13,6 +13,7 @@ export const toPost = () => {
         text: post.note || '',
         timestamp: new Date(post.created_at).getTime(),
         commentsCount: post.comments_count,
+        commentsLink: `/posts/${post.id}/comments`,
         categoryName: post.category_name,
       };
     }
