@@ -30,4 +30,8 @@ export const appLinks: Link[] = [
     routerLink: '/random',
     innerText: 'Случайные',
   },
+  {
+    routerLink: '/categories',
+    innerText: 'Категории',
+  },
 ];

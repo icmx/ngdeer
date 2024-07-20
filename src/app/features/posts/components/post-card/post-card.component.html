@@ -10,5 +10,5 @@
   {{ post.text }}
 </section>
 <footer>
-  <span>{{ post.categoryName }}</span>
+  <a [routerLink]="post.categoryLink">{{ post.categoryName }}</a>
 </footer>

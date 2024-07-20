@@ -4,7 +4,7 @@ import { DataStack } from '../../../common/classes/data-stack.class';
 import { WithFrom } from '../../../common/types/with-from.type';
 import { fromPostsReply } from '../mappers/from-posts-reply.mapper';
 import { Post } from '../models/post.model';
-import { ApiService } from './api.service';
+import { ApiService, GetPostsRequestOptions } from './api.service';
 import { UiService } from './ui.service';
 
 @Injectable({
@@ -14,6 +14,8 @@ export class DataService {
   private _latestPosts = new DataStack<Post>();
 
   private _randomPostsData = new DataStack<Post>();
+
+  private _categoryPostsData = new DataStack<Post>();
 
   constructor(
     private _apiService: ApiService,
@@ -52,6 +54,39 @@ export class DataService {
       fromPostsReply(),
       map((next) => {
         return data.setItems((prev) => [...prev, ...next]).getItems();
+      }),
+      tap(() => {
+        this._uiService.stopLoading();
+      }),
+    );
+  }
+
+  loadCategoryPosts(
+    categoryId: string,
+    params: WithFrom = {},
+  ): Observable<Post[]> {
+    this._uiService.startLoading();
+
+    const data = this._categoryPostsData;
+    const options: GetPostsRequestOptions = { params: {} };
+
+    options.params!.category_id = categoryId;
+
+    if (params.from) {
+      options.params!.from = params.from;
+    }
+
+    if (data.hasTag(options)) {
+      return of(data.getItems());
+    }
+
+    return this._apiService.getPosts(options).pipe(
+      fromPostsReply(),
+      map((next) => {
+        return data
+          .setItems((prev) => [...prev, ...next])
+          .addTag(options)
+          .getItems();
       }),
       tap(() => {
         this._uiService.stopLoading();

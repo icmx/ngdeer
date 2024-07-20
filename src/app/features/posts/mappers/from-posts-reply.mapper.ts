@@ -14,6 +14,7 @@ export const toPost = () => {
         timestamp: new Date(post.created_at).getTime(),
         commentsCount: post.comments_count,
         commentsLink: `/posts/${post.id}/comments`,
+        categoryLink: `/categories/${post.category_id}/posts`,
         categoryName: post.category_name,
       };
     }
