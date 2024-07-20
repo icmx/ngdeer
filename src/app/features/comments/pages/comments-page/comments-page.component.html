@@ -1,4 +1,4 @@
-<div class="search-results" infiniteScroll (scrolled)="handleScroll()">
+<div infiniteScroll (scrolled)="handleScroll()">
   @for (comment of comments$ | async; track comment.id) {
     <ngd-comments-branch [rootComment]="comment" />
   }

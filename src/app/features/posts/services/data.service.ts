@@ -13,6 +13,8 @@ import { UiService } from './ui.service';
 export class DataService {
   private _latestPosts = new DataStack<Post>();
 
+  private _randomPostsData = new DataStack<Post>();
+
   constructor(
     private _apiService: ApiService,
     private _uiService: UiService,
@@ -41,7 +43,24 @@ export class DataService {
     );
   }
 
+  loadRandomPosts(): Observable<Post[]> {
+    this._uiService.startLoading();
+
+    const data = this._randomPostsData;
+
+    return this._apiService.getPostsRandom().pipe(
+      fromPostsReply(),
+      map((next) => {
+        return data.setItems((prev) => [...prev, ...next]).getItems();
+      }),
+      tap(() => {
+        this._uiService.stopLoading();
+      }),
+    );
+  }
+
   clear(): void {
     this._latestPosts.clear();
+    this._randomPostsData.clear();
   }
 }

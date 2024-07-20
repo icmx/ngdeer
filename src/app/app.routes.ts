@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
-import { LatestPostsPageComponent } from './features/posts/pages/latest-posts-page/latest-posts-page.component';
 import { CommentsPageComponent } from './features/comments/pages/comments-page/comments-page.component';
+import { LatestPostsPageComponent } from './features/posts/pages/latest-posts-page/latest-posts-page.component';
+import { RandomPostsPageComponent } from './features/posts/pages/random-posts-page/random-posts-page.component';
 
 export const routes: Routes = [
   {
@@ -9,8 +10,13 @@ export const routes: Routes = [
     title: 'Новые',
   },
   {
+    path: 'random',
+    component: RandomPostsPageComponent,
+    title: 'Случайные',
+  },
+  {
     path: 'posts/:postId/comments',
     component: CommentsPageComponent,
-    title: 'Комментарии'
-  }
+    title: 'Комментарии',
+  },
 ];

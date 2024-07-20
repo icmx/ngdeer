@@ -26,4 +26,8 @@ export const appLinks: Link[] = [
     routerLink: '/',
     innerText: 'Новые',
   },
+  {
+    routerLink: '/random',
+    innerText: 'Случайные',
+  },
 ];

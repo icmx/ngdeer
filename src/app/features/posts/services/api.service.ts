@@ -17,6 +17,13 @@ export type GetPostsRequestOptions = RequestOptions<{
   };
 }>;
 
+export type GetPostsRandomRequestOptions = RequestOptions<{
+  params: {
+    category_id?: Param;
+    category_slug?: Param;
+  };
+}>;
+
 @Injectable({
   providedIn: 'root',
 })
@@ -30,6 +37,15 @@ export class ApiService {
   ): Observable<WithApiPosts & WithApiCategory> {
     return this._http.get<WithApiPosts & WithApiCategory>(
       `${this._baseUrl}/posts`,
+      options,
+    );
+  }
+
+  getPostsRandom(
+    options?: GetPostsRandomRequestOptions,
+  ): Observable<WithApiPosts> {
+    return this._http.get<WithApiPosts>(
+      `${this._baseUrl}/posts/random`,
       options,
     );
   }
