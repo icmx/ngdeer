@@ -28,6 +28,20 @@ html {
 
   --button-section-border-radius: 12px;
   --button-section-hover-background-color: #444444;
+
+  --field-color: #000000;
+  --field-background-color: #ffffff;
+
+  --field-focus-background-color: #ffffff;
+  --field-focus-border-color: #000000;
+  --field-focus-box-shadow-color: #000000;
+
+  --field-invalid-border-color: #ff0000;
+
+  --caption-color: #000000;
+
+  --control-font-family: system-ui, sans-serif;
+  --control-font-size: 1rem;
 }
 
 body {

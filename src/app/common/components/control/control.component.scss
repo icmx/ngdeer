@@ -1,0 +1,19 @@
+:host {
+  background: transparent;
+  border: none;
+
+  padding: 0;
+  margin: 0;
+
+  font-family: var(--control-font-family);
+  font-size: var(--control-font-size);
+
+  width: 100%;
+  box-sizing: border-box;
+
+  color: inherit;
+}
+
+:host:focus {
+  outline: none;
+}

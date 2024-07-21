@@ -4,6 +4,7 @@ import { LatestPostsPageComponent } from './features/posts/pages/latest-posts-pa
 import { RandomPostsPageComponent } from './features/posts/pages/random-posts-page/random-posts-page.component';
 import { CategoriesPageComponent } from './features/categories/pages/categories-page/categories-page.component';
 import { CategoryPostsPageComponent } from './features/posts/pages/category-posts-page/category-posts-page.component';
+import { SearchPostsPageComponent } from './features/posts/pages/search-posts-page/search-posts-page.component';
 
 export const routes: Routes = [
   {
@@ -24,7 +25,12 @@ export const routes: Routes = [
   {
     path: 'categories/:categoryId/posts',
     component: CategoryPostsPageComponent,
-    title: 'Новые'
+    title: 'Новые',
+  },
+  {
+    path: 'search',
+    component: SearchPostsPageComponent,
+    title: 'Поиск',
   },
   {
     path: 'posts/:postId/comments',

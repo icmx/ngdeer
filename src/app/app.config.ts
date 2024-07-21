@@ -34,4 +34,8 @@ export const appLinks: Link[] = [
     routerLink: '/categories',
     innerText: 'Категории',
   },
+  {
+    routerLink: '/search',
+    innerText: 'Поиск',
+  },
 ];
