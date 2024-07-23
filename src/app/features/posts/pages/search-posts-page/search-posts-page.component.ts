@@ -35,6 +35,7 @@ import { WithCategoryId } from '../../../../common/types/with-category-id.type';
 import { WithFrom } from '../../../../common/types/with-from.type';
 import { WithText } from '../../../../common/types/with-text.type';
 import { DataService as CategoriesDataService } from '../../../categories/services/data.service';
+import { UiService as CategoriesUiService } from '../../../categories/services/ui.service';
 import { PostCardComponent } from '../../components/post-card/post-card.component';
 import { DataService as PostsDataService } from '../../services/data.service';
 import { UiService as PostsUiService } from '../../services/ui.service';
@@ -69,7 +70,6 @@ export class SearchPostsPageComponentFormGroup extends FormGroup<SearchPostsPage
     InfiniteScrollDirective,
     PostCardComponent,
     LoadingStubComponent,
-
     ButtonComponent,
   ],
   templateUrl: './search-posts-page.component.html',
@@ -102,8 +102,14 @@ export class SearchPostsPageComponent implements AfterViewChecked {
     map(([from, queryParams]) => ({ ...from, ...queryParams })),
   );
 
-  // todo: pipe categroeis
-  isLoading$ = this._postsUiService.isLoading$;
+  isLoading$ = combineLatest([
+    this._categoriesUiService.isLoading$,
+    this._postsUiService.isLoading$,
+  ]).pipe(
+    map((isLoadings) => {
+      return isLoadings.some((isLoading) => isLoading === true);
+    }),
+  );
 
   categories$ = this._categoriesDataService.loadCategories();
 
@@ -128,6 +134,7 @@ export class SearchPostsPageComponent implements AfterViewChecked {
     private _activatedRoute: ActivatedRoute,
     private _viewportScroller: ViewportScroller,
     private _categoriesDataService: CategoriesDataService,
+    private _categoriesUiService: CategoriesUiService,
     private _postsDataService: PostsDataService,
     private _postsUiService: PostsUiService,
   ) {
