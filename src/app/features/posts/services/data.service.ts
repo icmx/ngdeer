@@ -1,5 +1,12 @@
 import { Injectable } from '@angular/core';
-import { map, Observable, of, tap } from 'rxjs';
+import {
+  map,
+  MonoTypeOperatorFunction,
+  Observable,
+  of,
+  switchMap,
+  tap,
+} from 'rxjs';
 import { DataStack } from '../../../common/classes/data-stack.class';
 import { WithFrom } from '../../../common/types/with-from.type';
 import { fromPostsReply } from '../mappers/from-posts-reply.mapper';
@@ -26,42 +33,60 @@ export class DataService {
     private _uiService: UiService,
   ) {}
 
-  loadLatestPosts(params: WithFrom = {}): Observable<Post[]> {
-    this._uiService.startLoading();
+  private _startLoading<T>(): MonoTypeOperatorFunction<T> {
+    return tap(() => {
+      this._uiService.startLoading();
+    });
+  }
 
+  private _stopLoading<T>(): MonoTypeOperatorFunction<T> {
+    return tap(() => {
+      this._uiService.stopLoading();
+    });
+  }
+
+  loadLatestPosts(params: WithFrom = {}): Observable<Post[]> {
     const data = this._latestPosts;
 
-    if (data.hasTag(params)) {
-      return of(data.getItems());
-    }
+    return of(data.hasTag(params)).pipe(
+      this._startLoading(),
 
-    return this._apiService.getPosts({ params }).pipe(
-      fromPostsReply(),
-      map((next) => {
-        return data
-          .setItems((prev) => [...prev, ...next])
-          .addTag(params)
-          .getItems();
+      switchMap((hasTag) => {
+        if (hasTag) {
+          return of(data.getItems());
+        }
+
+        return this._apiService.getPosts({ params }).pipe(
+          fromPostsReply(),
+          map((next) => {
+            return data
+              .setItems((prev) => [...prev, ...next])
+              .addTag(params)
+              .getItems();
+          }),
+        );
       }),
-      tap(() => {
-        this._uiService.stopLoading();
-      }),
+
+      this._stopLoading(),
     );
   }
 
   loadRandomPosts(): Observable<Post[]> {
-    this._uiService.startLoading();
-
     const data = this._randomPosts;
 
-    return this._apiService.getPostsRandom().pipe(
-      fromPostsReply(),
-      map((next) => {
-        return data.setItems((prev) => [...prev, ...next]).getItems();
+    return of().pipe(
+      this._startLoading(),
+
+      switchMap(() => {
+        return this._apiService.getPostsRandom().pipe(
+          fromPostsReply(),
+          map((next) => {
+            return data.setItems((prev) => [...prev, ...next]).getItems();
+          }),
+        );
       }),
-      tap(() => {
-        this._uiService.stopLoading();
-      }),
+
+      this._stopLoading(),
     );
   }
 
@@ -69,9 +94,6 @@ export class DataService {
     categoryId: string,
     params: WithFrom = {},
   ): Observable<Post[]> {
-    this._uiService.startLoading();
-
-    const data = this._categoryPosts;
     const options: GetPostsRequestOptions = { params: {} };
 
     options.params!.category_id = categoryId;
@@ -80,30 +102,34 @@ export class DataService {
       options.params!.from = params.from;
     }
 
-    if (data.hasTag(options)) {
-      return of(data.getItems());
-    }
+    const data = this._categoryPosts;
 
-    return this._apiService.getPosts(options).pipe(
-      fromPostsReply(),
-      map((next) => {
-        return data
-          .setItems((prev) => [...prev, ...next])
-          .addTag(options)
-          .getItems();
+    return of(data.hasTag(options)).pipe(
+      this._startLoading(),
+
+      switchMap((hasTag) => {
+        if (hasTag) {
+          return of(data.getItems());
+        }
+
+        return this._apiService.getPosts(options).pipe(
+          fromPostsReply(),
+          map((next) => {
+            return data
+              .setItems((prev) => [...prev, ...next])
+              .addTag(options)
+              .getItems();
+          }),
+        );
       }),
-      tap(() => {
-        this._uiService.stopLoading();
-      }),
+
+      this._stopLoading(),
     );
   }
 
   loadSearchPosts(
     params: WithText & WithFrom & WithCategoryId = {},
   ): Observable<Post[]> {
-    this._uiService.startLoading();
-
-    const data = this._searchPosts;
     const options: GetPostsRequestOptions = { params: {} };
 
     if (params.text) {
@@ -118,21 +144,28 @@ export class DataService {
       options.params = { ...options.params, category_id: params.categoryId };
     }
 
-    if (data.hasTag(options)) {
-      return of(data.getItems());
-    }
+    const data = this._searchPosts;
 
-    return this._apiService.getPosts(options).pipe(
-      fromPostsReply(),
-      map((next) => {
-        return data
-          .setItems((prev) => [...prev, ...next])
-          .addTag(options)
-          .getItems();
+    return of(data.hasTag(options)).pipe(
+      this._startLoading(),
+
+      switchMap((hasTag) => {
+        if (hasTag) {
+          return of(data.getItems());
+        }
+
+        return this._apiService.getPosts(options).pipe(
+          fromPostsReply(),
+          map((next) => {
+            return data
+              .setItems((prev) => [...prev, ...next])
+              .addTag(options)
+              .getItems();
+          }),
+        );
       }),
-      tap(() => {
-        this._uiService.stopLoading();
-      }),
+
+      this._stopLoading(),
     );
   }
 
