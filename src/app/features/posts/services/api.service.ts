@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { BASE_URL } from '../../../common/providers/base-url.provider';
 import { RequestOptions } from '../../../common/types/request-options.type';
 import { Param } from '../../../common/types/param.type';
 import { WithApiCategory } from '../../categories/types/with-api-category.type';
@@ -28,9 +29,11 @@ export type GetPostsRandomRequestOptions = RequestOptions<{
   providedIn: 'root',
 })
 export class ApiService {
-  private _baseUrl = 'https://podslyshano.com/api/v3.5';
-
-  constructor(private _http: HttpClient) {}
+  constructor(
+    private _http: HttpClient,
+    @Inject(BASE_URL)
+    private _baseUrl: string,
+  ) {}
 
   getPosts(
     options?: GetPostsRequestOptions,

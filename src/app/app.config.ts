@@ -2,6 +2,7 @@ import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideHttpClient } from '@angular/common/http';
 import { provideRouter, withInMemoryScrolling } from '@angular/router';
 import { routes } from './app.routes';
+import { provideBaseUrl } from './common/providers/base-url.provider';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -13,6 +14,7 @@ export const appConfig: ApplicationConfig = {
       }),
     ),
     provideHttpClient(),
+    provideBaseUrl('https://podslyshano.com/api/v3.5'),
   ],
 };
 

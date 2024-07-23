@@ -74,7 +74,7 @@ export class DataService {
   loadRandomPosts(): Observable<Post[]> {
     const data = this._randomPosts;
 
-    return of().pipe(
+    return of(null).pipe(
       this._startLoading(),
 
       switchMap(() => {
