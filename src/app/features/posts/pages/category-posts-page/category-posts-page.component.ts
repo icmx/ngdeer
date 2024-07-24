@@ -35,7 +35,7 @@ export class CategoryPostsPageComponent {
 
   private _from$ = new BehaviorSubject<WithFrom>({});
 
-  private _lastFrom: WithFrom = {};
+  private _prevFrom: WithFrom = {};
 
   private _loadingParams$ = combineLatest([this._categoryId$, this._from$]);
 
@@ -53,7 +53,7 @@ export class CategoryPostsPageComponent {
       this._prevScrollPosition = scrollPosition;
 
       const from = posts.at(-1)?.id;
-      this._lastFrom = { from };
+      this._prevFrom = { from };
 
       return posts;
     }),
@@ -74,6 +74,8 @@ export class CategoryPostsPageComponent {
   }
 
   handleScrolled(): void {
-    this._from$.next(this._lastFrom);
+    if (this._prevFrom?.from) {
+      this._from$.next(this._prevFrom);
+    }
   }
 }

@@ -53,6 +53,8 @@ export class CommentsPageComponent {
   ) {}
 
   handleScroll() {
-    this._later$.next(this._prevLater);
+    if (this._prevLater?.later) {
+      this._later$.next(this._prevLater);
+    }
   }
 }

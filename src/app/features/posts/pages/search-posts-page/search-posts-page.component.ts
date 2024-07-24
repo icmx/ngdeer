@@ -170,7 +170,9 @@ export class SearchPostsPageComponent implements AfterViewChecked {
   }
 
   handleScrolled(): void {
-    this._from$.next(this._prevFrom);
+    if (this._prevFrom?.from) {
+      this._from$.next(this._prevFrom);
+    }
   }
 
   handleTextFieldSuffixClick(): void {
