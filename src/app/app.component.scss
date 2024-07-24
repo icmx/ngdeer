@@ -1,6 +1,6 @@
 :host {
   display: grid;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: auto 1fr auto;
 
   margin: 0 auto;
 
@@ -25,6 +25,14 @@ header {
   background-color: var(--background-color);
 }
 
-header a {
+header a,
+footer a {
   text-decoration: none;
+}
+
+footer {
+  text-align: center;
+  padding: 0 1rem;
+
+  font-size: 0.75rem;
 }

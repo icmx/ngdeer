@@ -1,0 +1,25 @@
+article {
+  padding: 1rem;
+  margin: 8px 0;
+
+  border-radius: var(--card-border-radius);
+  background-color: var(--card-background-color);
+}
+
+h1 {
+  margin: 0;
+}
+
+p {
+  margin: 1rem 0 0;
+}
+
+hr {
+  margin: 1.25rem 0;
+  padding: 0;
+
+  height: 1px;
+
+  border: 0;
+  background-color: var(--color-mute);
+}

@@ -5,6 +5,8 @@ import { RandomPostsPageComponent } from './features/posts/pages/random-posts-pa
 import { CategoriesPageComponent } from './features/categories/pages/categories-page/categories-page.component';
 import { CategoryPostsPageComponent } from './features/posts/pages/category-posts-page/category-posts-page.component';
 import { SearchPostsPageComponent } from './features/posts/pages/search-posts-page/search-posts-page.component';
+import { AboutPageComponent } from './common/pages/about-page/about-page.component';
+import { NotFoundPageComponent } from './common/pages/not-found-page/not-found-page.component';
 
 export const routes: Routes = [
   {
@@ -36,5 +38,15 @@ export const routes: Routes = [
     path: 'posts/:postId/comments',
     component: CommentsPageComponent,
     title: 'Комментарии',
+  },
+  {
+    path: 'about',
+    component: AboutPageComponent,
+    title: 'О проекте',
+  },
+  {
+    path: '**',
+    component: NotFoundPageComponent,
+    title: 'Не найдено!',
   },
 ];

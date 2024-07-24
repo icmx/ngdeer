@@ -40,4 +40,8 @@ export const appLinks: Link[] = [
     routerLink: '/search',
     innerText: 'Поиск',
   },
+  {
+    routerLink: '/about',
+    innerText: 'О проекте',
+  },
 ];
