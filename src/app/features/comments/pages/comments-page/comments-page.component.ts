@@ -15,10 +15,15 @@ import { UiService } from '../../services/ui.service';
   selector: 'ngd-comments-page',
   standalone: true,
   imports: [
+    // Angular Imports
     AsyncPipe,
+
+    // External Imports
     InfiniteScrollDirective,
-    CommentsBranchComponent,
+
+    // Internal Imports
     LoadingStubComponent,
+    CommentsBranchComponent,
   ],
   templateUrl: './comments-page.component.html',
   styleUrl: './comments-page.component.scss',

@@ -5,7 +5,10 @@ import { Comment } from '../../models/comment.model';
 @Component({
   selector: 'ngd-comment-card',
   standalone: true,
-  imports: [TimestampDirective],
+  imports: [
+    // Internal Imports
+    TimestampDirective,
+  ],
   templateUrl: './comment-card.component.html',
   styleUrl: './comment-card.component.scss',
 })

@@ -21,10 +21,13 @@ import { CommentCardComponent } from '../comment-card/comment-card.component';
   selector: 'ngd-comments-branch',
   standalone: true,
   imports: [
+    // Angular Imports
     AsyncPipe,
-    CommentCardComponent,
-    LoadingStubComponent,
+
+    // Internal Imports
     ButtonComponent,
+    LoadingStubComponent,
+    CommentCardComponent,
   ],
   templateUrl: './comments-branch.component.html',
   styleUrl: './comments-branch.component.scss',

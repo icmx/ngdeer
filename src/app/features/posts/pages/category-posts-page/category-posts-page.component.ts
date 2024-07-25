@@ -17,10 +17,15 @@ import { UiService } from '../../services/ui.service';
   selector: 'ngd-category-posts-page',
   standalone: true,
   imports: [
+    // Angular Imports
     AsyncPipe,
+
+    // External Imports
     InfiniteScrollDirective,
-    PostCardComponent,
+
+    // Internal Imports
     LoadingStubComponent,
+    PostCardComponent,
   ],
   templateUrl: './category-posts-page.component.html',
   styleUrl: './category-posts-page.component.scss',

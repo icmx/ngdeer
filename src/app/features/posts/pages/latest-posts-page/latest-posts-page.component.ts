@@ -16,10 +16,15 @@ import { UiService } from '../../services/ui.service';
   selector: 'ngd-latest-posts-page',
   standalone: true,
   imports: [
+    // Angular Imports
     AsyncPipe,
+
+    // External Imports
     InfiniteScrollDirective,
-    PostCardComponent,
+
+    // Internal Imports
     LoadingStubComponent,
+    PostCardComponent,
   ],
   templateUrl: './latest-posts-page.component.html',
   styleUrl: './latest-posts-page.component.scss',

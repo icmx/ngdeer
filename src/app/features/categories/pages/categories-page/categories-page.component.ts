@@ -9,7 +9,15 @@ import { UiService } from '../../services/ui.service';
 @Component({
   selector: 'ngd-categories-page',
   standalone: true,
-  imports: [AsyncPipe, RouterLink, CategoryCardComponent, LoadingStubComponent],
+  imports: [
+    // Angular Imports
+    AsyncPipe,
+    RouterLink,
+
+    // Internal Imports
+    LoadingStubComponent,
+    CategoryCardComponent,
+  ],
   templateUrl: './categories-page.component.html',
   styleUrl: './categories-page.component.scss',
 })

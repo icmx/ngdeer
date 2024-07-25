@@ -13,7 +13,11 @@ import { DataService as PostsDataService } from './features/posts/services/data.
 @Component({
   selector: 'ngd-root',
   standalone: true,
-  imports: [RouterLink, RouterOutlet],
+  imports: [
+    // Angular Imports
+    RouterLink,
+    RouterOutlet,
+  ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })

@@ -8,6 +8,7 @@ import { AsyncPipe, ViewportScroller } from '@angular/common';
 import {
   FormControl,
   FormGroup,
+  FormGroupDirective,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
@@ -61,16 +62,21 @@ export class SearchPostsPageComponentFormGroup extends FormGroup<SearchPostsPage
   selector: 'ngd-search-posts-page',
   standalone: true,
   imports: [
+    // Angular Imports
     AsyncPipe,
     ReactiveFormsModule,
-    FieldComponent,
+
+    // External Imports
+    InfiniteScrollDirective,
+
+    // Internal Imports
+    ButtonComponent,
     CaptionComponent,
     ControlComponent,
-    SuffixDirective,
-    InfiniteScrollDirective,
-    PostCardComponent,
+    FieldComponent,
     LoadingStubComponent,
-    ButtonComponent,
+    SuffixDirective,
+    PostCardComponent,
   ],
   templateUrl: './search-posts-page.component.html',
   styleUrl: './search-posts-page.component.scss',

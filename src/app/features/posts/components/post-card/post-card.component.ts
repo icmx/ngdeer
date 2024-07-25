@@ -6,7 +6,13 @@ import { RouterLink } from '@angular/router';
 @Component({
   selector: 'ngd-post-card',
   standalone: true,
-  imports: [RouterLink, TimestampDirective],
+  imports: [
+    // Angular Imports
+    RouterLink,
+
+    // Internal Imports
+    TimestampDirective,
+  ],
   templateUrl: './post-card.component.html',
   styleUrl: './post-card.component.scss',
 })
