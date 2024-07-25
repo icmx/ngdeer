@@ -13,7 +13,6 @@ import {
 } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
-  BehaviorSubject,
   combineLatest,
   debounceTime,
   exhaustMap,
@@ -22,6 +21,7 @@ import {
   tap,
 } from 'rxjs';
 import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
+import { DeferredSubject } from '../../../../common/classes/deferred-subject.class';
 import { ButtonComponent } from '../../../../common/components/button/button.component';
 import { CaptionComponent } from '../../../../common/components/caption/caption.component';
 import { ControlComponent } from '../../../../common/components/control/control.component';
@@ -88,9 +88,7 @@ export class SearchPostsPageComponent implements AfterViewChecked {
       extractParams<WithText & WithCategoryId>(),
     );
 
-  private _from$ = new BehaviorSubject<WithFrom>({});
-
-  private _prevFrom: WithFrom = {};
+  private _from$ = new DeferredSubject<WithFrom>({});
 
   private _loadingParams$ = combineLatest([
     this._from$,
@@ -123,7 +121,7 @@ export class SearchPostsPageComponent implements AfterViewChecked {
       this._prevScrollPosition = scrollPosition;
 
       const from = posts.at(-1)?.id;
-      this._prevFrom = { from };
+      this._from$.prev({ from });
 
       return posts;
     }),
@@ -170,8 +168,8 @@ export class SearchPostsPageComponent implements AfterViewChecked {
   }
 
   handleScrolled(): void {
-    if (this._prevFrom?.from) {
-      this._from$.next(this._prevFrom);
+    if (this._from$.getValue()?.from) {
+      this._from$.next();
     }
   }
 

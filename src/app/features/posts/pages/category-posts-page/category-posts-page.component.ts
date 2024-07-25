@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BehaviorSubject, combineLatest, exhaustMap, map } from 'rxjs';
+import { combineLatest, exhaustMap, map } from 'rxjs';
 import { AsyncPipe, ViewportScroller } from '@angular/common';
 import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
+import { DeferredSubject } from '../../../../common/classes/deferred-subject.class';
 import { LoadingStubComponent } from '../../../../common/components/loading-stub/loading-stub.component';
 import { extractParam } from '../../../../common/mappers/extract-param.mapper';
 import { extractScrollPosition } from '../../../../common/mappers/extract-scroll-position.mapper';
@@ -33,9 +34,7 @@ export class CategoryPostsPageComponent {
 
   private _prevScrollPosition: ScrollPosition = null;
 
-  private _from$ = new BehaviorSubject<WithFrom>({});
-
-  private _prevFrom: WithFrom = {};
+  private _from$ = new DeferredSubject<WithFrom>({});
 
   private _loadingParams$ = combineLatest([this._categoryId$, this._from$]);
 
@@ -53,7 +52,7 @@ export class CategoryPostsPageComponent {
       this._prevScrollPosition = scrollPosition;
 
       const from = posts.at(-1)?.id;
-      this._prevFrom = { from };
+      this._from$.prev({ from });
 
       return posts;
     }),
@@ -74,8 +73,8 @@ export class CategoryPostsPageComponent {
   }
 
   handleScrolled(): void {
-    if (this._prevFrom?.from) {
-      this._from$.next(this._prevFrom);
+    if (this._from$.getValue()?.from) {
+      this._from$.next();
     }
   }
 }

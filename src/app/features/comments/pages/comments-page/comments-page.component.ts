@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AsyncPipe } from '@angular/common';
-import { BehaviorSubject, combineLatest, exhaustMap, scan, tap } from 'rxjs';
+import { combineLatest, exhaustMap, scan, tap } from 'rxjs';
 import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
+import { DeferredSubject } from '../../../../common/classes/deferred-subject.class';
 import { LoadingStubComponent } from '../../../../common/components/loading-stub/loading-stub.component';
 import { extractParam } from '../../../../common/mappers/extract-param.mapper';
 import { WithLater } from '../../../../common/types/with-later-type';
@@ -27,9 +28,7 @@ export class CommentsPageComponent {
     extractParam<string>('postId'),
   );
 
-  private _later$ = new BehaviorSubject<WithLater>({});
-
-  private _prevLater: WithLater = {};
+  private _later$ = new DeferredSubject<WithLater>({});
 
   comments$ = combineLatest([this._postId$, this._later$]).pipe(
     exhaustMap(([postId, params]) =>
@@ -37,7 +36,7 @@ export class CommentsPageComponent {
     ),
     tap((comments) => {
       const later = comments.at(-1)?.id;
-      this._prevLater = { later };
+      this._later$.prev({ later });
     }),
     scan((prev, next) => {
       return [...prev, ...next];
@@ -53,8 +52,8 @@ export class CommentsPageComponent {
   ) {}
 
   handleScroll() {
-    if (this._prevLater?.later) {
-      this._later$.next(this._prevLater);
+    if (this._later$.getValue()?.later) {
+      this._later$.next();
     }
   }
 }

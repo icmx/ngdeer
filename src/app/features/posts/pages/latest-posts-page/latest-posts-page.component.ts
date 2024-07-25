@@ -1,8 +1,9 @@
 import { AfterViewChecked, Component } from '@angular/core';
 import { AsyncPipe, ViewportScroller } from '@angular/common';
 import { Router } from '@angular/router';
-import { BehaviorSubject, combineLatest, exhaustMap, map } from 'rxjs';
+import { combineLatest, exhaustMap, map } from 'rxjs';
 import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
+import { DeferredSubject } from '../../../../common/classes/deferred-subject.class';
 import { LoadingStubComponent } from '../../../../common/components/loading-stub/loading-stub.component';
 import { extractScrollPosition } from '../../../../common/mappers/extract-scroll-position.mapper';
 import { ScrollPosition } from '../../../../common/types/scroll-position.type';
@@ -28,9 +29,7 @@ export class LatestPostsPageComponent implements AfterViewChecked {
 
   private _prevScrollPosition: ScrollPosition = null;
 
-  private _from$ = new BehaviorSubject<WithFrom>({});
-
-  private _prevFrom: WithFrom = {};
+  private _from$ = new DeferredSubject<WithFrom>({});
 
   isLoading$ = this._uiService.isLoading$;
 
@@ -44,7 +43,7 @@ export class LatestPostsPageComponent implements AfterViewChecked {
       this._prevScrollPosition = scrollPosition;
 
       const from = posts.at(-1)?.id;
-      this._prevFrom = { from };
+      this._from$.prev({ from });
 
       return posts;
     }),
@@ -64,8 +63,8 @@ export class LatestPostsPageComponent implements AfterViewChecked {
   }
 
   handleScrolled(): void {
-    if (this._prevFrom?.from) {
-      this._from$.next(this._prevFrom);
+    if (this._from$.getValue()?.from) {
+      this._from$.next();
     }
   }
 }
