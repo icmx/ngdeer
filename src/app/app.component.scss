@@ -15,7 +15,7 @@ header {
   display: flex;
   gap: 1rem;
 
-  padding: 1rem;
+  padding: 0.75rem;
 
   white-space: nowrap;
   overflow-y: auto;
@@ -25,9 +25,17 @@ header {
   background-color: var(--background-color);
 }
 
-header a,
-footer a {
+.header-link,
+.footer-link {
   text-decoration: none;
+}
+
+.header-link {
+  padding: 0.25rem 0;
+}
+
+.header-link.is-active {
+  border-bottom: solid 3px var(--color);
 }
 
 footer {

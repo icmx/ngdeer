@@ -1,6 +1,11 @@
 <header>
   @for (link of links; track link.routerLink) {
-    <a [routerLink]="link.routerLink">
+    <a
+      class="header-link"
+      [routerLink]="link.routerLink"
+      routerLinkActive="is-active"
+      [routerLinkActiveOptions]="{ exact: true }"
+    >
       {{ link.innerText }}
     </a>
   }
@@ -11,6 +16,6 @@
 <footer>
   <p><strong>ngdeer</strong> — клиент «Подслушано»</p>
   <p>
-    <a href="https://github.com/icmx">{{ "@icmx" }}</a>
+    <a class="footer-link" href="https://github.com/icmx">{{ "@icmx" }}</a>
   </p>
 </footer>

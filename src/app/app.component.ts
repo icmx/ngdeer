@@ -4,6 +4,7 @@ import {
   NavigationStart,
   Router,
   RouterLink,
+  RouterLinkActive,
   RouterOutlet,
 } from '@angular/router';
 import { filter } from 'rxjs';
@@ -16,6 +17,7 @@ import { DataService as PostsDataService } from './features/posts/services/data.
   imports: [
     // Angular Imports
     RouterLink,
+    RouterLinkActive,
     RouterOutlet,
   ],
   templateUrl: './app.component.html',
