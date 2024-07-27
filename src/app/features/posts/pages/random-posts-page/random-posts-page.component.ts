@@ -37,17 +37,18 @@ export class RandomPostsPageComponent {
   isLoading$ = this._uiService.isLoading$;
 
   posts$ = combineLatest([
-    this._scrollPosition$,
-    this._scroll$.pipe(
-      startWith(undefined),
-      exhaustMap(() => this._dataService.loadRandomPosts()),
-    ),
-  ]).pipe(
-    map(([scrollPosition, posts]) => {
-      this._prevScrollPosition = scrollPosition;
+    this._scrollPosition$.pipe(
+      map((scrollPosition) => {
+        this._prevScrollPosition = scrollPosition;
 
-      return posts;
-    }),
+        return !!scrollPosition;
+      }),
+    ),
+    this._scroll$.pipe(startWith(undefined)),
+  ]).pipe(
+    exhaustMap(([fromCache]) =>
+      this._dataService.loadRandomPosts({ fromCache }),
+    ),
   );
 
   constructor(

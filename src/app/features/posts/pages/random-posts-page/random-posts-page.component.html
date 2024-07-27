@@ -1,4 +1,4 @@
-<div infiniteScroll (scrolled)="handleScrolled()">
+<div infiniteScroll [alwaysCallback]="true" (scrolled)="handleScrolled()">
   @for (post of posts$ | async; track post.id) {
     <ngd-post-card [post]="post" />
   }

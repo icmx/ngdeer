@@ -9,12 +9,13 @@ import {
 } from 'rxjs';
 import { DataStack } from '../../../common/classes/data-stack.class';
 import { WithFrom } from '../../../common/types/with-from.type';
-import { fromPostsReply } from '../mappers/from-posts-reply.mapper';
-import { Post } from '../models/post.model';
-import { ApiService, GetPostsRequestOptions } from './api.service';
-import { UiService } from './ui.service';
 import { WithText } from '../../../common/types/with-text.type';
 import { WithCategoryId } from '../../../common/types/with-category-id.type';
+import { fromPostsReply } from '../mappers/from-posts-reply.mapper';
+import { Post } from '../models/post.model';
+import { WithFromCache } from '../types/with-from-cache';
+import { ApiService, GetPostsRequestOptions } from './api.service';
+import { UiService } from './ui.service';
 
 @Injectable({
   providedIn: 'root',
@@ -71,13 +72,17 @@ export class DataService {
     );
   }
 
-  loadRandomPosts(): Observable<Post[]> {
+  loadRandomPosts(params: WithFromCache = {}): Observable<Post[]> {
     const data = this._randomPosts;
 
-    return of(null).pipe(
+    return of(params.fromCache).pipe(
       this._startLoading(),
 
-      switchMap(() => {
+      switchMap((skipRequest) => {
+        if (skipRequest) {
+          return of(data.getItems());
+        }
+
         return this._apiService.getPostsRandom().pipe(
           fromPostsReply(),
           map((next) => {
