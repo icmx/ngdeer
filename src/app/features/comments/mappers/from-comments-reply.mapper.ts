@@ -3,15 +3,26 @@ import { ApiComment } from '../models/api-comment.model';
 import { Comment } from '../models/comment.model';
 import { WithApiComments } from '../types/with-api-comments.type';
 
+export const defaultUsername = 'аноним';
+
+/** Makes username string less distractive by removinj emoji and such */
+export const mute = (source: null | string): string => {
+  if (!source) {
+    return defaultUsername;
+  }
+
+  return (
+    source
+      .replace(/\P{Letter}/gu, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '')
+      .toLowerCase() || defaultUsername
+  );
+};
+
 export const toComment = () => {
   return (comment: ApiComment): Comment => {
-    const username =
-      (comment.user.fullname || '')
-        .toLowerCase()
-        .replace(/\p{Emoji_Presentation}/gu, '')
-        .replace(/\s+/g, '-')
-        .replace(/-*?\d*?$/, '')
-        .trim() || 'аноним';
+    const username = mute(comment.user?.fullname);
 
     return {
       id: comment.id.toString(),

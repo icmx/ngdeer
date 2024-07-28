@@ -1,6 +1,9 @@
 import { DateInit } from '../types/date-init.type';
 
-const rtf = new Intl.RelativeTimeFormat('ru', { numeric: 'auto' });
+const rtf = new Intl.RelativeTimeFormat('ru', {
+  numeric: 'auto',
+  style: 'short',
+});
 
 const cutoffs = [60, 3600, 86400, 86400 * 7, 86400 * 30, 86400 * 365, Infinity];
 
