@@ -1,20 +1,13 @@
 :host {
   display: inline-block;
-
   padding: 6px;
 
-  color: var(--field-color);
-  background-color: var(--field-background-color);
-
-  border: solid 1px transparent;
-  border-radius: 8px;
+  border: solid 1px var(--field-border-color);
+  border-radius: var(--field-border-radius);
 }
 
 :host:focus-within {
-  background-color: var(--field-focus-background-color);
-
   border-color: var(--field-focus-border-color);
-  box-shadow: 0 0 0 3px var(--field-focus-box-shadow-color);
 }
 
 :host:has(.ng-invalid.ng-touched) {

@@ -5,19 +5,19 @@
   background: none;
   border: none;
 
-  color: var(--button-color);
+  border-radius: var(--button-border-radius);
 
   font-family: var(--button-font-family);
   font-size: var(--button-font-size);
   font-weight: var(--button-font-weight);
 
+  cursor: pointer;
+
   &.default {
     padding: 0.75rem;
 
-    border-radius: var(--button-default-border-radius);
+    color: var(---button-default-color);
     background-color: var(--button-default-background-color);
-
-    font-weight: 600;
 
     &:hover {
       background-color: var(--button-default-hover-background-color);
@@ -33,7 +33,11 @@
     max-width: 1.25rem;
     max-height: 1.25rem;
 
+    color: inherit;
     border-radius: 10000px;
+
+    font-weight: inherit;
+    line-height: 1.25rem;
 
     &:hover {
       background-color: var(--button-icon-hover-background-color);
@@ -41,10 +45,15 @@
   }
 
   &.section {
+    display: block;
     padding: 0.75rem;
+
     width: 100%;
 
-    border-radius: var(--button-section-border-radius);
+    font-weight: inherit;
+    line-height: inherit;
+
+    color: inherit;
 
     &:hover {
       background-color: var(--button-section-hover-background-color);

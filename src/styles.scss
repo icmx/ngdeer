@@ -3,42 +3,38 @@ html {
   --font-size: 1rem;
   --line-height: 1.5;
 
-  --color: #fffffe;
-  --background-color: #271c19;
+  --color: #232323;
+  --background-color: #fafafa;
 
-  --color-mute: #fff3ec;
+  --color-mute: #686868;
 
-  --a-color: #e78fb3;
+  --a-color: #cc7d24;
 
   --card-border-radius: 12px;
-  --card-background-color: #55423d;
+  --card-background-color: #fafafa;
+
+  --button-border-radius: 12px;
 
   --button-font-family: system-ui, sans-serif;
   --button-font-size: 1rem;
   --button-font-weight: 600;
 
-  --button-color: #ffffff;
+  --button-default-color: #ffffff;
+  --button-default-background-color: #cc7d24;
+  --button-default-hover-background-color: #b16605;
 
-  --button-default-border-radius: 12px;
-  --button-default-background-color: #418af4;
+  --button-icon-hover-background-color: #f2f2f2;
 
-  --button-default-hover-background-color: #598fde;
+  --button-section-hover-background-color: #f2f2f2;
 
-  --button-icon-hover-background-color: #444444;
+  --field-border-radius: 8px;
+  --field-border-color: #eeeeee;
 
-  --button-section-border-radius: 12px;
-  --button-section-hover-background-color: #444444;
+  --field-focus-border-color: #cc7d24;
 
-  --field-color: #000000;
-  --field-background-color: #ffffff;
+  --field-invalid-border-color: #dc2626;
 
-  --field-focus-background-color: #ffffff;
-  --field-focus-border-color: #000000;
-  --field-focus-box-shadow-color: #000000;
-
-  --field-invalid-border-color: #ff0000;
-
-  --caption-color: #000000;
+  --caption-color: #686868;
 
   --control-font-family: system-ui, sans-serif;
   --control-font-size: 1rem;
@@ -53,6 +49,8 @@ body {
 
   color: var(--color);
   background-color: var(--background-color);
+
+  overflow-y: scroll;
 }
 
 a {

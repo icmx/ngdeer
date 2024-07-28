@@ -1,8 +1,11 @@
 :host {
   display: block;
-  padding: 1rem;
+  padding: 0.75rem;
+
+  line-height: inherit;
   text-align: center;
 
+  cursor: progress;
   animation: blink 0.5s infinite linear;
 }
 
