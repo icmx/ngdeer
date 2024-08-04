@@ -1,6 +1,8 @@
-# ngdeer
+# ngdeer [![Netlify Status](https://api.netlify.com/api/v1/badges/10f5c8ff-868b-4127-9a5d-3732e1ac3283/deploy-status)](https://ngdeer.netlify.app/)
 
 Client application for [ideer.ru](https://ideer.ru/), a "social entertaining project" of sharing personal secrets and revelations anonymously.
+
+Check it on **[ngdeer.netlify.app](https://ngdeer.netlify.app/)!**
 
 ## Features
 
