@@ -1,27 +1,39 @@
 # ngdeer
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.0.4.
+Client application for [ideer.ru](https://ideer.ru/), a "social entertaining project" of sharing personal secrets and revelations anonymously.
 
-## Development server
+## Features
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+  - Built with [Angular 18](https://angular.dev/) and [Angular Infinite Scroll](https://github.com/orizens/ngx-infinite-scroll)
+  - Uses official ideer API
+  - Nearly-classic experience: latest and random stories, categories and search, comments
+  - Infinite scroll loading for stories and comments pages
+  - Adaptive design for any screen
+  - Distraction-free: just the content, no ratings, no likes, no reactions, no extra involving patterns
 
-## Code scaffolding
+## Development
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+```sh
+# clone repository
+git clone https://github.com/icmx/ngdeer && cd ngdeer
 
-## Build
+# install dependencies
+npm install
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+# serve for local development
+# available at localhost:4200
+ng serve
 
-## Running unit tests
+# build in case you need to
+ng build
+```
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+Note: this project is built with [Angular CLI](https://angular.dev/tools/cli) and supports standard code scaffolding like `ng g c` and so on.
 
-## Running end-to-end tests
+## License
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+[MIT](./LICENSE).
 
-## Further help
+Original stories belongs to [ideer.ru](https://ideer.ru/) owners as it stated in [agreement](https://ideer.ru/info/agreement).
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+[😈 devilhorns](https://github.com/mozilla/fxemoji/blob/270af343bee346d8221f87806d2b1eee0438431a/svgs/FirefoxEmoji/u1F608-devilhorns.svg) emoji favicon image is made by Mozilla.
