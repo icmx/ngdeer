@@ -1,40 +1,53 @@
+html[data-theme="light"] {
+  --color: #232323;
+  --background-color: #fafafa;
+
+  --a-color: #cc7d24;
+
+  --button-default-color: #ffffff;
+  --button-default-background-color: #cc7d24;
+  --button-default-hover-background-color: #b16605;
+  --button-icon-hover-background-color: #f2f2f2;
+  --button-section-hover-background-color: #f2f2f2;
+
+  --field-border-color: #eeeeee;
+  --field-focus-border-color: #cc7d24;
+  --field-invalid-border-color: #dc2626;
+
+  --caption-color: #686868;
+}
+
+html[data-theme="dark"] {
+  --color: #f3f3f3;
+  --background-color: #111111;
+
+  --a-color: #cc7d24;
+
+  --button-default-color: #111111;
+  --button-default-background-color: #cc7d24;
+  --button-default-hover-background-color: #b66b0d;
+  --button-icon-hover-background-color: #191919;
+  --button-section-hover-background-color: #191919;
+
+  --field-focus-border-color: #cc7d24;
+  --field-invalid-border-color: #f87171;
+
+  --caption-color: #888888;
+}
+
 html {
   --font-family: system-ui, sans-serif;
   --font-size: 1rem;
   --line-height: 1.5;
 
-  --color: #232323;
-  --background-color: #fafafa;
-
-  --color-mute: #686868;
-
-  --a-color: #cc7d24;
-
   --card-border-radius: 12px;
-  --card-background-color: #fafafa;
 
   --button-border-radius: 12px;
-
   --button-font-family: system-ui, sans-serif;
   --button-font-size: 1rem;
   --button-font-weight: 600;
 
-  --button-default-color: #ffffff;
-  --button-default-background-color: #cc7d24;
-  --button-default-hover-background-color: #b16605;
-
-  --button-icon-hover-background-color: #f2f2f2;
-
-  --button-section-hover-background-color: #f2f2f2;
-
   --field-border-radius: 8px;
-  --field-border-color: #eeeeee;
-
-  --field-focus-border-color: #cc7d24;
-
-  --field-invalid-border-color: #dc2626;
-
-  --caption-color: #686868;
 
   --control-font-family: system-ui, sans-serif;
   --control-font-size: 1rem;

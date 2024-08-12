@@ -3,6 +3,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideRouter, withInMemoryScrolling } from '@angular/router';
 import { provideBaseUrl } from './common/providers/base-url.provider';
 import { provideBaseTitle } from './common/providers/base-title.provider';
+import { provideLocalStorage } from './common/providers/local-storage.provider';
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
@@ -19,6 +20,7 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(),
     provideBaseTitle(),
     provideBaseUrl('https://podslyshano.com/api/v3.5'),
+    provideLocalStorage(),
   ],
 };
 
@@ -43,6 +45,10 @@ export const appLinks: Link[] = [
   {
     routerLink: '/search',
     innerText: 'Поиск',
+  },
+  {
+    routerLink: '/settings',
+    innerText: 'Настройки',
   },
   {
     routerLink: '/about',

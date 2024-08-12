@@ -1,0 +1,10 @@
+<form [formGroup]="formGroup">
+  <ngd-field>
+    <label ngdCaption>Тема</label>
+    <select formControlName="theme" ngdControl>
+      @for (theme of themes$ | async; track theme.value) {
+        <option [value]="theme.value">{{ theme.text }}</option>
+      }
+    </select>
+  </ngd-field>
+</form>
