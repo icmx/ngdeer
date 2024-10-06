@@ -13,8 +13,8 @@ import { AsyncPipe } from '@angular/common';
 import { ButtonComponent } from '../../../../common/components/button/button.component';
 import { LoadingStubComponent } from '../../../../common/components/loading-stub/loading-stub.component';
 import { Comment } from '../../models/comment.model';
-import { DataService } from '../../services/data.service';
-import { UiService } from '../../services/ui.service';
+import { CommentsDataService } from '../../services/comments-data.service';
+import { CommentsUiService } from '../../services/comments-ui.service';
 import { CommentCardComponent } from '../comment-card/comment-card.component';
 
 @Component({
@@ -47,13 +47,15 @@ export class CommentsBranchComponent implements OnInit {
   private _branchComments$: Observable<Comment[]> = of([]);
 
   constructor(
-    private _dataService: DataService,
-    private _uiService: UiService,
+    private _commentsDataService: CommentsDataService,
+    private _commentsUiService: CommentsUiService,
   ) {}
 
   ngOnInit(): void {
     this._branchComments$ = this._loadMore$.pipe(
-      exhaustMap(() => this._dataService.loadBranch(this.rootComment.id)),
+      exhaustMap(() =>
+        this._commentsDataService.loadBranch(this.rootComment.id),
+      ),
       shareReplay(1),
     );
 
@@ -61,7 +63,7 @@ export class CommentsBranchComponent implements OnInit {
       startWith(this.rootComment.branch || []),
     );
 
-    const isBranchLoading$ = this._uiService.branchLoading$.pipe(
+    const isBranchLoading$ = this._commentsUiService.branchLoading$.pipe(
       map((rootCommentId) => this.rootComment.id === rootCommentId),
     );
 

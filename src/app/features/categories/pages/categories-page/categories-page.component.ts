@@ -3,8 +3,8 @@ import { AsyncPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { LoadingStubComponent } from '../../../../common/components/loading-stub/loading-stub.component';
 import { CategoryCardComponent } from '../../components/category-card/category-card.component';
-import { DataService } from '../../services/data.service';
-import { UiService } from '../../services/ui.service';
+import { CategoriesUiService } from '../../services/categories-ui.service';
+import { CategoriesDataService } from '../../services/categories-data.service';
 
 @Component({
   selector: 'ngd-categories-page',
@@ -22,12 +22,12 @@ import { UiService } from '../../services/ui.service';
   styleUrl: './categories-page.component.scss',
 })
 export class CategoriesPageComponent {
-  categories$ = this._dataService.loadCategories();
+  categories$ = this._categoriesDataService.loadCategories();
 
-  isLoading$ = this._uiService.isLoading$;
+  isLoading$ = this._categoriesUiService.isLoading$;
 
   constructor(
-    private _dataService: DataService,
-    private _uiService: UiService,
+    private _categoriesDataService: CategoriesDataService,
+    private _categoriesUiService: CategoriesUiService,
   ) {}
 }

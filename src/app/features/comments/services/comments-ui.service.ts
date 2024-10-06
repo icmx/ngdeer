@@ -4,7 +4,7 @@ import { BehaviorSubject } from 'rxjs';
 @Injectable({
   providedIn: 'root',
 })
-export class UiService {
+export class CommentsUiService {
   private _isLoading$ = new BehaviorSubject(false);
 
   private _branchLoading$ = new BehaviorSubject<null | string>(null);

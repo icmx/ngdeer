@@ -8,8 +8,8 @@ import { LoadingStubComponent } from '../../../../common/components/loading-stub
 import { extractParam } from '../../../../common/mappers/extract-param.mapper';
 import { WithLater } from '../../../../common/types/with-later-type';
 import { CommentsBranchComponent } from '../../components/comments-branch/comments-branch.component';
-import { DataService } from '../../services/data.service';
-import { UiService } from '../../services/ui.service';
+import { CommentsDataService } from '../../services/comments-data.service';
+import { CommentsUiService } from '../../services/comments-ui.service';
 
 @Component({
   selector: 'ngd-comments-page',
@@ -37,7 +37,7 @@ export class CommentsPageComponent {
 
   comments$ = combineLatest([this._postId$, this._later$]).pipe(
     exhaustMap(([postId, params]) =>
-      this._dataService.loadComments(postId, params),
+      this._commentsDataService.loadComments(postId, params),
     ),
     tap((comments) => {
       const later = comments.at(-1)?.id;
@@ -48,12 +48,12 @@ export class CommentsPageComponent {
     }),
   );
 
-  isLoading$ = this._uiService.isLoading$;
+  isLoading$ = this._commentsUiService.isLoading$;
 
   constructor(
     private _activatedRoute: ActivatedRoute,
-    private _dataService: DataService,
-    private _uiService: UiService,
+    private _commentsDataService: CommentsDataService,
+    private _commentsUiService: CommentsUiService,
   ) {}
 
   handleScroll() {

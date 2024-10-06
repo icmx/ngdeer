@@ -14,7 +14,7 @@ export type GetPostCommentsOptions = RequestOptions<{
 @Injectable({
   providedIn: 'root',
 })
-export class ApiService {
+export class CommentsApiService {
   constructor(
     private _http: HttpClient,
     @Inject(BASE_URL)

@@ -14,13 +14,13 @@ import { WithCategoryId } from '../../../common/types/with-category-id.type';
 import { fromPostsReply } from '../mappers/from-posts-reply.mapper';
 import { Post } from '../models/post.model';
 import { WithFromCache } from '../types/with-from-cache';
-import { ApiService, GetPostsRequestOptions } from './api.service';
-import { UiService } from './ui.service';
+import { GetPostsRequestOptions, PostsApiService } from './posts-api.service';
+import { PostsUiService } from './posts-ui.service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class DataService {
+export class PostsDataService {
   private _latestPosts = new DataStack<Post>();
 
   private _randomPosts = new DataStack<Post>();
@@ -30,19 +30,19 @@ export class DataService {
   private _searchPosts = new DataStack<Post>();
 
   constructor(
-    private _apiService: ApiService,
-    private _uiService: UiService,
+    private _postsApiService: PostsApiService,
+    private _postsUiService: PostsUiService,
   ) {}
 
   private _startLoading<T>(): MonoTypeOperatorFunction<T> {
     return tap(() => {
-      this._uiService.startLoading();
+      this._postsUiService.startLoading();
     });
   }
 
   private _stopLoading<T>(): MonoTypeOperatorFunction<T> {
     return tap(() => {
-      this._uiService.stopLoading();
+      this._postsUiService.stopLoading();
     });
   }
 
@@ -57,7 +57,7 @@ export class DataService {
           return of(data.getItems());
         }
 
-        return this._apiService.getPosts({ params }).pipe(
+        return this._postsApiService.getPosts({ params }).pipe(
           fromPostsReply(),
           map((next) => {
             return data
@@ -83,7 +83,7 @@ export class DataService {
           return of(data.getItems());
         }
 
-        return this._apiService.getPostsRandom().pipe(
+        return this._postsApiService.getPostsRandom().pipe(
           fromPostsReply(),
           map((next) => {
             return data.setItems((prev) => [...prev, ...next]).getItems();
@@ -117,7 +117,7 @@ export class DataService {
           return of(data.getItems());
         }
 
-        return this._apiService.getPosts(options).pipe(
+        return this._postsApiService.getPosts(options).pipe(
           fromPostsReply(),
           map((next) => {
             return data
@@ -159,7 +159,7 @@ export class DataService {
           return of(data.getItems());
         }
 
-        return this._apiService.getPosts(options).pipe(
+        return this._postsApiService.getPosts(options).pipe(
           fromPostsReply(),
           map((next) => {
             return data

@@ -28,7 +28,7 @@ export type GetPostsRandomRequestOptions = RequestOptions<{
 @Injectable({
   providedIn: 'root',
 })
-export class ApiService {
+export class PostsApiService {
   constructor(
     private _http: HttpClient,
     @Inject(BASE_URL)

@@ -1,24 +1,24 @@
 import { Injectable } from '@angular/core';
-import { ApiService } from './api.service';
 import { map, Observable, tap } from 'rxjs';
 import { WithLater } from '../../../common/types/with-later-type';
 import { fromCommentsReply } from '../mappers/from-comments-reply.mapper';
 import { Comment } from '../models/comment.model';
-import { UiService } from './ui.service';
+import { CommentsUiService } from './comments-ui.service';
+import { CommentsApiService } from './comments-api.service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class DataService {
+export class CommentsDataService {
   constructor(
-    private _apiService: ApiService,
-    private _uiService: UiService,
+    private _commentsApiService: CommentsApiService,
+    private _commentsUiService: CommentsUiService,
   ) {}
 
   loadComments(postId: string, params: WithLater = {}): Observable<Comment[]> {
-    this._uiService.startLoading();
+    this._commentsUiService.startLoading();
 
-    return this._apiService.getPostComments(postId, { params }).pipe(
+    return this._commentsApiService.getPostComments(postId, { params }).pipe(
       fromCommentsReply(),
       map((prevComments) => {
         const nextComments: Comment[] = [];
@@ -42,18 +42,18 @@ export class DataService {
         return nextComments;
       }),
       tap(() => {
-        this._uiService.stopLoading();
+        this._commentsUiService.stopLoading();
       }),
     );
   }
 
   loadBranch(rootCommentId: string): Observable<Comment[]> {
-    this._uiService.startBranchLoading(rootCommentId);
+    this._commentsUiService.startBranchLoading(rootCommentId);
 
-    return this._apiService.getCommentBranch(rootCommentId).pipe(
+    return this._commentsApiService.getCommentBranch(rootCommentId).pipe(
       fromCommentsReply(),
       tap(() => {
-        this._uiService.stopBranchLoading();
+        this._commentsUiService.stopBranchLoading();
       }),
     );
   }

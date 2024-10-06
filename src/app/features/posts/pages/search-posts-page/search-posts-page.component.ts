@@ -8,7 +8,6 @@ import { AsyncPipe, ViewportScroller } from '@angular/common';
 import {
   FormControl,
   FormGroup,
-  FormGroupDirective,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
@@ -35,11 +34,11 @@ import { ScrollPosition } from '../../../../common/types/scroll-position.type';
 import { WithCategoryId } from '../../../../common/types/with-category-id.type';
 import { WithFrom } from '../../../../common/types/with-from.type';
 import { WithText } from '../../../../common/types/with-text.type';
-import { DataService as CategoriesDataService } from '../../../categories/services/data.service';
-import { UiService as CategoriesUiService } from '../../../categories/services/ui.service';
 import { PostCardComponent } from '../../components/post-card/post-card.component';
-import { DataService as PostsDataService } from '../../services/data.service';
-import { UiService as PostsUiService } from '../../services/ui.service';
+import { CategoriesDataService } from '../../../categories/services/categories-data.service';
+import { CategoriesUiService } from '../../../categories/services/categories-ui.service';
+import { PostsDataService } from '../../services/posts-data.service';
+import { PostsUiService } from '../../services/posts-ui.service';
 
 export type SearchPostsPageComponentFormGroupValue = {
   text: FormControl<string>;

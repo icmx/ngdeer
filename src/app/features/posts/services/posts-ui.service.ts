@@ -4,7 +4,7 @@ import { BehaviorSubject } from 'rxjs';
 @Injectable({
   providedIn: 'root',
 })
-export class UiService {
+export class PostsUiService {
   private _isLoading$ = new BehaviorSubject(false);
 
   isLoading$ = this._isLoading$.asObservable();

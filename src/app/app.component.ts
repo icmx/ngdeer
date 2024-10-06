@@ -9,7 +9,7 @@ import {
 } from '@angular/router';
 import { filter } from 'rxjs';
 import { appLinks } from './app.config';
-import { DataService as PostsDataService } from './features/posts/services/data.service';
+import { PostsDataService } from './features/posts/services/posts-data.service';
 
 @Component({
   selector: 'ngd-root',

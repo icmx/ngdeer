@@ -9,8 +9,8 @@ import { extractScrollPosition } from '../../../../common/mappers/extract-scroll
 import { ScrollPosition } from '../../../../common/types/scroll-position.type';
 import { WithFrom } from '../../../../common/types/with-from.type';
 import { PostCardComponent } from '../../components/post-card/post-card.component';
-import { DataService } from '../../services/data.service';
-import { UiService } from '../../services/ui.service';
+import { PostsDataService } from '../../services/posts-data.service';
+import { PostsUiService } from '../../services/posts-ui.service';
 
 @Component({
   selector: 'ngd-latest-posts-page',
@@ -36,12 +36,12 @@ export class LatestPostsPageComponent implements AfterViewChecked {
 
   private _from$ = new DeferredSubject<WithFrom>({});
 
-  isLoading$ = this._uiService.isLoading$;
+  isLoading$ = this._postsUiService.isLoading$;
 
   posts$ = combineLatest([
     this._scrollPosition$,
     this._from$.pipe(
-      exhaustMap((params) => this._dataService.loadLatestPosts(params)),
+      exhaustMap((params) => this._postsDataService.loadLatestPosts(params)),
     ),
   ]).pipe(
     map(([scrollPosition, posts]) => {
@@ -57,8 +57,8 @@ export class LatestPostsPageComponent implements AfterViewChecked {
   constructor(
     private _router: Router,
     private _viewportScroller: ViewportScroller,
-    private _dataService: DataService,
-    private _uiService: UiService,
+    private _postsDataService: PostsDataService,
+    private _postsUiService: PostsUiService,
   ) {}
 
   ngAfterViewChecked(): void {

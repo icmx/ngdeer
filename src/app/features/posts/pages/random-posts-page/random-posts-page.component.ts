@@ -7,8 +7,8 @@ import { LoadingStubComponent } from '../../../../common/components/loading-stub
 import { extractScrollPosition } from '../../../../common/mappers/extract-scroll-position.mapper';
 import { ScrollPosition } from '../../../../common/types/scroll-position.type';
 import { PostCardComponent } from '../../components/post-card/post-card.component';
-import { DataService } from '../../services/data.service';
-import { UiService } from '../../services/ui.service';
+import { PostsDataService } from '../../services/posts-data.service';
+import { PostsUiService } from '../../services/posts-ui.service';
 
 @Component({
   selector: 'ngd-random-posts-page',
@@ -34,7 +34,7 @@ export class RandomPostsPageComponent {
 
   private _scroll$ = new Subject<void>();
 
-  isLoading$ = this._uiService.isLoading$;
+  isLoading$ = this._postsUiService.isLoading$;
 
   posts$ = combineLatest([
     this._scrollPosition$.pipe(
@@ -47,15 +47,15 @@ export class RandomPostsPageComponent {
     this._scroll$.pipe(startWith(undefined)),
   ]).pipe(
     exhaustMap(([fromCache]) =>
-      this._dataService.loadRandomPosts({ fromCache }),
+      this._postsDataService.loadRandomPosts({ fromCache }),
     ),
   );
 
   constructor(
     private _router: Router,
     private _viewportScroller: ViewportScroller,
-    private _dataService: DataService,
-    private _uiService: UiService,
+    private _postsDataService: PostsDataService,
+    private _postsUiService: PostsUiService,
   ) {}
 
   ngAfterViewChecked(): void {

@@ -10,8 +10,8 @@ import { extractScrollPosition } from '../../../../common/mappers/extract-scroll
 import { ScrollPosition } from '../../../../common/types/scroll-position.type';
 import { WithFrom } from '../../../../common/types/with-from.type';
 import { PostCardComponent } from '../../components/post-card/post-card.component';
-import { DataService } from '../../services/data.service';
-import { UiService } from '../../services/ui.service';
+import { PostsDataService } from '../../services/posts-data.service';
+import { PostsUiService } from '../../services/posts-ui.service';
 
 @Component({
   selector: 'ngd-category-posts-page',
@@ -43,13 +43,13 @@ export class CategoryPostsPageComponent {
 
   private _loadingParams$ = combineLatest([this._categoryId$, this._from$]);
 
-  isLoading$ = this._uiService.isLoading$;
+  isLoading$ = this._postsUiService.isLoading$;
 
   posts$ = combineLatest([
     this._scrollPosition$,
     this._loadingParams$.pipe(
       exhaustMap(([categoryId, params]) =>
-        this._dataService.loadCategoryPosts(categoryId, params),
+        this._postsDataService.loadCategoryPosts(categoryId, params),
       ),
     ),
   ]).pipe(
@@ -67,8 +67,8 @@ export class CategoryPostsPageComponent {
     private _router: Router,
     private _activatedRoute: ActivatedRoute,
     private _viewportScroller: ViewportScroller,
-    private _dataService: DataService,
-    private _uiService: UiService,
+    private _postsDataService: PostsDataService,
+    private _postsUiService: PostsUiService,
   ) {}
 
   ngAfterViewChecked(): void {
