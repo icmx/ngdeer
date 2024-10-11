@@ -5,6 +5,7 @@ import { provideStore } from '@ngxs/store';
 import { provideBaseUrl } from './common/providers/base-url.provider';
 import { provideBaseTitle } from './common/providers/base-title.provider';
 import { provideLocalStorage } from './common/providers/local-storage.provider';
+import { CategoriesState } from './features/categories/states/categories.state';
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
@@ -19,7 +20,7 @@ export const appConfig: ApplicationConfig = {
       }),
     ),
     provideHttpClient(),
-    provideStore([]),
+    provideStore([CategoriesState]),
     provideBaseTitle(),
     provideBaseUrl('https://podslyshano.com/api/v3.5'),
     provideLocalStorage(),

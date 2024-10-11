@@ -2,6 +2,7 @@ import {
   AfterViewChecked,
   ChangeDetectionStrategy,
   Component,
+  OnInit,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AsyncPipe, ViewportScroller } from '@angular/common';
@@ -35,10 +36,9 @@ import { WithCategoryId } from '../../../../common/types/with-category-id.type';
 import { WithFrom } from '../../../../common/types/with-from.type';
 import { WithText } from '../../../../common/types/with-text.type';
 import { PostCardComponent } from '../../components/post-card/post-card.component';
-import { CategoriesDataService } from '../../../categories/services/categories-data.service';
-import { CategoriesUiService } from '../../../categories/services/categories-ui.service';
 import { PostsDataService } from '../../services/posts-data.service';
 import { PostsUiService } from '../../services/posts-ui.service';
+import { CategoriesService } from '../../../categories/services/categories.service';
 
 export type SearchPostsPageComponentFormGroupValue = {
   text: FormControl<string>;
@@ -81,7 +81,7 @@ export class SearchPostsPageComponentFormGroup extends FormGroup<SearchPostsPage
   styleUrl: './search-posts-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SearchPostsPageComponent implements AfterViewChecked {
+export class SearchPostsPageComponent implements OnInit, AfterViewChecked {
   formGroup = new SearchPostsPageComponentFormGroup();
 
   private _scrollPosition$ = this._router.events.pipe(extractScrollPosition());
@@ -106,7 +106,7 @@ export class SearchPostsPageComponent implements AfterViewChecked {
   );
 
   isLoading$ = combineLatest([
-    this._categoriesUiService.isLoading$,
+    this._categoriesService.loading$,
     this._postsUiService.isLoading$,
   ]).pipe(
     map((isLoadings) => {
@@ -114,7 +114,7 @@ export class SearchPostsPageComponent implements AfterViewChecked {
     }),
   );
 
-  categories$ = this._categoriesDataService.loadCategories();
+  categories$ = this._categoriesService.entries$;
 
   posts$ = combineLatest([
     this._scrollPosition$,
@@ -136,8 +136,7 @@ export class SearchPostsPageComponent implements AfterViewChecked {
     private _router: Router,
     private _activatedRoute: ActivatedRoute,
     private _viewportScroller: ViewportScroller,
-    private _categoriesDataService: CategoriesDataService,
-    private _categoriesUiService: CategoriesUiService,
+    private _categoriesService: CategoriesService,
     private _postsDataService: PostsDataService,
     private _postsUiService: PostsUiService,
   ) {
@@ -164,6 +163,10 @@ export class SearchPostsPageComponent implements AfterViewChecked {
           queryParams: { ...value },
         });
       });
+  }
+
+  ngOnInit(): void {
+    this._categoriesService.load();
   }
 
   ngAfterViewChecked(): void {
