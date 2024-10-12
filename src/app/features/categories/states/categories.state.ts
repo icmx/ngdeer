@@ -57,6 +57,6 @@ export class CategoriesSelectors {
 
   @Selector([CategoriesState])
   static canLoadEntries(state: CategoriesStateModel): boolean {
-    return state.done;
+    return !state.done;
   }
 }

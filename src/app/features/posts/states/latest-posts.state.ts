@@ -12,7 +12,7 @@ export type LatestPostsStateModel = {
 };
 
 export class LoadLatestPosts {
-  static readonly type = '[LatestPosts] LoadLatest';
+  static readonly type = '[LatestPosts] Load';
 
   constructor(public params: WithFrom = {}) {}
 }

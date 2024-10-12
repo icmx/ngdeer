@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { combineLatest, exhaustMap, map } from 'rxjs';
+import { combineLatest, exhaustMap, map, of } from 'rxjs';
 import { AsyncPipe, ViewportScroller } from '@angular/common';
 import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
 import { DeferredSubject } from '../../../../common/classes/deferred-subject.class';
@@ -12,6 +12,8 @@ import { WithFrom } from '../../../../common/types/with-from.type';
 import { PostCardComponent } from '../../components/post-card/post-card.component';
 import { PostsDataService } from '../../services/posts-data.service';
 import { PostsUiService } from '../../services/posts-ui.service';
+import { Post } from '../../models/post.model';
+import { CategoryPostsService } from '../../services/category-posts.service';
 
 @Component({
   selector: 'ngd-category-posts-page',
@@ -30,38 +32,24 @@ import { PostsUiService } from '../../services/posts-ui.service';
   templateUrl: './category-posts-page.component.html',
   styleUrl: './category-posts-page.component.scss',
 })
-export class CategoryPostsPageComponent {
-  private _categoryId$ = this._activatedRoute.params.pipe(
-    extractParam<string>('categoryId'),
-  );
+export class CategoryPostsPageComponent implements OnInit {
+  @Input({ required: true })
+  categoryId = '';
+  // private _categoryId$ = this._activatedRoute.params.pipe(
+  //   extractParam<string>('categoryId'),
+  // );
 
-  private _scrollPosition$ = this._router.events.pipe(extractScrollPosition());
+  // private _scrollPosition$ = this._router.events.pipe(extractScrollPosition());
 
-  private _prevScrollPosition: ScrollPosition = null;
+  // private _prevScrollPosition: ScrollPosition = null;
 
-  private _from$ = new DeferredSubject<WithFrom>({});
+  // private _from$ = new DeferredSubject<WithFrom>({});
 
-  private _loadingParams$ = combineLatest([this._categoryId$, this._from$]);
+  // private _loadingParams$ = combineLatest([this._categoryId$, this._from$]);
 
-  isLoading$ = this._postsUiService.isLoading$;
+  isLoading$ = of<boolean>(false);
 
-  posts$ = combineLatest([
-    this._scrollPosition$,
-    this._loadingParams$.pipe(
-      exhaustMap(([categoryId, params]) =>
-        this._postsDataService.loadCategoryPosts(categoryId, params),
-      ),
-    ),
-  ]).pipe(
-    map(([scrollPosition, posts]) => {
-      this._prevScrollPosition = scrollPosition;
-
-      const from = posts.at(-1)?.id;
-      this._from$.prev({ from });
-
-      return posts;
-    }),
-  );
+  posts$ = of<Post[]>([]);
 
   constructor(
     private _router: Router,
@@ -69,17 +57,33 @@ export class CategoryPostsPageComponent {
     private _viewportScroller: ViewportScroller,
     private _postsDataService: PostsDataService,
     private _postsUiService: PostsUiService,
+    private _categoryPostsService: CategoryPostsService,
   ) {}
 
-  ngAfterViewChecked(): void {
-    if (this._prevScrollPosition) {
-      this._viewportScroller.scrollToPosition(this._prevScrollPosition);
-    }
+  ngOnInit(): void {
+    this.isLoading$ = this._categoryPostsService.connectLoading();
+
+    this.posts$ = this._categoryPostsService.connectEntries(this.categoryId);
+
+    this._categoryPostsService.startLoading(this.categoryId);
+
+    // const categoryId = this.categoryId
+
+    // this.isLoading$ = this._
+
+    // throw new Error('Method not implemented.');
   }
 
+  // ngAfterViewChecked(): void {
+  //   if (this._prevScrollPosition) {
+  //     this._viewportScroller.scrollToPosition(this._prevScrollPosition);
+  //   }
+  // }
+
   handleScrolled(): void {
-    if (this._from$.getValue()?.from) {
-      this._from$.next();
-    }
+    this._categoryPostsService.startLoadingMore(this.categoryId);
+    // if (this._from$.getValue()?.from) {
+    //   this._from$.next();
+    // }
   }
 }

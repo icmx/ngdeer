@@ -13,7 +13,6 @@ import { WithText } from '../../../common/types/with-text.type';
 import { WithCategoryId } from '../../../common/types/with-category-id.type';
 import { fromPostsReply } from '../mappers/from-posts-reply.mapper';
 import { Post } from '../models/post.model';
-import { WithFromCache } from '../types/with-from-cache';
 import { GetPostsRequestOptions, PostsApiService } from './posts-api.service';
 import { PostsUiService } from './posts-ui.service';
 
@@ -21,10 +20,6 @@ import { PostsUiService } from './posts-ui.service';
   providedIn: 'root',
 })
 export class PostsDataService {
-  private _randomPosts = new DataStack<Post>();
-
-  private _categoryPosts = new DataStack<Post>();
-
   private _searchPosts = new DataStack<Post>();
 
   constructor(
@@ -42,66 +37,6 @@ export class PostsDataService {
     return tap(() => {
       this._postsUiService.stopLoading();
     });
-  }
-
-  loadRandomPosts(params: WithFromCache = {}): Observable<Post[]> {
-    const data = this._randomPosts;
-
-    return of(params.fromCache).pipe(
-      this._startLoading(),
-
-      switchMap((skipRequest) => {
-        if (skipRequest) {
-          return of(data.getItems());
-        }
-
-        return this._postsApiService.getPostsRandom().pipe(
-          fromPostsReply(),
-          map((next) => {
-            return data.setItems((prev) => [...prev, ...next]).getItems();
-          }),
-        );
-      }),
-
-      this._stopLoading(),
-    );
-  }
-
-  loadCategoryPosts(
-    categoryId: string,
-    params: WithFrom = {},
-  ): Observable<Post[]> {
-    const options: GetPostsRequestOptions = { params: {} };
-
-    options.params!.category_id = categoryId;
-
-    if (params.from) {
-      options.params!.from = params.from;
-    }
-
-    const data = this._categoryPosts;
-
-    return of(data.hasTag(options)).pipe(
-      this._startLoading(),
-
-      switchMap((hasTag) => {
-        if (hasTag) {
-          return of(data.getItems());
-        }
-
-        return this._postsApiService.getPosts(options).pipe(
-          fromPostsReply(),
-          map((next) => {
-            return data
-              .setItems((prev) => [...prev, ...next])
-              .addTag(options)
-              .getItems();
-          }),
-        );
-      }),
-
-      this._stopLoading(),
-    );
   }
 
   loadSearchPosts(
@@ -147,8 +82,6 @@ export class PostsDataService {
   }
 
   clear(): void {
-    this._randomPosts.clear();
-    this._categoryPosts.clear();
     this._searchPosts.clear();
   }
 }
