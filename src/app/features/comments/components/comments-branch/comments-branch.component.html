@@ -1,6 +1,6 @@
 <ngd-comment-card [comment]="rootComment" />
 
-@if (rootComment.branch) {
+@if (rootComment.branchSize) {
   <section>
     @for (childComment of childComments$ | async; track childComment.id) {
       <ngd-comment-card [comment]="childComment" />

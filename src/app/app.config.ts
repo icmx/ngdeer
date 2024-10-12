@@ -1,12 +1,17 @@
 import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideHttpClient } from '@angular/common/http';
-import { provideRouter, withInMemoryScrolling } from '@angular/router';
+import {
+  provideRouter,
+  withComponentInputBinding,
+  withInMemoryScrolling,
+} from '@angular/router';
 import { provideStore } from '@ngxs/store';
 import { provideBaseUrl } from './common/providers/base-url.provider';
 import { provideBaseTitle } from './common/providers/base-title.provider';
 import { provideLocalStorage } from './common/providers/local-storage.provider';
 import { CategoriesState } from './features/categories/states/categories.state';
 import { routes } from './app.routes';
+import { CommentsState } from './features/comments/states/comments.state';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -15,12 +20,13 @@ export const appConfig: ApplicationConfig = {
     }),
     provideRouter(
       routes,
+      withComponentInputBinding(),
       withInMemoryScrolling({
-        scrollPositionRestoration: 'top',
+        scrollPositionRestoration: 'enabled',
       }),
     ),
     provideHttpClient(),
-    provideStore([CategoriesState]),
+    provideStore([CategoriesState, CommentsState]),
     provideBaseTitle(),
     provideBaseUrl('https://podslyshano.com/api/v3.5'),
     provideLocalStorage(),

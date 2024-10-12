@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngxs/store';
+import { Observable } from 'rxjs';
+import { Category } from '../models/category.model';
 import {
   CategoriesSelectors,
   LoadCategories,
@@ -11,14 +13,20 @@ import {
 export class CategoriesService {
   constructor(private _store: Store) {}
 
-  loading$ = this._store.select(CategoriesSelectors.loading);
+  connectLoading(): Observable<boolean> {
+    return this._store.select(CategoriesSelectors.loading);
+  }
 
-  entries$ = this._store.select(CategoriesSelectors.entries);
+  connectEntries(): Observable<Category[]> {
+    return this._store.select(CategoriesSelectors.entries);
+  }
 
-  load() {
-    const done = this._store.selectSnapshot(CategoriesSelectors.done);
+  startLoading(): void {
+    const canLoadEntries = this._store.selectSnapshot(
+      CategoriesSelectors.canLoadEntries,
+    );
 
-    if (!done) {
+    if (canLoadEntries) {
       this._store.dispatch(new LoadCategories());
     }
   }

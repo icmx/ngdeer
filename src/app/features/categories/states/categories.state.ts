@@ -51,12 +51,12 @@ export class CategoriesSelectors {
   }
 
   @Selector([CategoriesState])
-  static done(state: CategoriesStateModel): boolean {
-    return state.done;
+  static entries(state: CategoriesStateModel): Category[] {
+    return state.entries;
   }
 
   @Selector([CategoriesState])
-  static entries(state: CategoriesStateModel): Category[] {
-    return state.entries;
+  static canLoadEntries(state: CategoriesStateModel): boolean {
+    return state.done;
   }
 }

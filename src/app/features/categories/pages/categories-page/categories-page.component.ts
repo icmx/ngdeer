@@ -21,13 +21,13 @@ import { CategoriesService } from '../../services/categories.service';
   styleUrl: './categories-page.component.scss',
 })
 export class CategoriesPageComponent implements OnInit {
-  categories$ = this._categoriesService.entries$;
+  categories$ = this._categoriesService.connectEntries();
 
-  isLoading$ = this._categoriesService.loading$;
+  isLoading$ = this._categoriesService.connectLoading();
 
   constructor(private _categoriesService: CategoriesService) {}
 
   ngOnInit(): void {
-    this._categoriesService.load();
+    this._categoriesService.startLoading();
   }
 }

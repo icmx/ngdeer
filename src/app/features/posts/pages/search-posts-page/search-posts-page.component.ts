@@ -106,7 +106,7 @@ export class SearchPostsPageComponent implements OnInit, AfterViewChecked {
   );
 
   isLoading$ = combineLatest([
-    this._categoriesService.loading$,
+    this._categoriesService.connectLoading(),
     this._postsUiService.isLoading$,
   ]).pipe(
     map((isLoadings) => {
@@ -114,7 +114,7 @@ export class SearchPostsPageComponent implements OnInit, AfterViewChecked {
     }),
   );
 
-  categories$ = this._categoriesService.entries$;
+  categories$ = this._categoriesService.connectEntries();
 
   posts$ = combineLatest([
     this._scrollPosition$,
@@ -166,7 +166,7 @@ export class SearchPostsPageComponent implements OnInit, AfterViewChecked {
   }
 
   ngOnInit(): void {
-    this._categoriesService.load();
+    this._categoriesService.startLoading();
   }
 
   ngAfterViewChecked(): void {

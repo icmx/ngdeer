@@ -1,20 +1,10 @@
 import { Component, Input, OnInit } from '@angular/core';
-import {
-  Observable,
-  Subject,
-  combineLatest,
-  exhaustMap,
-  map,
-  of,
-  shareReplay,
-  startWith,
-} from 'rxjs';
 import { AsyncPipe } from '@angular/common';
+import { Observable, of } from 'rxjs';
 import { ButtonComponent } from '../../../../common/components/button/button.component';
 import { LoadingStubComponent } from '../../../../common/components/loading-stub/loading-stub.component';
 import { Comment } from '../../models/comment.model';
-import { CommentsDataService } from '../../services/comments-data.service';
-import { CommentsUiService } from '../../services/comments-ui.service';
+import { CommentsService } from '../../services/comments.service';
 import { CommentCardComponent } from '../comment-card/comment-card.component';
 
 @Component({
@@ -36,78 +26,28 @@ export class CommentsBranchComponent implements OnInit {
   @Input({ required: true })
   rootComment!: Comment;
 
+  isLoading$: Observable<boolean> = of(false);
+
   childComments$: Observable<Comment[]> = of([]);
 
   showLoadMoreButton$: Observable<boolean> = of(false);
 
-  isLoading$: Observable<boolean> = of(false);
-
-  private _loadMore$ = new Subject<void>();
-
-  private _branchComments$: Observable<Comment[]> = of([]);
-
-  constructor(
-    private _commentsDataService: CommentsDataService,
-    private _commentsUiService: CommentsUiService,
-  ) {}
+  constructor(private _commentsService: CommentsService) {}
 
   ngOnInit(): void {
-    this._branchComments$ = this._loadMore$.pipe(
-      exhaustMap(() =>
-        this._commentsDataService.loadBranch(this.rootComment.id),
-      ),
-      shareReplay(1),
-    );
+    const rootId = this.rootComment.id;
 
-    this.childComments$ = this._branchComments$.pipe(
-      startWith(this.rootComment.branch || []),
-    );
+    this.isLoading$ = this._commentsService.connectLoading(rootId);
 
-    const isBranchLoading$ = this._commentsUiService.branchLoading$.pipe(
-      map((rootCommentId) => this.rootComment.id === rootCommentId),
-    );
+    this.childComments$ = this._commentsService.connectBranchComments(rootId);
 
-    this.showLoadMoreButton$ = combineLatest([
-      isBranchLoading$,
-      this.childComments$,
-    ]).pipe(
-      map(([isBranchLoading, childComments]) => {
-        if (isBranchLoading) {
-          return false;
-        }
-
-        if (this.rootComment.branchSize === null) {
-          return false;
-        }
-
-        if (this.rootComment.branchSize === 0) {
-          return false;
-        }
-
-        if (this.rootComment.branchSize === 1) {
-          return false;
-        }
-
-        if (this.rootComment.branchSize === childComments?.length) {
-          return false;
-        }
-
-        return true;
-      }),
-    );
-
-    this.isLoading$ = combineLatest([
-      this.showLoadMoreButton$,
-      isBranchLoading$,
-    ]).pipe(
-      map(
-        ([showLoadMoreButton, isBranchLoading]) =>
-          !showLoadMoreButton && isBranchLoading,
-      ),
-    );
+    this.showLoadMoreButton$ =
+      this._commentsService.connectCanLoadMoreBranchComments(rootId);
   }
 
   handleLoadMoreButtonClick(): void {
-    this._loadMore$.next();
+    const rootId = this.rootComment.id;
+
+    this._commentsService.startLoadingBranchComments(rootId);
   }
 }
