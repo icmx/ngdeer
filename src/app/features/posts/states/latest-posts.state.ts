@@ -1,20 +1,18 @@
-import { Action, Selector, State, StateContext } from '@ngxs/store';
-import { ScrollPosition } from '../../../common/types/scroll-position.type';
-import { Post } from '../models/post.model';
 import { Injectable } from '@angular/core';
-import { PostsApiService } from '../services/posts-api.service';
-import { WithFrom } from '../../../common/types/with-from.type';
 import { exhaustMap, Observable, of, tap } from 'rxjs';
+import { Action, Selector, State, StateContext } from '@ngxs/store';
+import { WithFrom } from '../../../common/types/with-from.type';
 import { fromPostsReply } from '../mappers/from-posts-reply.mapper';
+import { Post } from '../models/post.model';
+import { PostsApiService } from '../services/posts-api.service';
 
 export type LatestPostsStateModel = {
   loading: boolean;
   entries: Post[];
-  scrollPosition: ScrollPosition;
 };
 
 export class LoadLatestPosts {
-  static readonly type = '[Latest Posts] LoadLatestPosts';
+  static readonly type = '[LatestPosts] LoadLatest';
 
   constructor(public params: WithFrom = {}) {}
 }
@@ -24,7 +22,6 @@ export class LoadLatestPosts {
   defaults: {
     loading: false,
     entries: [],
-    scrollPosition: [0, 0],
   },
 })
 @Injectable()

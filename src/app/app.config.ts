@@ -12,6 +12,7 @@ import { provideLocalStorage } from './common/providers/local-storage.provider';
 import { CategoriesState } from './features/categories/states/categories.state';
 import { CommentsState } from './features/comments/states/comments.state';
 import { LatestPostsState } from './features/posts/states/latest-posts.state';
+import { RandomPostsState } from './features/posts/states/random-posts.state';
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
@@ -27,7 +28,12 @@ export const appConfig: ApplicationConfig = {
       }),
     ),
     provideHttpClient(),
-    provideStore([CategoriesState, CommentsState, LatestPostsState]),
+    provideStore([
+      CategoriesState,
+      CommentsState,
+      LatestPostsState,
+      RandomPostsState,
+    ]),
     provideBaseTitle(),
     provideBaseUrl('https://podslyshano.com/api/v3.5'),
     provideLocalStorage(),
