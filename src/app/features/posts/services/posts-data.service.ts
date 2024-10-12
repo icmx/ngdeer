@@ -21,8 +21,6 @@ import { PostsUiService } from './posts-ui.service';
   providedIn: 'root',
 })
 export class PostsDataService {
-  private _latestPosts = new DataStack<Post>();
-
   private _randomPosts = new DataStack<Post>();
 
   private _categoryPosts = new DataStack<Post>();
@@ -44,32 +42,6 @@ export class PostsDataService {
     return tap(() => {
       this._postsUiService.stopLoading();
     });
-  }
-
-  loadLatestPosts(params: WithFrom = {}): Observable<Post[]> {
-    const data = this._latestPosts;
-
-    return of(data.hasTag(params)).pipe(
-      this._startLoading(),
-
-      switchMap((hasTag) => {
-        if (hasTag) {
-          return of(data.getItems());
-        }
-
-        return this._postsApiService.getPosts({ params }).pipe(
-          fromPostsReply(),
-          map((next) => {
-            return data
-              .setItems((prev) => [...prev, ...next])
-              .addTag(params)
-              .getItems();
-          }),
-        );
-      }),
-
-      this._stopLoading(),
-    );
   }
 
   loadRandomPosts(params: WithFromCache = {}): Observable<Post[]> {
@@ -175,7 +147,6 @@ export class PostsDataService {
   }
 
   clear(): void {
-    this._latestPosts.clear();
     this._randomPosts.clear();
     this._categoryPosts.clear();
     this._searchPosts.clear();
