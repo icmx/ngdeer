@@ -4,7 +4,12 @@
       class="header-link"
       [routerLink]="link.routerLink"
       routerLinkActive="is-active"
-      [routerLinkActiveOptions]="{ exact: true }"
+      [routerLinkActiveOptions]="{
+        matrixParams: 'ignored',
+        queryParams: 'ignored',
+        paths: 'exact',
+        fragment: 'ignored',
+      }"
     >
       {{ link.innerText }}
     </a>
