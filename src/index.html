@@ -7,12 +7,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <script>
-      const key = '/ngdeer/theme';
-      const value = localStorage?.getItem(key) || JSON.stringify('light');
+      const key = 'ngdeer:settings';
+      const valueString = localStorage?.getItem(key) || '{}';
+      const valueObject = JSON.parse(valueString);
 
-      const theme = JSON.parse(value);
+      console.log(valueObject)
+
+      const theme = valueObject?.theme || 'light';
+
       const dataset = document.documentElement.dataset || {};
-
       dataset.theme = theme;
     </script>
   </head>

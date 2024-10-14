@@ -6,9 +6,11 @@ import {
   withInMemoryScrolling,
 } from '@angular/router';
 import { provideStore } from '@ngxs/store';
-import { provideBaseUrl } from './common/providers/base-url.provider';
+import { withNgxsStoragePlugin } from '@ngxs/storage-plugin';
 import { provideBaseTitle } from './common/providers/base-title.provider';
-import { provideLocalStorage } from './common/providers/local-storage.provider';
+import { provideBaseUrl } from './common/providers/base-url.provider';
+import { provideDocumentDataset } from './common/providers/document-dataset.provider';
+import { SettingsState } from './common/states/settings.state';
 import { CategoriesState } from './features/categories/states/categories.state';
 import { CommentsState } from './features/comments/states/comments.state';
 import { CategoryPostsState } from './features/posts/states/category-posts.state';
@@ -30,17 +32,21 @@ export const appConfig: ApplicationConfig = {
       }),
     ),
     provideHttpClient(),
-    provideStore([
-      CategoriesState,
-      CommentsState,
-      LatestPostsState,
-      RandomPostsState,
-      CategoryPostsState,
-      SearchPostsState,
-    ]),
+    provideStore(
+      [
+        SettingsState,
+        CategoriesState,
+        CommentsState,
+        LatestPostsState,
+        RandomPostsState,
+        CategoryPostsState,
+        SearchPostsState,
+      ],
+      withNgxsStoragePlugin({ keys: [SettingsState], namespace: 'ngdeer' }),
+    ),
     provideBaseTitle(),
     provideBaseUrl('https://podslyshano.com/api/v3.5'),
-    provideLocalStorage(),
+    provideDocumentDataset(),
   ],
 };
 
