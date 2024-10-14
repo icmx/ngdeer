@@ -1,15 +1,11 @@
-import { Component } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, Input, OnInit } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
-import { combineLatest, exhaustMap, scan, tap } from 'rxjs';
+import { of } from 'rxjs';
 import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
-import { DeferredSubject } from '../../../../common/classes/deferred-subject.class';
 import { LoadingStubComponent } from '../../../../common/components/loading-stub/loading-stub.component';
-import { extractParam } from '../../../../common/mappers/extract-param.mapper';
-import { WithLater } from '../../../../common/types/with-later-type';
 import { CommentsBranchComponent } from '../../components/comments-branch/comments-branch.component';
-import { DataService } from '../../services/data.service';
-import { UiService } from '../../services/ui.service';
+import { Comment } from '../../models/comment.model';
+import { CommentsService } from '../../services/comments.service';
 
 @Component({
   selector: 'ngd-comments-page',
@@ -28,37 +24,23 @@ import { UiService } from '../../services/ui.service';
   templateUrl: './comments-page.component.html',
   styleUrl: './comments-page.component.scss',
 })
-export class CommentsPageComponent {
-  private _postId$ = this._activatedRoute.params.pipe(
-    extractParam<string>('postId'),
-  );
+export class CommentsPageComponent implements OnInit {
+  @Input({ required: true })
+  postId = '';
 
-  private _later$ = new DeferredSubject<WithLater>({});
+  comments$ = of<Comment[]>([]);
 
-  comments$ = combineLatest([this._postId$, this._later$]).pipe(
-    exhaustMap(([postId, params]) =>
-      this._dataService.loadComments(postId, params),
-    ),
-    tap((comments) => {
-      const later = comments.at(-1)?.id;
-      this._later$.prev({ later });
-    }),
-    scan((prev, next) => {
-      return [...prev, ...next];
-    }),
-  );
+  isLoading$ = this._commentsService.connectLoading();
 
-  isLoading$ = this._uiService.isLoading$;
+  constructor(private _commentsService: CommentsService) {}
 
-  constructor(
-    private _activatedRoute: ActivatedRoute,
-    private _dataService: DataService,
-    private _uiService: UiService,
-  ) {}
+  ngOnInit(): void {
+    this.comments$ = this._commentsService.connectPostComments(this.postId);
 
-  handleScroll() {
-    if (this._later$.getValue()?.later) {
-      this._later$.next();
-    }
+    this._commentsService.startLoadingPostComments(this.postId);
+  }
+
+  handleScroll(): void {
+    this._commentsService.startLoadingMorePostComments(this.postId);
   }
 }

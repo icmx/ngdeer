@@ -1,36 +1,22 @@
-import { Inject, Injectable } from '@angular/core';
-import { DOCUMENT } from '@angular/common';
-import { Theme } from '../enums/theme.enum';
-import { StorageService } from './storage.service';
-import { Settings } from '../types/settings.type';
-
-const THEME_KEY = 'theme';
+import { Injectable } from '@angular/core';
+import { Store } from '@ngxs/store';
+import {
+  SetSettings,
+  SETTINGS_STATE_TOKEN,
+  SettingsStateModel,
+} from '../states/settings.state';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SettingsService {
-  constructor(
-    @Inject(DOCUMENT)
-    private _document: Document,
-    private _storageService: StorageService,
-  ) {}
+  constructor(private _store: Store) {}
 
-  getSettings(): Settings {
-    const theme = this._storageService.getItem<Theme>(THEME_KEY) || Theme.Light;
-
-    return { theme };
+  getSettings(): SettingsStateModel {
+    return this._store.selectSnapshot(SETTINGS_STATE_TOKEN);
   }
 
-  setSettings(settings: Settings): void {
-    const theme = settings?.[THEME_KEY] || Theme.Light;
-
-    this._storageService.setItem<Theme>(THEME_KEY, theme);
-
-    console.log(this._document);
-
-    const dataset = this._document?.documentElement?.dataset || {};
-
-    dataset[THEME_KEY] = theme;
+  setSettings(settings: SettingsStateModel): void {
+    this._store.dispatch(new SetSettings(settings));
   }
 }

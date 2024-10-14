@@ -1,10 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { LoadingStubComponent } from '../../../../common/components/loading-stub/loading-stub.component';
 import { CategoryCardComponent } from '../../components/category-card/category-card.component';
-import { DataService } from '../../services/data.service';
-import { UiService } from '../../services/ui.service';
+import { CategoriesService } from '../../services/categories.service';
 
 @Component({
   selector: 'ngd-categories-page',
@@ -21,13 +20,14 @@ import { UiService } from '../../services/ui.service';
   templateUrl: './categories-page.component.html',
   styleUrl: './categories-page.component.scss',
 })
-export class CategoriesPageComponent {
-  categories$ = this._dataService.loadCategories();
+export class CategoriesPageComponent implements OnInit {
+  categories$ = this._categoriesService.connectEntries();
 
-  isLoading$ = this._uiService.isLoading$;
+  isLoading$ = this._categoriesService.connectLoading();
 
-  constructor(
-    private _dataService: DataService,
-    private _uiService: UiService,
-  ) {}
+  constructor(private _categoriesService: CategoriesService) {}
+
+  ngOnInit(): void {
+    this._categoriesService.startLoading();
+  }
 }

@@ -3,24 +3,16 @@
     <ngd-field>
       <label ngdCaption>Текст</label>
       <input ngdControl formControlName="text" />
-      <button
-        ngd-button
-        appearance="icon"
-        ngdSuffix
-        (click)="handleTextFieldSuffixClick()"
-      >
-        ×
-      </button>
     </ngd-field>
     <ngd-field>
       <label ngdCaption>Категория</label>
       <select ngdControl formControlName="categoryId">
-        <option [value]="''">Без категории</option>
         @for (category of categories$ | async; track category.id) {
           <option [value]="category.id">{{ category.text }}</option>
         }
       </select>
     </ngd-field>
+    <button ngd-button [appearance]="'section'" type="reset">Сбросить</button>
   </form>
 
   @for (post of posts$ | async; track post.id; let last = $last) {

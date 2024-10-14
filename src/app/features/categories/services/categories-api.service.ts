@@ -7,7 +7,7 @@ import { WithApiCategories } from '../types/with-api-categories.type';
 @Injectable({
   providedIn: 'root',
 })
-export class ApiService {
+export class CategoriesApiService {
   constructor(
     private _http: HttpClient,
     @Inject(BASE_URL)

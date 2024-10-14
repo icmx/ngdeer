@@ -1,58 +1,29 @@
-import {
-  AfterViewChecked,
-  ChangeDetectionStrategy,
-  Component,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { AsyncPipe, ViewportScroller } from '@angular/common';
-import {
-  FormControl,
-  FormGroup,
-  FormGroupDirective,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import {
-  combineLatest,
-  debounceTime,
-  exhaustMap,
-  filter,
-  map,
-  tap,
-} from 'rxjs';
+import { AsyncPipe } from '@angular/common';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { ActivatedRoute, Params, Router } from '@angular/router';
+import { combineLatest, debounceTime, map, Observable } from 'rxjs';
 import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
-import { DeferredSubject } from '../../../../common/classes/deferred-subject.class';
-import { ButtonComponent } from '../../../../common/components/button/button.component';
 import { CaptionComponent } from '../../../../common/components/caption/caption.component';
 import { ControlComponent } from '../../../../common/components/control/control.component';
+import { ButtonComponent } from '../../../../common/components/button/button.component';
 import { FieldComponent } from '../../../../common/components/field/field.component';
 import { LoadingStubComponent } from '../../../../common/components/loading-stub/loading-stub.component';
 import { SuffixDirective } from '../../../../common/directives/suffix.directive';
-import { extractScrollPosition } from '../../../../common/mappers/extract-scroll-position.mapper';
-import { extractParams } from '../../../../common/mappers/extract-params.mapper';
-import { ScrollPosition } from '../../../../common/types/scroll-position.type';
 import { WithCategoryId } from '../../../../common/types/with-category-id.type';
-import { WithFrom } from '../../../../common/types/with-from.type';
 import { WithText } from '../../../../common/types/with-text.type';
-import { DataService as CategoriesDataService } from '../../../categories/services/data.service';
-import { UiService as CategoriesUiService } from '../../../categories/services/ui.service';
+import { CategoriesService } from '../../../categories/services/categories.service';
 import { PostCardComponent } from '../../components/post-card/post-card.component';
-import { DataService as PostsDataService } from '../../services/data.service';
-import { UiService as PostsUiService } from '../../services/ui.service';
+import { SearchPostsService } from '../../services/search-posts.service';
 
-export type SearchPostsPageComponentFormGroupValue = {
+export class SearchPostsPageComponentFormGroup extends FormGroup<{
   text: FormControl<string>;
   categoryId: FormControl<string>;
-};
-
-export class SearchPostsPageComponentFormGroup extends FormGroup<SearchPostsPageComponentFormGroupValue> {
+}> {
   constructor() {
     super({
-      text: new FormControl('', {
-        nonNullable: true,
-        validators: [Validators.required, Validators.minLength(3)],
-      }),
+      text: new FormControl('', { nonNullable: true }),
       categoryId: new FormControl('', { nonNullable: true }),
     });
   }
@@ -82,104 +53,70 @@ export class SearchPostsPageComponentFormGroup extends FormGroup<SearchPostsPage
   styleUrl: './search-posts-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SearchPostsPageComponent implements AfterViewChecked {
+export class SearchPostsPageComponent implements OnInit {
   formGroup = new SearchPostsPageComponentFormGroup();
 
-  private _scrollPosition$ = this._router.events.pipe(extractScrollPosition());
-
-  private _prevScrollPosition: ScrollPosition = null;
-
-  private _queryParams$ =
-    this._activatedRoute.queryParams.pipe(
-      extractParams<WithText & WithCategoryId>(),
-    );
-
-  private _from$ = new DeferredSubject<WithFrom>({});
-
-  private _loadingParams$ = combineLatest([
-    this._from$,
-    this._queryParams$,
-  ]).pipe(
-    filter(
-      ([, queryParams]) => !!queryParams.text && queryParams.text.length >= 3,
-    ),
-    map(([from, queryParams]) => ({ ...from, ...queryParams })),
-  );
-
   isLoading$ = combineLatest([
-    this._categoriesUiService.isLoading$,
-    this._postsUiService.isLoading$,
+    this._categoriesService.connectLoading(),
+    this._searchPostsService.connectLoading(),
   ]).pipe(
     map((isLoadings) => {
       return isLoadings.some((isLoading) => isLoading === true);
     }),
   );
 
-  categories$ = this._categoriesDataService.loadCategories();
-
-  posts$ = combineLatest([
-    this._scrollPosition$,
-    this._loadingParams$.pipe(
-      exhaustMap((params) => this._postsDataService.loadSearchPosts(params)),
-    ),
-  ]).pipe(
-    map(([scrollPosition, posts]) => {
-      this._prevScrollPosition = scrollPosition;
-
-      const from = posts.at(-1)?.id;
-      this._from$.prev({ from });
-
-      return posts;
+  categories$ = this._categoriesService.connectEntries().pipe(
+    map((entries) => {
+      return [{ id: '', postsLink: '', text: 'Без категории' }, ...entries];
     }),
   );
+
+  posts$ = this._searchPostsService.connectEntries();
+
+  private _formGroupValue$ = this.formGroup.valueChanges.pipe(
+    map((value) => {
+      const entries = Object.entries(value).filter(
+        ([, controlValue]) => !!controlValue,
+      );
+
+      return Object.fromEntries(entries) as WithText & WithCategoryId;
+    }),
+    debounceTime(300),
+  );
+
+  private _queryParams$: Observable<WithText & WithCategoryId> =
+    this._activatedRoute.queryParams;
 
   constructor(
     private _router: Router,
     private _activatedRoute: ActivatedRoute,
-    private _viewportScroller: ViewportScroller,
-    private _categoriesDataService: CategoriesDataService,
-    private _categoriesUiService: CategoriesUiService,
-    private _postsDataService: PostsDataService,
-    private _postsUiService: PostsUiService,
+    private _categoriesService: CategoriesService,
+    private _searchPostsService: SearchPostsService,
   ) {
+    this._formGroupValue$.pipe(takeUntilDestroyed()).subscribe((value) => {
+      const queryParams: Params = this.formGroup.valid ? { ...value } : {};
+
+      this._router.navigate([], { queryParams });
+    });
+
     this._queryParams$
       .pipe(takeUntilDestroyed())
-      .subscribe(({ text, categoryId }) => {
-        this.formGroup.controls.text.setValue(text || '', { emitEvent: false });
+      .subscribe(({ text = '', categoryId = '' }) => {
+        this.formGroup.patchValue({ text, categoryId }, { emitEvent: false });
 
-        this.formGroup.controls.categoryId.setValue(categoryId || '', {
-          emitEvent: false,
-        });
-      });
-
-    this.formGroup.valueChanges
-      .pipe(
-        debounceTime(400),
-        tap(() => {
-          this._postsDataService.clear();
-        }),
-        takeUntilDestroyed(),
-      )
-      .subscribe((value) => {
-        this._router.navigate([], {
-          queryParams: { ...value },
-        });
+        if (text || categoryId) {
+          this._searchPostsService.startLoading({ text, categoryId });
+        } else {
+          this._searchPostsService.drop();
+        }
       });
   }
 
-  ngAfterViewChecked(): void {
-    if (this._prevScrollPosition) {
-      this._viewportScroller.scrollToPosition(this._prevScrollPosition);
-    }
+  ngOnInit(): void {
+    this._categoriesService.startLoading();
   }
 
   handleScrolled(): void {
-    if (this._from$.getValue()?.from) {
-      this._from$.next();
-    }
-  }
-
-  handleTextFieldSuffixClick(): void {
-    this.formGroup.controls.text.setValue('');
+    this._searchPostsService.startLoadingMore(this.formGroup.value);
   }
 }

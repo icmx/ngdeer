@@ -1,21 +1,20 @@
 import { Component } from '@angular/core';
-import { SettingsService } from '../../services/settings.service';
-import { ThemesService } from '../../services/themes.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { AsyncPipe } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { Theme } from '../../enums/theme.enum';
-import { FieldComponent } from '../../components/field/field.component';
 import { CaptionComponent } from '../../components/caption/caption.component';
 import { ControlComponent } from '../../components/control/control.component';
-import { AsyncPipe } from '@angular/common';
+import { FieldComponent } from '../../components/field/field.component';
+import { Theme } from '../../enums/theme.enum';
+import { SettingsService } from '../../services/settings.service';
+import { ThemesService } from '../../services/themes.service';
 
-export type SettingsPageComponentFormGroupValue = {
+export class SettingsPageComponentFormGroup extends FormGroup<{
   theme: FormControl<Theme>;
-};
-
-export class SettingsPageComponentFormGroup extends FormGroup<SettingsPageComponentFormGroupValue> {
+}> {
   constructor() {
     super({
-      theme: new FormControl(),
+      theme: new FormControl(Theme.Light, { nonNullable: true }),
     });
   }
 }
@@ -45,8 +44,10 @@ export class SettingsPageComponent {
     const value = this._settingsService.getSettings();
     this.formGroup.setValue(value, { emitEvent: false });
 
-    this.formGroup.controls.theme.valueChanges.subscribe((theme) => {
-      this._settingsService.setSettings({ theme });
-    });
+    this.formGroup.controls.theme.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe((theme) => {
+        this._settingsService.setSettings({ theme });
+      });
   }
 }
