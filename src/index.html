@@ -11,11 +11,9 @@
       const valueString = localStorage?.getItem(key) || '{}';
       const valueObject = JSON.parse(valueString);
 
-      console.log(valueObject)
-
       const theme = valueObject?.theme || 'light';
 
-      const dataset = document.documentElement.dataset || {};
+      const dataset = document?.documentElement?.dataset || {};
       dataset.theme = theme;
     </script>
   </head>
