@@ -9,6 +9,7 @@ import { ThemeItem } from '../types/theme-item.type';
 export class ThemesService {
   getThemes(): Observable<ThemeItem[]> {
     return of([
+      { text: 'Как в системе', value: Theme.System },
       { text: 'Светлая', value: Theme.Light },
       { text: 'Темная', value: Theme.Dark },
     ]);
