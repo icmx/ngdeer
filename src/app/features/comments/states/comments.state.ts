@@ -4,9 +4,9 @@ import { Action, createSelector, State, StateContext } from '@ngxs/store';
 import { DynamicSelector } from '../../../common/types/dyanmic-selector.type';
 import { WithLater } from '../../../common/types/with-later-type';
 import { CommentsLoading } from '../enums/comments-loading.enum';
-import { fromCommentsReply } from '../mappers/from-comments-reply.mapper';
 import { Comment } from '../models/comment.model';
 import { CommentsApiService } from '../services/comments-api.service';
+import { extractCommentsFromReply } from '../operators/extract-comments-from-reply.operator';
 
 export type CommentsStateModel = {
   loading: string;
@@ -51,7 +51,7 @@ export class CommentsState {
       exhaustMap(() => {
         return this._commentsApiService.getPostComments(postId, { params });
       }),
-      fromCommentsReply(),
+      extractCommentsFromReply(),
       tap((nextEntries) => {
         const { entries: prevEntries } = ctx.getState();
         const entries = [...prevEntries, ...nextEntries];
@@ -73,7 +73,7 @@ export class CommentsState {
       exhaustMap(() => {
         return this._commentsApiService.getCommentBranch(rootId);
       }),
-      fromCommentsReply(),
+      extractCommentsFromReply(),
       tap((nextEntries) => {
         const { entries: prevEntries } = ctx.getState();
         const entries = [
