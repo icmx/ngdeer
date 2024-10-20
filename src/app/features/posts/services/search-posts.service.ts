@@ -16,11 +16,11 @@ import { WithCategoryId } from '../../../common/types/with-category-id.type';
 export class SearchPostsService {
   constructor(private _store: Store) {}
 
-  connectLoading(): Observable<boolean> {
+  selectLoading(): Observable<boolean> {
     return this._store.select(SearchPostsSelectors.loading);
   }
 
-  connectEntries(): Observable<Post[]> {
+  selectEntries(): Observable<Post[]> {
     return this._store.select(SearchPostsSelectors.entries);
   }
 

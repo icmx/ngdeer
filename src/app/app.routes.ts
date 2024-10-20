@@ -3,11 +3,11 @@ import { AboutPageComponent } from './common/pages/about-page/about-page.compone
 import { NotFoundPageComponent } from './common/pages/not-found-page/not-found-page.component';
 import { SettingsPageComponent } from './common/pages/settings-page/settings-page.component';
 import { CategoriesPageComponent } from './features/categories/pages/categories-page/categories-page.component';
-import { CommentsPageComponent } from './features/comments/pages/comments-page/comments-page.component';
 import { CategoryPostsPageComponent } from './features/posts/pages/category-posts-page/category-posts-page.component';
 import { LatestPostsPageComponent } from './features/posts/pages/latest-posts-page/latest-posts-page.component';
 import { RandomPostsPageComponent } from './features/posts/pages/random-posts-page/random-posts-page.component';
 import { SearchPostsPageComponent } from './features/posts/pages/search-posts-page/search-posts-page.component';
+import { PostPageComponent } from './features/posts/pages/post-page/post-page.component';
 
 export const routes: Routes = [
   {
@@ -36,8 +36,8 @@ export const routes: Routes = [
     title: 'Поиск',
   },
   {
-    path: 'posts/:postId/comments',
-    component: CommentsPageComponent,
+    path: 'posts/:postId',
+    component: PostPageComponent,
     title: 'Комментарии',
   },
   {

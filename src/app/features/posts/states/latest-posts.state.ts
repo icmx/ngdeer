@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { exhaustMap, Observable, of, tap } from 'rxjs';
 import { Action, Selector, State, StateContext } from '@ngxs/store';
 import { WithFrom } from '../../../common/types/with-from.type';
-import { fromPostsReply } from '../mappers/from-posts-reply.mapper';
 import { Post } from '../models/post.model';
+import { extractPostsFromReply } from '../operators/extract-posts-from-reply.operator';
 import { PostsApiService } from '../services/posts-api.service';
 
 export type LatestPostsStateModel = {
@@ -29,7 +29,7 @@ export class LatestPostsState {
   constructor(private _postsApiService: PostsApiService) {}
 
   @Action(LoadLatestPosts)
-  loadLatestPosts(
+  loadEntries(
     ctx: StateContext<LatestPostsStateModel>,
     { params }: LoadLatestPosts,
   ): Observable<Post[]> {
@@ -40,7 +40,7 @@ export class LatestPostsState {
       exhaustMap(() => {
         return this._postsApiService.getPosts({ params });
       }),
-      fromPostsReply(),
+      extractPostsFromReply(),
       tap((nextEntries) => {
         const { entries: prevEntries } = ctx.getState();
         const entries = [...prevEntries, ...nextEntries];

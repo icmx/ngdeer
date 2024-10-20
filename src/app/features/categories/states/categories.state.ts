@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { exhaustMap, Observable, of, tap } from 'rxjs';
 import { Action, Selector, State, StateContext } from '@ngxs/store';
-import { fromCategoriesReply } from '../mappers/from-categories-reply.mapper';
 import { Category } from '../models/category.model';
+import { extractCategoriesFromReply } from '../operators/extract-categories-from-reply.operator';
 import { CategoriesApiService } from '../services/categories-api.service';
 
 export type CategoriesStateModel = {
@@ -28,7 +28,7 @@ export class CategoriesState {
   constructor(private _categoriesApiService: CategoriesApiService) {}
 
   @Action(LoadCategories)
-  loadCategories(
+  loadEntries(
     ctx: StateContext<CategoriesStateModel>,
   ): Observable<Category[]> {
     return of(null).pipe(
@@ -36,7 +36,7 @@ export class CategoriesState {
         ctx.patchState({ loading: true, done: false, entries: [] });
       }),
       exhaustMap(() => this._categoriesApiService.getCategories()),
-      fromCategoriesReply(),
+      extractCategoriesFromReply(),
       tap((entries) => {
         ctx.patchState({ loading: false, done: true, entries });
       }),

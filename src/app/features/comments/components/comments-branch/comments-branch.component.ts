@@ -37,12 +37,12 @@ export class CommentsBranchComponent implements OnInit {
   ngOnInit(): void {
     const rootId = this.rootComment.id;
 
-    this.isLoading$ = this._commentsService.connectLoading(rootId);
+    this.isLoading$ = this._commentsService.selectLoading(rootId);
 
-    this.childComments$ = this._commentsService.connectBranchComments(rootId);
+    this.childComments$ = this._commentsService.selectBranchComments(rootId);
 
     this.showLoadMoreButton$ =
-      this._commentsService.connectCanLoadMoreBranchComments(rootId);
+      this._commentsService.selectCanLoadMoreBranchComments(rootId);
   }
 
   handleLoadMoreButtonClick(): void {

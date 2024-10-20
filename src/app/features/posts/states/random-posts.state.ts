@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { exhaustMap, Observable, of, tap } from 'rxjs';
 import { Action, Selector, State, StateContext } from '@ngxs/store';
-import { fromPostsReply } from '../mappers/from-posts-reply.mapper';
 import { Post } from '../models/post.model';
+import { extractPostsFromReply } from '../operators/extract-posts-from-reply.operator';
 import { PostsApiService } from '../services/posts-api.service';
 
 export type RandomPostsStateModel = {
@@ -26,7 +26,7 @@ export class RandomPostsState {
   constructor(private _postsApiService: PostsApiService) {}
 
   @Action(LoadRandomPosts)
-  loadRandomPosts(
+  loadEntries(
     ctx: StateContext<RandomPostsStateModel>,
   ): Observable<Post[]> {
     return of(null).pipe(
@@ -36,7 +36,7 @@ export class RandomPostsState {
       exhaustMap(() => {
         return this._postsApiService.getPostsRandom();
       }),
-      fromPostsReply(),
+      extractPostsFromReply(),
       tap((nextEntries) => {
         const { entries: prevEntries } = ctx.getState();
         const entries = [...prevEntries, ...nextEntries];

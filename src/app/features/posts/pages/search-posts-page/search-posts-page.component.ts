@@ -57,21 +57,21 @@ export class SearchPostsPageComponent implements OnInit {
   formGroup = new SearchPostsPageComponentFormGroup();
 
   isLoading$ = combineLatest([
-    this._categoriesService.connectLoading(),
-    this._searchPostsService.connectLoading(),
+    this._categoriesService.selectLoading(),
+    this._searchPostsService.selectLoading(),
   ]).pipe(
-    map((isLoadings) => {
-      return isLoadings.some((isLoading) => isLoading === true);
+    map((loadings) => {
+      return loadings.some((loading) => loading === true);
     }),
   );
 
-  categories$ = this._categoriesService.connectEntries().pipe(
+  categories$ = this._categoriesService.selectEntries().pipe(
     map((entries) => {
       return [{ id: '', postsLink: '', text: 'Без категории' }, ...entries];
     }),
   );
 
-  posts$ = this._searchPostsService.connectEntries();
+  posts$ = this._searchPostsService.selectEntries();
 
   private _formGroupValue$ = this.formGroup.valueChanges.pipe(
     map((value) => {
