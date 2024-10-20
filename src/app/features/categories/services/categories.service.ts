@@ -13,11 +13,11 @@ import {
 export class CategoriesService {
   constructor(private _store: Store) {}
 
-  connectLoading(): Observable<boolean> {
+  selectLoading(): Observable<boolean> {
     return this._store.select(CategoriesSelectors.loading);
   }
 
-  connectEntries(): Observable<Category[]> {
+  selectEntries(): Observable<Category[]> {
     return this._store.select(CategoriesSelectors.entries);
   }
 

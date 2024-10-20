@@ -6,6 +6,7 @@ import { RequestOptions } from '../../../common/types/request-options.type';
 import { Param } from '../../../common/types/param.type';
 import { WithApiCategory } from '../../categories/types/with-api-category.type';
 import { WithApiPosts } from '../types/with-api-posts.type';
+import { WithApiPost } from '../types/with-api-post.type';
 
 export type GetPostsRequestOptions = RequestOptions<{
   params: {
@@ -34,6 +35,10 @@ export class PostsApiService {
     @Inject(BASE_URL)
     private _baseUrl: string,
   ) {}
+
+  getPost(postId: string): Observable<WithApiPost> {
+    return this._http.get<WithApiPost>(`${this._baseUrl}/posts/${postId}`);
+  }
 
   getPosts(
     options?: GetPostsRequestOptions,

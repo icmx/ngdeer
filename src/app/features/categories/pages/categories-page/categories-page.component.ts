@@ -21,9 +21,9 @@ import { CategoriesService } from '../../services/categories.service';
   styleUrl: './categories-page.component.scss',
 })
 export class CategoriesPageComponent implements OnInit {
-  categories$ = this._categoriesService.connectEntries();
+  categories$ = this._categoriesService.selectEntries();
 
-  isLoading$ = this._categoriesService.connectLoading();
+  isLoading$ = this._categoriesService.selectLoading();
 
   constructor(private _categoriesService: CategoriesService) {}
 

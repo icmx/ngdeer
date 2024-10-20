@@ -15,11 +15,11 @@ import { CommentsLoading } from '../enums/comments-loading.enum';
 export class CommentsService {
   constructor(private _store: Store) {}
 
-  connectLoading(loading: string = CommentsLoading.Root): Observable<boolean> {
+  selectLoading(loading: string = CommentsLoading.Root): Observable<boolean> {
     return this._store.select(CommentsSelectors.loading(loading));
   }
 
-  connectPostComments(postId: string): Observable<Comment[]> {
+  selectPostComments(postId: string): Observable<Comment[]> {
     return this._store.select(CommentsSelectors.postComments(postId));
   }
 
@@ -47,11 +47,11 @@ export class CommentsService {
     }
   }
 
-  connectBranchComments(rootId: string): Observable<Comment[]> {
+  selectBranchComments(rootId: string): Observable<Comment[]> {
     return this._store.select(CommentsSelectors.branchComments(rootId));
   }
 
-  connectCanLoadMoreBranchComments(rootId: string): Observable<boolean> {
+  selectCanLoadMoreBranchComments(rootId: string): Observable<boolean> {
     return this._store.select(
       CommentsSelectors.canLoadMoreBranchComments(rootId),
     );

@@ -17,6 +17,7 @@ import { CategoryPostsState } from './features/posts/states/category-posts.state
 import { LatestPostsState } from './features/posts/states/latest-posts.state';
 import { RandomPostsState } from './features/posts/states/random-posts.state';
 import { SearchPostsState } from './features/posts/states/search-posts.state';
+import { PostState } from './features/posts/states/post.state';
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
@@ -41,6 +42,7 @@ export const appConfig: ApplicationConfig = {
         RandomPostsState,
         CategoryPostsState,
         SearchPostsState,
+        PostState,
       ],
       withNgxsStoragePlugin({ keys: [SettingsState], namespace: 'ngdeer' }),
     ),

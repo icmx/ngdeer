@@ -1,4 +1,10 @@
 <div infiniteScroll (scrolled)="handleScroll()">
+  @if (post$ | async; as post) {
+    <ngd-post-card [post]="post" />
+
+    <hr />
+  }
+
   @for (comment of comments$ | async; track comment.id) {
     <ngd-comments-branch [rootComment]="comment" />
   }

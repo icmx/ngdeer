@@ -1,11 +1,9 @@
 import { Param } from './param.type';
 
-type RequestOptionsGeneric = {
-  params?: {
-    [name: string]: Param | Param[];
-  };
-};
-
-export type RequestOptions<T extends RequestOptionsGeneric> = {
+export type RequestOptions<
+  T extends {
+    params?: { [key: string]: Param | Param[] };
+  },
+> = {
   params?: T['params'];
 };

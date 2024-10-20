@@ -23,9 +23,9 @@ import { RandomPostsService } from '../../services/random-posts.service';
   styleUrl: './random-posts-page.component.scss',
 })
 export class RandomPostsPageComponent implements OnInit {
-  isLoading$ = this._randomPostsService.connectLoading();
+  isLoading$ = this._randomPostsService.selectLoading();
 
-  posts$ = this._randomPostsService.connectEntries();
+  posts$ = this._randomPostsService.selectEntries();
 
   constructor(private _randomPostsService: RandomPostsService) {}
 

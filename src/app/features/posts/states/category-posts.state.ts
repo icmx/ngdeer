@@ -9,8 +9,8 @@ import {
 } from '@ngxs/store';
 import { DynamicSelector } from '../../../common/types/dyanmic-selector.type';
 import { WithFrom } from '../../../common/types/with-from.type';
-import { fromPostsReply } from '../mappers/from-posts-reply.mapper';
 import { Post } from '../models/post.model';
+import { extractPostsFromReply } from '../operators/extract-posts-from-reply.operator';
 import { PostsApiService } from '../services/posts-api.service';
 
 export type CategoryPostsStateModel = {
@@ -39,7 +39,7 @@ export class CategoryPostsState {
   constructor(private _postsApiService: PostsApiService) {}
 
   @Action(LoadCategoryPosts)
-  loadCategoryPosts(
+  loadEntries(
     ctx: StateContext<CategoryPostsStateModel>,
     { categoryId, params }: LoadCategoryPosts,
   ): Observable<Post[]> {
@@ -52,7 +52,7 @@ export class CategoryPostsState {
           params: { category_id: categoryId, ...params },
         });
       }),
-      fromPostsReply(),
+      extractPostsFromReply(),
       tap((nextEntries) => {
         const { entries: prevEntries } = ctx.getState();
         const entries = [...prevEntries, ...nextEntries];

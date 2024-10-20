@@ -1,6 +1,6 @@
 <header>
   @if (post.commentsCount > 0) {
-    <a [routerLink]="post.commentsLink">#{{ post.id }}</a>
+    <a [routerLink]="post.postLink">#{{ post.id }}</a>
   } @else {
     <span>#{{ post.id }}</span>
   }

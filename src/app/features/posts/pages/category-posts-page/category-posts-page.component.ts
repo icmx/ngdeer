@@ -28,14 +28,14 @@ export class CategoryPostsPageComponent implements OnInit {
   @Input({ required: true })
   categoryId = '';
 
-  isLoading$ = this._categoryPostsService.connectLoading();
+  isLoading$ = this._categoryPostsService.selectLoading();
 
   posts$ = of<Post[]>([]);
 
   constructor(private _categoryPostsService: CategoryPostsService) {}
 
   ngOnInit(): void {
-    this.posts$ = this._categoryPostsService.connectEntries(this.categoryId);
+    this.posts$ = this._categoryPostsService.selectEntries(this.categoryId);
 
     this._categoryPostsService.startLoading(this.categoryId);
   }
