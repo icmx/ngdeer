@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AsyncPipe } from '@angular/common';
-import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
 import { LoadingStubComponent } from '../../../../common/components/loading-stub/loading-stub.component';
 import { PostCardComponent } from '../../components/post-card/post-card.component';
 import { LatestPostsService } from '../../services/latest-posts.service';
+import { ScrollService } from '../../../../common/services/scroll.service';
 
 @Component({
   selector: 'ngd-latest-posts-page',
@@ -11,9 +12,6 @@ import { LatestPostsService } from '../../services/latest-posts.service';
   imports: [
     // Angular Imports
     AsyncPipe,
-
-    // External Imports
-    InfiniteScrollDirective,
 
     // Internal Imports
     LoadingStubComponent,
@@ -27,13 +25,16 @@ export class LatestPostsPageComponent implements OnInit {
 
   posts$ = this._latestPostsService.selectEntries();
 
-  constructor(private _latestPostsService: LatestPostsService) {}
+  constructor(
+    private _scrollService: ScrollService,
+    private _latestPostsService: LatestPostsService,
+  ) {
+    this._scrollService.scroll$.pipe(takeUntilDestroyed()).subscribe(() => {
+      this._latestPostsService.startLoadingMore();
+    });
+  }
 
   ngOnInit(): void {
     this._latestPostsService.startLoading();
-  }
-
-  handleScrolled(): void {
-    this._latestPostsService.startLoadingMore();
   }
 }

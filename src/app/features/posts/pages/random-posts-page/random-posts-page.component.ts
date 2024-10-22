@@ -1,9 +1,10 @@
-import { AsyncPipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { AsyncPipe } from '@angular/common';
 import { LoadingStubComponent } from '../../../../common/components/loading-stub/loading-stub.component';
 import { PostCardComponent } from '../../components/post-card/post-card.component';
 import { RandomPostsService } from '../../services/random-posts.service';
+import { ScrollService } from '../../../../common/services/scroll.service';
 
 @Component({
   selector: 'ngd-random-posts-page',
@@ -11,9 +12,6 @@ import { RandomPostsService } from '../../services/random-posts.service';
   imports: [
     // Angular Imports
     AsyncPipe,
-
-    // External Imports
-    InfiniteScrollDirective,
 
     // Internal Imports
     LoadingStubComponent,
@@ -27,13 +25,16 @@ export class RandomPostsPageComponent implements OnInit {
 
   posts$ = this._randomPostsService.selectEntries();
 
-  constructor(private _randomPostsService: RandomPostsService) {}
+  constructor(
+    private _scrollService: ScrollService,
+    private _randomPostsService: RandomPostsService,
+  ) {
+    this._scrollService.scroll$.pipe(takeUntilDestroyed()).subscribe(() => {
+      this._randomPostsService.startLoadMore();
+    });
+  }
 
   ngOnInit(): void {
     this._randomPostsService.startLoading();
-  }
-
-  handleScrolled(): void {
-    this._randomPostsService.startLoadMore();
   }
 }
