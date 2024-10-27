@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { TimestampDirective } from '../../../../common/directives/timestamp.directive';
 import { Comment } from '../../models/comment.model';
 
@@ -11,6 +11,7 @@ import { Comment } from '../../models/comment.model';
   ],
   templateUrl: './comment-card.component.html',
   styleUrl: './comment-card.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CommentCardComponent {
   @Input({ required: true })

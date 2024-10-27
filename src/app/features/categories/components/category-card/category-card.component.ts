@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Category } from '../../models/category.model';
 
@@ -11,6 +11,7 @@ import { Category } from '../../models/category.model';
   ],
   templateUrl: './category-card.component.html',
   styleUrl: './category-card.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CategoryCardComponent {
   @Input({ required: true })

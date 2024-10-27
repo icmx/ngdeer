@@ -1,5 +1,5 @@
 import { map, Observable } from 'rxjs';
-import { toCategory } from '../mappers/to-category';
+import { toCategory } from '../mappers/to-category.mapper';
 import { Category } from '../models/category.model';
 import { WithApiCategories } from '../types/with-api-categories.type';
 

@@ -1,4 +1,9 @@
-import { Component, HostBinding, Input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  HostBinding,
+  Input,
+} from '@angular/core';
 
 export type NgdButtonAppearance = 'default' | 'icon' | 'section';
 
@@ -8,6 +13,7 @@ export type NgdButtonAppearance = 'default' | 'icon' | 'section';
   imports: [],
   templateUrl: './button.component.html',
   styleUrl: './button.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ButtonComponent {
   @Input()

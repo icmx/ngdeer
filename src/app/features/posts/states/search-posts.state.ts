@@ -10,6 +10,7 @@ import {
   GetPostsRequestOptions,
   PostsApiService,
 } from '../services/posts-api.service';
+import { PostsCacheService } from '../services/posts-cache.service';
 
 export type SearchPostsStateModel = {
   loading: boolean;
@@ -35,7 +36,10 @@ export class DropSearchPosts {
 })
 @Injectable()
 export class SearchPostsState {
-  constructor(private _postsApiService: PostsApiService) {}
+  constructor(
+    private _postsApiService: PostsApiService,
+    private _postsCacheService: PostsCacheService,
+  ) {}
 
   @Action(LoadSearchPosts)
   loadEntries(
@@ -70,6 +74,8 @@ export class SearchPostsState {
       }),
       extractPostsFromReply(),
       tap((nextEntries) => {
+        this._postsCacheService.add(...nextEntries);
+
         const { entries: prevEntries } = ctx.getState();
         const entries = [...prevEntries, ...nextEntries];
 

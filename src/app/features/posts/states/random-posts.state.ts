@@ -4,6 +4,7 @@ import { Action, Selector, State, StateContext } from '@ngxs/store';
 import { Post } from '../models/post.model';
 import { extractPostsFromReply } from '../operators/extract-posts-from-reply.operator';
 import { PostsApiService } from '../services/posts-api.service';
+import { PostsCacheService } from '../services/posts-cache.service';
 
 export type RandomPostsStateModel = {
   loading: boolean;
@@ -23,12 +24,13 @@ export class LoadRandomPosts {
 })
 @Injectable()
 export class RandomPostsState {
-  constructor(private _postsApiService: PostsApiService) {}
+  constructor(
+    private _postsApiService: PostsApiService,
+    private _postsCacheService: PostsCacheService,
+  ) {}
 
   @Action(LoadRandomPosts)
-  loadEntries(
-    ctx: StateContext<RandomPostsStateModel>,
-  ): Observable<Post[]> {
+  loadEntries(ctx: StateContext<RandomPostsStateModel>): Observable<Post[]> {
     return of(null).pipe(
       tap(() => {
         ctx.patchState({ loading: true });
@@ -38,6 +40,8 @@ export class RandomPostsState {
       }),
       extractPostsFromReply(),
       tap((nextEntries) => {
+        this._postsCacheService.add(...nextEntries);
+
         const { entries: prevEntries } = ctx.getState();
         const entries = [...prevEntries, ...nextEntries];
 

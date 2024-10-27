@@ -1,15 +1,12 @@
-<div infiniteScroll (scrolled)="handleScroll()">
-  @if (post$ | async; as post) {
-    <ngd-post-card [post]="post" />
+@if (post$ | async; as post) {
+  <ngd-post-card [post]="post" />
+  <hr />
+}
 
-    <hr />
-  }
+@for (comment of comments$ | async; track comment.id) {
+  <ngd-comments-branch [rootComment]="comment" />
+}
 
-  @for (comment of comments$ | async; track comment.id) {
-    <ngd-comments-branch [rootComment]="comment" />
-  }
-
-  @if (isLoading$ | async) {
-    <ngd-loading-stub />
-  }
-</div>
+@if (isLoading$ | async) {
+  <ngd-loading-stub />
+}

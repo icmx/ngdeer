@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { LoadingStubComponent } from '../../../../common/components/loading-stub/loading-stub.component';
@@ -19,6 +19,7 @@ import { CategoriesService } from '../../services/categories.service';
   ],
   templateUrl: './categories-page.component.html',
   styleUrl: './categories-page.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CategoriesPageComponent implements OnInit {
   categories$ = this._categoriesService.selectEntries();

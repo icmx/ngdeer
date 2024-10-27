@@ -1,4 +1,9 @@
-import { Component, Input, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+  OnInit,
+} from '@angular/core';
 import { AsyncPipe } from '@angular/common';
 import { Observable, of } from 'rxjs';
 import { ButtonComponent } from '../../../../common/components/button/button.component';
@@ -21,6 +26,7 @@ import { CommentCardComponent } from '../comment-card/comment-card.component';
   ],
   templateUrl: './comments-branch.component.html',
   styleUrl: './comments-branch.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CommentsBranchComponent implements OnInit {
   @Input({ required: true })

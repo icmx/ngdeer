@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
   selector: 'ngd-loading-stub',
@@ -6,5 +6,6 @@ import { Component } from '@angular/core';
   imports: [],
   templateUrl: './loading-stub.component.html',
   styleUrl: './loading-stub.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoadingStubComponent {}

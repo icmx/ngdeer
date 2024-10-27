@@ -1,11 +1,17 @@
-import { Component, Input, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+  OnInit,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AsyncPipe } from '@angular/common';
-import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
+import { of } from 'rxjs';
 import { LoadingStubComponent } from '../../../../common/components/loading-stub/loading-stub.component';
+import { ScrollService } from '../../../../common/services/scroll.service';
 import { PostCardComponent } from '../../components/post-card/post-card.component';
 import { Post } from '../../models/post.model';
 import { CategoryPostsService } from '../../services/category-posts.service';
-import { of } from 'rxjs';
 
 @Component({
   selector: 'ngd-category-posts-page',
@@ -14,15 +20,13 @@ import { of } from 'rxjs';
     // Angular Imports
     AsyncPipe,
 
-    // External Imports
-    InfiniteScrollDirective,
-
     // Internal Imports
     LoadingStubComponent,
     PostCardComponent,
   ],
   templateUrl: './category-posts-page.component.html',
   styleUrl: './category-posts-page.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CategoryPostsPageComponent implements OnInit {
   @Input({ required: true })
@@ -32,15 +36,18 @@ export class CategoryPostsPageComponent implements OnInit {
 
   posts$ = of<Post[]>([]);
 
-  constructor(private _categoryPostsService: CategoryPostsService) {}
+  constructor(
+    private _scrollService: ScrollService,
+    private _categoryPostsService: CategoryPostsService,
+  ) {
+    this._scrollService.scroll$.pipe(takeUntilDestroyed()).subscribe(() => {
+      this._categoryPostsService.startLoadingMore(this.categoryId);
+    });
+  }
 
   ngOnInit(): void {
     this.posts$ = this._categoryPostsService.selectEntries(this.categoryId);
 
     this._categoryPostsService.startLoading(this.categoryId);
-  }
-
-  handleScrolled(): void {
-    this._categoryPostsService.startLoadingMore(this.categoryId);
   }
 }
