@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
 import { appLinks } from './app.config';
@@ -18,6 +18,7 @@ import { ScrollService } from './common/services/scroll.service';
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent {
   links = appLinks;

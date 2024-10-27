@@ -1,4 +1,9 @@
-import { Component, ContentChild, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ContentChild,
+  OnInit,
+} from '@angular/core';
 import { CaptionComponent } from '../../components/caption/caption.component';
 import { ControlComponent } from '../../components/control/control.component';
 import { SuffixDirective } from '../../directives/suffix.directive';
@@ -15,6 +20,7 @@ import { SuffixDirective } from '../../directives/suffix.directive';
   ],
   templateUrl: './field.component.html',
   styleUrl: './field.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FieldComponent implements OnInit {
   @ContentChild(CaptionComponent, { static: true })

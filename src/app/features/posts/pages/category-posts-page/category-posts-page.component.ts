@@ -1,4 +1,9 @@
-import { Component, Input, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+  OnInit,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AsyncPipe } from '@angular/common';
 import { of } from 'rxjs';
@@ -21,6 +26,7 @@ import { CategoryPostsService } from '../../services/category-posts.service';
   ],
   templateUrl: './category-posts-page.component.html',
   styleUrl: './category-posts-page.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CategoryPostsPageComponent implements OnInit {
   @Input({ required: true })

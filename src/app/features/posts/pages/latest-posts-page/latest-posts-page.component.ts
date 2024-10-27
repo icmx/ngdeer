@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AsyncPipe } from '@angular/common';
 import { LoadingStubComponent } from '../../../../common/components/loading-stub/loading-stub.component';
@@ -19,6 +19,7 @@ import { ScrollService } from '../../../../common/services/scroll.service';
   ],
   templateUrl: './latest-posts-page.component.html',
   styleUrl: './latest-posts-page.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LatestPostsPageComponent implements OnInit {
   isLoading$ = this._latestPostsService.selectLoading();

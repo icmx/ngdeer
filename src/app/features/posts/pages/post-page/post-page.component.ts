@@ -1,4 +1,9 @@
-import { Component, Input, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+  OnInit,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AsyncPipe } from '@angular/common';
 import { combineLatest, map, of } from 'rxjs';
@@ -25,6 +30,7 @@ import { PostService } from '../../services/post.service';
   ],
   templateUrl: './post-page.component.html',
   styleUrl: './post-page.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PostPageComponent implements OnInit {
   @Input()
