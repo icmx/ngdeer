@@ -4,6 +4,7 @@ import { Action, Selector, State, StateContext } from '@ngxs/store';
 import { Post } from '../models/post.model';
 import { extractPostFromReply } from '../operators/extract-post-from-reply.operator';
 import { PostsApiService } from '../services/posts-api.service';
+import { PostsCacheService } from '../services/posts-cache.service';
 
 export type PostStateModel = {
   loading: boolean;
@@ -25,7 +26,10 @@ export class LoadPost {
 })
 @Injectable()
 export class PostState {
-  constructor(private _postsApiService: PostsApiService) {}
+  constructor(
+    private _postsApiService: PostsApiService,
+    private _postsCacheService: PostsCacheService,
+  ) {}
 
   @Action(LoadPost)
   loadEntry(
@@ -37,9 +41,16 @@ export class PostState {
         ctx.patchState({ loading: true, entry: null });
       }),
       exhaustMap(() => {
-        return this._postsApiService.getPost(postId);
+        const cachedPost = this._postsCacheService.get(postId);
+
+        if (cachedPost) {
+          return of(cachedPost);
+        }
+
+        return this._postsApiService
+          .getPost(postId)
+          .pipe(extractPostFromReply());
       }),
-      extractPostFromReply(),
       tap((entry) => {
         ctx.patchState({ loading: false, entry });
       }),

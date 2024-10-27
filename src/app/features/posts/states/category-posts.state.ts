@@ -12,6 +12,7 @@ import { WithFrom } from '../../../common/types/with-from.type';
 import { Post } from '../models/post.model';
 import { extractPostsFromReply } from '../operators/extract-posts-from-reply.operator';
 import { PostsApiService } from '../services/posts-api.service';
+import { PostsCacheService } from '../services/posts-cache.service';
 
 export type CategoryPostsStateModel = {
   loading: boolean;
@@ -36,7 +37,10 @@ export class LoadCategoryPosts {
 })
 @Injectable()
 export class CategoryPostsState {
-  constructor(private _postsApiService: PostsApiService) {}
+  constructor(
+    private _postsApiService: PostsApiService,
+    private _postsCacheService: PostsCacheService,
+  ) {}
 
   @Action(LoadCategoryPosts)
   loadEntries(
@@ -54,6 +58,8 @@ export class CategoryPostsState {
       }),
       extractPostsFromReply(),
       tap((nextEntries) => {
+        this._postsCacheService.add(...nextEntries);
+
         const { entries: prevEntries } = ctx.getState();
         const entries = [...prevEntries, ...nextEntries];
 
