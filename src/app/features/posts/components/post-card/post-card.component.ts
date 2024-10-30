@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ClipboardButtonComponent } from '../../../../common/components/clipboard-button/clipboard-button.component';
 import { TimestampDirective } from '../../../../common/directives/timestamp.directive';
 import { Post } from '../../models/post.model';
 import { RouterLink } from '@angular/router';
@@ -11,6 +12,7 @@ import { RouterLink } from '@angular/router';
     RouterLink,
 
     // Internal Imports
+    ClipboardButtonComponent,
     TimestampDirective,
   ],
   templateUrl: './post-card.component.html',

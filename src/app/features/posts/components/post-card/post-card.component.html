@@ -1,6 +1,6 @@
 <header>
   @if (post.commentsCount > 0) {
-    <a [routerLink]="post.postLink">#{{ post.id }}</a>
+    <a [routerLink]="post.link">#{{ post.id }}</a>
   } @else {
     <span>#{{ post.id }}</span>
   }
@@ -11,4 +11,5 @@
 </section>
 <footer>
   <a [routerLink]="post.categoryLink">{{ post.categoryName }}</a>
+  <button ngd-clipboard-button [content]="post.contentToShare"></button>
 </footer>

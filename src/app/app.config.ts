@@ -9,6 +9,7 @@ import { provideStore } from '@ngxs/store';
 import { withNgxsStoragePlugin } from '@ngxs/storage-plugin';
 import { provideBaseTitle } from './common/providers/base-title.provider';
 import { provideBaseUrl } from './common/providers/base-url.provider';
+import { provideClipboard } from './common/providers/clipboard.provider';
 import { provideDocumentDataset } from './common/providers/document-dataset.provider';
 import { SettingsState } from './common/states/settings.state';
 import { CategoriesState } from './features/categories/states/categories.state';
@@ -48,6 +49,7 @@ export const appConfig: ApplicationConfig = {
     ),
     provideBaseTitle(),
     provideBaseUrl('https://podslyshano.com/api/v3.5'),
+    provideClipboard(),
     provideDocumentDataset(),
   ],
 };
@@ -57,7 +59,7 @@ export type Link = {
   innerText: string;
 };
 
-export const appLinks: Link[] = [
+export const APP_LINKS: Link[] = [
   {
     routerLink: '/',
     innerText: 'Новые',
@@ -83,3 +85,5 @@ export const appLinks: Link[] = [
     innerText: 'О проекте',
   },
 ];
+
+export const DEPLOY_URL = 'https://ngdeer.netlify.app';
