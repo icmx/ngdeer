@@ -1,3 +1,4 @@
+import { DEPLOY_URL } from '../../../app.config';
 import { ApiPostType } from '../enums/api-post-type.enum';
 import { ApiPost } from '../models/api-post.model';
 import { Post } from '../models/post.model';
@@ -5,15 +6,27 @@ import { Post } from '../models/post.model';
 export const toPost = () => {
   return (post: ApiPost): Post => {
     if (post.type === ApiPostType.Post) {
+      const id = post.id.toString();
+      const text = post.note || '';
+
+      const contentToShare = [
+        `Секрет #${id}`,
+        text,
+        `${DEPLOY_URL}/posts/${id}`,
+      ]
+        .filter((value) => !!value)
+        .join('\n\n');
+
       return {
-        id: post.id.toString(),
-        text: post.note || '',
+        id,
+        link: `/posts/${id}`,
+        text,
         timestamp: new Date(post.created_at).getTime(),
         commentsCount: post.comments_count,
         categoryId: post.category_id.toString(),
         categoryLink: `/categories/${post.category_id}/posts`,
         categoryName: post.category_name,
-        postLink: `/posts/${post.id}`,
+        contentToShare,
       };
     }
 
