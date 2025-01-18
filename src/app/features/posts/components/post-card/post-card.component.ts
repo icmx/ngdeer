@@ -1,12 +1,11 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { ClipboardButtonComponent } from '../../../../common/components/clipboard-button/clipboard-button.component';
 import { TimestampDirective } from '../../../../common/directives/timestamp.directive';
 import { Post } from '../../models/post.model';
-import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'ngd-post-card',
-  standalone: true,
   imports: [
     // Angular Imports
     RouterLink,

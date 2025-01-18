@@ -4,7 +4,6 @@ import { Category } from '../../models/category.model';
 
 @Component({
   selector: 'ngd-category-card',
-  standalone: true,
   imports: [
     // Angular Imports
     RouterLink,

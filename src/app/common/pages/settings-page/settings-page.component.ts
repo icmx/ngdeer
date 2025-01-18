@@ -21,7 +21,6 @@ export class SettingsPageComponentFormGroup extends FormGroup<{
 
 @Component({
   selector: 'ngd-settings-page',
-  standalone: true,
   imports: [
     AsyncPipe,
     ReactiveFormsModule,

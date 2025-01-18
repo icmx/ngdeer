@@ -6,7 +6,6 @@ import { APP_LINKS } from './app.config';
 
 @Component({
   selector: 'ngd-root',
-  standalone: true,
   imports: [
     // Angular Imports
     RouterLink,

@@ -18,7 +18,6 @@ import { PostService } from '../../services/post.service';
 
 @Component({
   selector: 'ngd-post-page',
-  standalone: true,
   imports: [
     // Angular Imports
     AsyncPipe,

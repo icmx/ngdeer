@@ -15,7 +15,6 @@ import { CategoryPostsService } from '../../services/category-posts.service';
 
 @Component({
   selector: 'ngd-category-posts-page',
-  standalone: true,
   imports: [
     // Angular Imports
     AsyncPipe,

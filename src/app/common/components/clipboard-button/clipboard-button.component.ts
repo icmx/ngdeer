@@ -14,7 +14,6 @@ import { CLIPBOARD } from '../../providers/clipboard.provider';
 
 @Component({
   selector: 'button[ngd-clipboard-button]',
-  standalone: true,
   imports: [],
   templateUrl: './clipboard-button.component.html',
   styleUrl: './clipboard-button.component.scss',

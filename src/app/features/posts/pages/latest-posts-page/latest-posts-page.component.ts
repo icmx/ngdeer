@@ -8,7 +8,6 @@ import { ScrollService } from '../../../../common/services/scroll.service';
 
 @Component({
   selector: 'ngd-latest-posts-page',
-  standalone: true,
   imports: [
     // Angular Imports
     AsyncPipe,
