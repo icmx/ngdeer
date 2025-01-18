@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, HostBinding } from '@angular/core';
 
 @Component({
   selector: 'label[ngdCaption]',
-  standalone: true,
   imports: [],
   templateUrl: './caption.component.html',
   styleUrl: './caption.component.scss',

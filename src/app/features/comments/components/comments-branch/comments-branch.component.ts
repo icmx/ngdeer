@@ -14,7 +14,6 @@ import { CommentCardComponent } from '../comment-card/comment-card.component';
 
 @Component({
   selector: 'ngd-comments-branch',
-  standalone: true,
   imports: [
     // Angular Imports
     AsyncPipe,

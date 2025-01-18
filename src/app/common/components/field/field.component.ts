@@ -10,7 +10,6 @@ import { SuffixDirective } from '../../directives/suffix.directive';
 
 @Component({
   selector: 'ngd-field',
-  standalone: true,
   imports: [
     // Internal Imports
     // These are not necessary, but they're closely related

@@ -31,7 +31,6 @@ export class SearchPostsPageComponentFormGroup extends FormGroup<{
 
 @Component({
   selector: 'ngd-search-posts-page',
-  standalone: true,
   imports: [
     // Angular Imports
     AsyncPipe,
@@ -46,7 +45,6 @@ export class SearchPostsPageComponentFormGroup extends FormGroup<{
     ControlComponent,
     FieldComponent,
     LoadingStubComponent,
-    SuffixDirective,
     PostCardComponent,
   ],
   templateUrl: './search-posts-page.component.html',
