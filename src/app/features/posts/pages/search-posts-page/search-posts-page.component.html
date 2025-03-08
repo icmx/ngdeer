@@ -1,25 +1,23 @@
-<div infiniteScroll (scrolled)="handleScrolled()">
-  <form [formGroup]="formGroup">
-    <ngd-field>
-      <label ngdCaption>Текст</label>
-      <input ngdControl formControlName="text" />
-    </ngd-field>
-    <ngd-field>
-      <label ngdCaption>Категория</label>
-      <select ngdControl formControlName="categoryId">
-        @for (category of categories$ | async; track category.id) {
-          <option [value]="category.id">{{ category.text }}</option>
-        }
-      </select>
-    </ngd-field>
-    <button ngd-button [appearance]="'section'" type="reset">Сбросить</button>
-  </form>
+<form [formGroup]="formGroup">
+  <ngd-field>
+    <label ngdCaption>Текст</label>
+    <input ngdControl formControlName="text" />
+  </ngd-field>
+  <ngd-field>
+    <label ngdCaption>Категория</label>
+    <select ngdControl formControlName="categoryId">
+      @for (category of categories$ | async; track category.id) {
+        <option [value]="category.id">{{ category.text }}</option>
+      }
+    </select>
+  </ngd-field>
+  <button ngd-button [appearance]="'section'" type="reset">Сбросить</button>
+</form>
 
-  @for (post of posts$ | async; track post.id; let last = $last) {
-    <ngd-post-card [post]="post" />
-  }
+@for (post of posts$ | async; track post.id; let last = $last) {
+  <ngd-post-card [post]="post" />
+}
 
-  @if (isLoading$ | async) {
-    <ngd-loading-stub />
-  }
-</div>
+@if (isLoading$ | async) {
+  <ngd-loading-stub />
+}
