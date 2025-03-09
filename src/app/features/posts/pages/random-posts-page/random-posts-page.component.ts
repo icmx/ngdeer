@@ -4,7 +4,7 @@ import { AsyncPipe } from '@angular/common';
 import { LoadingStubComponent } from '../../../../common/components/loading-stub/loading-stub.component';
 import { PostCardComponent } from '../../components/post-card/post-card.component';
 import { RandomPostsService } from '../../services/random-posts.service';
-import { ScrollService } from '../../../../common/services/scroll.service';
+import { WindowScrollService } from '../../../../common/services/window-scroll.service';
 
 @Component({
   selector: 'ngd-random-posts-page',
@@ -26,12 +26,14 @@ export class RandomPostsPageComponent implements OnInit {
   posts$ = this._randomPostsService.selectEntries();
 
   constructor(
-    private _scrollService: ScrollService,
+    private _windowScrollService: WindowScrollService,
     private _randomPostsService: RandomPostsService,
   ) {
-    this._scrollService.scroll$.pipe(takeUntilDestroyed()).subscribe(() => {
-      this._randomPostsService.startLoadMore();
-    });
+    this._windowScrollService.scrollToBottom$
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => {
+        this._randomPostsService.startLoadMore();
+      });
   }
 
   ngOnInit(): void {

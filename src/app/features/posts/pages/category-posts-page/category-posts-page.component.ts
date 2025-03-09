@@ -8,7 +8,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AsyncPipe } from '@angular/common';
 import { of } from 'rxjs';
 import { LoadingStubComponent } from '../../../../common/components/loading-stub/loading-stub.component';
-import { ScrollService } from '../../../../common/services/scroll.service';
+import { WindowScrollService } from '../../../../common/services/window-scroll.service';
 import { PostCardComponent } from '../../components/post-card/post-card.component';
 import { Post } from '../../models/post.model';
 import { CategoryPostsService } from '../../services/category-posts.service';
@@ -36,12 +36,14 @@ export class CategoryPostsPageComponent implements OnInit {
   posts$ = of<Post[]>([]);
 
   constructor(
-    private _scrollService: ScrollService,
+    private _windowScrollService: WindowScrollService,
     private _categoryPostsService: CategoryPostsService,
   ) {
-    this._scrollService.scroll$.pipe(takeUntilDestroyed()).subscribe(() => {
-      this._categoryPostsService.startLoadingMore(this.categoryId);
-    });
+    this._windowScrollService.scrollToBottom$
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => {
+        this._categoryPostsService.startLoadingMore(this.categoryId);
+      });
   }
 
   ngOnInit(): void {

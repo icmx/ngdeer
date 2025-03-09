@@ -11,6 +11,7 @@ import { provideBaseTitle } from './common/providers/base-title.provider';
 import { provideBaseUrl } from './common/providers/base-url.provider';
 import { provideClipboard } from './common/providers/clipboard.provider';
 import { provideDocumentDataset } from './common/providers/document-dataset.provider';
+import { provideWindow } from './common/providers/window.provider';
 import { SettingsState } from './common/states/settings.state';
 import { CategoriesState } from './features/categories/states/categories.state';
 import { CommentsState } from './features/comments/states/comments.state';
@@ -51,6 +52,7 @@ export const appConfig: ApplicationConfig = {
     provideBaseUrl('https://podslyshano.com/api/v3.5'),
     provideClipboard(),
     provideDocumentDataset(),
+    provideWindow(),
   ],
 };
 

@@ -4,13 +4,12 @@ import { AsyncPipe } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { combineLatest, debounceTime, map, Observable } from 'rxjs';
-import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
 import { CaptionComponent } from '../../../../common/components/caption/caption.component';
 import { ControlComponent } from '../../../../common/components/control/control.component';
 import { ButtonComponent } from '../../../../common/components/button/button.component';
 import { FieldComponent } from '../../../../common/components/field/field.component';
 import { LoadingStubComponent } from '../../../../common/components/loading-stub/loading-stub.component';
-import { SuffixDirective } from '../../../../common/directives/suffix.directive';
+import { WindowScrollService } from '../../../../common/services/window-scroll.service';
 import { WithCategoryId } from '../../../../common/types/with-category-id.type';
 import { WithText } from '../../../../common/types/with-text.type';
 import { CategoriesService } from '../../../categories/services/categories.service';
@@ -35,9 +34,6 @@ export class SearchPostsPageComponentFormGroup extends FormGroup<{
     // Angular Imports
     AsyncPipe,
     ReactiveFormsModule,
-
-    // External Imports
-    InfiniteScrollDirective,
 
     // Internal Imports
     ButtonComponent,
@@ -88,9 +84,16 @@ export class SearchPostsPageComponent implements OnInit {
   constructor(
     private _router: Router,
     private _activatedRoute: ActivatedRoute,
+    private _windowScrollService: WindowScrollService,
     private _categoriesService: CategoriesService,
     private _searchPostsService: SearchPostsService,
   ) {
+    this._windowScrollService.scrollToBottom$
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => {
+        this._searchPostsService.startLoadingMore(this.formGroup.value);
+      });
+
     this._formGroupValue$.pipe(takeUntilDestroyed()).subscribe((value) => {
       const queryParams: Params = this.formGroup.valid ? { ...value } : {};
 
@@ -112,9 +115,5 @@ export class SearchPostsPageComponent implements OnInit {
 
   ngOnInit(): void {
     this._categoriesService.startLoading();
-  }
-
-  handleScrolled(): void {
-    this._searchPostsService.startLoadingMore(this.formGroup.value);
   }
 }

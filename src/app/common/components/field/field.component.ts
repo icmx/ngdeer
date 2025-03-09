@@ -6,17 +6,10 @@ import {
 } from '@angular/core';
 import { CaptionComponent } from '../../components/caption/caption.component';
 import { ControlComponent } from '../../components/control/control.component';
-import { SuffixDirective } from '../../directives/suffix.directive';
 
 @Component({
   selector: 'ngd-field',
-  imports: [
-    // Internal Imports
-    // These are not necessary, but they're closely related
-    CaptionComponent,
-    ControlComponent,
-    SuffixDirective,
-  ],
+  imports: [],
   templateUrl: './field.component.html',
   styleUrl: './field.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
