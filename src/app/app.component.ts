@@ -1,7 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
-import { ScrollService } from './common/services/scroll.service';
 import { APP_LINKS } from './app.config';
 
 @Component({
@@ -11,9 +9,6 @@ import { APP_LINKS } from './app.config';
     RouterLink,
     RouterLinkActive,
     RouterOutlet,
-
-    // External Imports
-    InfiniteScrollDirective,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
@@ -21,10 +16,4 @@ import { APP_LINKS } from './app.config';
 })
 export class AppComponent {
   links = APP_LINKS;
-
-  constructor(private _scrollService: ScrollService) {}
-
-  handleScrolled() {
-    this._scrollService.scroll();
-  }
 }

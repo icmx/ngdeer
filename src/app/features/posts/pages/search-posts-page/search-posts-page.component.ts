@@ -9,7 +9,7 @@ import { ControlComponent } from '../../../../common/components/control/control.
 import { ButtonComponent } from '../../../../common/components/button/button.component';
 import { FieldComponent } from '../../../../common/components/field/field.component';
 import { LoadingStubComponent } from '../../../../common/components/loading-stub/loading-stub.component';
-import { ScrollService } from '../../../../common/services/scroll.service';
+import { WindowScrollService } from '../../../../common/services/window-scroll.service';
 import { WithCategoryId } from '../../../../common/types/with-category-id.type';
 import { WithText } from '../../../../common/types/with-text.type';
 import { CategoriesService } from '../../../categories/services/categories.service';
@@ -84,13 +84,15 @@ export class SearchPostsPageComponent implements OnInit {
   constructor(
     private _router: Router,
     private _activatedRoute: ActivatedRoute,
-    private _scrollService: ScrollService,
+    private _windowScrollService: WindowScrollService,
     private _categoriesService: CategoriesService,
     private _searchPostsService: SearchPostsService,
   ) {
-    this._scrollService.scroll$.pipe(takeUntilDestroyed()).subscribe(() => {
-      this._searchPostsService.startLoadingMore(this.formGroup.value);
-    });
+    this._windowScrollService.scrollToBottom$
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => {
+        this._searchPostsService.startLoadingMore(this.formGroup.value);
+      });
 
     this._formGroupValue$.pipe(takeUntilDestroyed()).subscribe((value) => {
       const queryParams: Params = this.formGroup.valid ? { ...value } : {};

@@ -1,14 +1,14 @@
 import { DOCUMENT } from '@angular/common';
 import { inject, InjectionToken, Provider } from '@angular/core';
 
-export const CLIPBOARD = new InjectionToken<Clipboard>('CLIPBOARD');
+export const WINDOW = new InjectionToken<Window>('WINDOW');
 
-export const provideClipboard = (): Provider => {
+export const provideWindow = (): Provider => {
   return {
-    provide: CLIPBOARD,
+    provide: WINDOW,
     useFactory: () => {
       const document = inject(DOCUMENT);
-      const target = document.defaultView?.navigator.clipboard;
+      const target = document.defaultView;
 
       return target;
     },

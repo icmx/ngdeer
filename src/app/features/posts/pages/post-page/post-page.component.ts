@@ -8,8 +8,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AsyncPipe } from '@angular/common';
 import { combineLatest, map, of } from 'rxjs';
 import { LoadingStubComponent } from '../../../../common/components/loading-stub/loading-stub.component';
+import { WindowScrollService } from '../../../../common/services/window-scroll.service';
 import { CommentsBranchComponent } from '../../../comments/components/comments-branch/comments-branch.component';
-import { ScrollService } from '../../../../common/services/scroll.service';
 import { Comment } from '../../../comments/models/comment.model';
 import { CommentsService } from '../../../comments/services/comments.service';
 import { PostCardComponent } from '../../components/post-card/post-card.component';
@@ -49,13 +49,15 @@ export class PostPageComponent implements OnInit {
   comments$ = of<Comment[]>([]);
 
   constructor(
-    private _scrollService: ScrollService,
+    private _windowScrollService: WindowScrollService,
     private _postService: PostService,
     private _commentsService: CommentsService,
   ) {
-    this._scrollService.scroll$.pipe(takeUntilDestroyed()).subscribe(() => {
-      this._commentsService.startLoadingMorePostComments(this.postId);
-    });
+    this._windowScrollService.scrollToBottom$
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => {
+        this._commentsService.startLoadingMorePostComments(this.postId);
+      });
   }
 
   ngOnInit(): void {

@@ -6,7 +6,7 @@ Check it on **[ngdeer.netlify.app](https://ngdeer.netlify.app/)!**
 
 ## Features
 
-  - Built with [Angular 19](https://angular.dev/) and [Angular Infinite Scroll](https://github.com/orizens/ngx-infinite-scroll)
+  - Built with [Angular 19](https://angular.dev/)
   - Uses official ideer API
   - Nearly-classic experience: latest and random stories, categories and search, comments
   - Infinite scroll loading for stories and comments pages
@@ -24,7 +24,7 @@ npm install
 
 # serve for local development
 # available at localhost:4200
-ng serve
+ng start
 
 # build in case you need to
 ng build

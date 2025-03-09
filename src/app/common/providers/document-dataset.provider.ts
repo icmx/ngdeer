@@ -10,9 +10,9 @@ export const provideDocumentDataset = (): Provider => {
     provide: DOCUMENT_DATASET,
     useFactory: () => {
       const document = inject(DOCUMENT);
-      const dataset = document?.documentElement?.dataset || {};
+      const target = document?.documentElement?.dataset || {};
 
-      return dataset;
+      return target;
     },
   };
 };
