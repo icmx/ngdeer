@@ -24,7 +24,7 @@ npm install
 
 # serve for local development
 # available at localhost:4200
-ng start
+ng serve
 
 # build in case you need to
 ng build
