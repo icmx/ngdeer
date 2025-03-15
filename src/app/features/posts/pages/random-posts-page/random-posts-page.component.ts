@@ -1,6 +1,12 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  OnInit,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AsyncPipe } from '@angular/common';
+import { tap } from 'rxjs';
 import { LoadingStubComponent } from '../../../../common/components/loading-stub/loading-stub.component';
 import { PostCardComponent } from '../../components/post-card/post-card.component';
 import { RandomPostsService } from '../../services/random-posts.service';
@@ -26,17 +32,21 @@ export class RandomPostsPageComponent implements OnInit {
   posts$ = this._randomPostsService.selectEntries();
 
   constructor(
+    private _destroyRef: DestroyRef,
     private _windowScrollService: WindowScrollService,
     private _randomPostsService: RandomPostsService,
-  ) {
-    this._windowScrollService.scrollToBottom$
-      .pipe(takeUntilDestroyed())
-      .subscribe(() => {
-        this._randomPostsService.startLoadMore();
-      });
-  }
+  ) {}
 
   ngOnInit(): void {
+    this._windowScrollService.scrollToBottom$
+      .pipe(
+        tap(() => {
+          this._randomPostsService.startLoadMore();
+        }),
+        takeUntilDestroyed(this._destroyRef),
+      )
+      .subscribe();
+
     this._randomPostsService.startLoading();
   }
 }

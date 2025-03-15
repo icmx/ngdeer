@@ -1,12 +1,13 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   Input,
   OnInit,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AsyncPipe } from '@angular/common';
-import { of } from 'rxjs';
+import { of, tap } from 'rxjs';
 import { LoadingStubComponent } from '../../../../common/components/loading-stub/loading-stub.component';
 import { WindowScrollService } from '../../../../common/services/window-scroll.service';
 import { PostCardComponent } from '../../components/post-card/post-card.component';
@@ -36,17 +37,21 @@ export class CategoryPostsPageComponent implements OnInit {
   posts$ = of<Post[]>([]);
 
   constructor(
+    private _destroyRef: DestroyRef,
     private _windowScrollService: WindowScrollService,
     private _categoryPostsService: CategoryPostsService,
-  ) {
-    this._windowScrollService.scrollToBottom$
-      .pipe(takeUntilDestroyed())
-      .subscribe(() => {
-        this._categoryPostsService.startLoadingMore(this.categoryId);
-      });
-  }
+  ) {}
 
   ngOnInit(): void {
+    this._windowScrollService.scrollToBottom$
+      .pipe(
+        tap(() => {
+          this._categoryPostsService.startLoadingMore(this.categoryId);
+        }),
+        takeUntilDestroyed(this._destroyRef),
+      )
+      .subscribe();
+
     this.posts$ = this._categoryPostsService.selectEntries(this.categoryId);
 
     this._categoryPostsService.startLoading(this.categoryId);

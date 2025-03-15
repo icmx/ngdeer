@@ -1,9 +1,14 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  OnInit,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AsyncPipe } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { combineLatest, debounceTime, map, Observable } from 'rxjs';
+import { combineLatest, debounceTime, map, Observable, tap } from 'rxjs';
 import { CaptionComponent } from '../../../../common/components/caption/caption.component';
 import { ControlComponent } from '../../../../common/components/control/control.component';
 import { ButtonComponent } from '../../../../common/components/button/button.component';
@@ -82,38 +87,50 @@ export class SearchPostsPageComponent implements OnInit {
     this._activatedRoute.queryParams;
 
   constructor(
+    private _destroyRef: DestroyRef,
     private _router: Router,
     private _activatedRoute: ActivatedRoute,
     private _windowScrollService: WindowScrollService,
     private _categoriesService: CategoriesService,
     private _searchPostsService: SearchPostsService,
-  ) {
-    this._windowScrollService.scrollToBottom$
-      .pipe(takeUntilDestroyed())
-      .subscribe(() => {
-        this._searchPostsService.startLoadingMore(this.formGroup.value);
-      });
-
-    this._formGroupValue$.pipe(takeUntilDestroyed()).subscribe((value) => {
-      const queryParams: Params = this.formGroup.valid ? { ...value } : {};
-
-      this._router.navigate([], { queryParams });
-    });
-
-    this._queryParams$
-      .pipe(takeUntilDestroyed())
-      .subscribe(({ text = '', categoryId = '' }) => {
-        this.formGroup.patchValue({ text, categoryId }, { emitEvent: false });
-
-        if (text || categoryId) {
-          this._searchPostsService.startLoading({ text, categoryId });
-        } else {
-          this._searchPostsService.drop();
-        }
-      });
-  }
+  ) {}
 
   ngOnInit(): void {
+    this._windowScrollService.scrollToBottom$
+      .pipe(
+        tap(() => {
+          this._searchPostsService.startLoadingMore(this.formGroup.value);
+        }),
+        takeUntilDestroyed(this._destroyRef),
+      )
+      .subscribe();
+
+    this._formGroupValue$
+      .pipe(
+        tap((value) => {
+          const queryParams: Params = this.formGroup.valid ? { ...value } : {};
+
+          this._router.navigate([], { queryParams });
+        }),
+        takeUntilDestroyed(this._destroyRef),
+      )
+      .subscribe();
+
+    this._queryParams$
+      .pipe(
+        tap(({ text = '', categoryId = '' }) => {
+          this.formGroup.patchValue({ text, categoryId }, { emitEvent: false });
+
+          if (text || categoryId) {
+            this._searchPostsService.startLoading({ text, categoryId });
+          } else {
+            this._searchPostsService.drop();
+          }
+        }),
+        takeUntilDestroyed(this._destroyRef),
+      )
+      .subscribe();
+
     this._categoriesService.startLoading();
   }
 }

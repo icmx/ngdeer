@@ -1,12 +1,13 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   Input,
   OnInit,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AsyncPipe } from '@angular/common';
-import { combineLatest, map, of } from 'rxjs';
+import { combineLatest, map, of, tap } from 'rxjs';
 import { LoadingStubComponent } from '../../../../common/components/loading-stub/loading-stub.component';
 import { WindowScrollService } from '../../../../common/services/window-scroll.service';
 import { CommentsBranchComponent } from '../../../comments/components/comments-branch/comments-branch.component';
@@ -49,18 +50,22 @@ export class PostPageComponent implements OnInit {
   comments$ = of<Comment[]>([]);
 
   constructor(
+    private _destroyRef: DestroyRef,
     private _windowScrollService: WindowScrollService,
     private _postService: PostService,
     private _commentsService: CommentsService,
-  ) {
-    this._windowScrollService.scrollToBottom$
-      .pipe(takeUntilDestroyed())
-      .subscribe(() => {
-        this._commentsService.startLoadingMorePostComments(this.postId);
-      });
-  }
+  ) {}
 
   ngOnInit(): void {
+    this._windowScrollService.scrollToBottom$
+      .pipe(
+        tap(() => {
+          this._commentsService.startLoadingMorePostComments(this.postId);
+        }),
+        takeUntilDestroyed(this._destroyRef),
+      )
+      .subscribe();
+
     this.post$ = this._postService.selectEntry();
     this._postService.startLoading(this.postId);
 

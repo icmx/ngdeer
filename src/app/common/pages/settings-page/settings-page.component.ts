@@ -1,4 +1,9 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  OnInit,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AsyncPipe } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
@@ -32,20 +37,23 @@ export class SettingsPageComponentFormGroup extends FormGroup<{
   styleUrl: './settings-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SettingsPageComponent {
+export class SettingsPageComponent implements OnInit {
   themes$ = this._themesService.getThemes();
 
   formGroup = new SettingsPageComponentFormGroup();
 
   constructor(
+    private _destoryRef: DestroyRef,
     private _settingsService: SettingsService,
     private _themesService: ThemesService,
   ) {
     const value = this._settingsService.getSettings();
     this.formGroup.setValue(value, { emitEvent: false });
+  }
 
+  ngOnInit(): void {
     this.formGroup.controls.theme.valueChanges
-      .pipe(takeUntilDestroyed())
+      .pipe(takeUntilDestroyed(this._destoryRef))
       .subscribe((theme) => {
         this._settingsService.setSettings({ theme });
       });
