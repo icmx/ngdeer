@@ -15,10 +15,10 @@ import { provideWindow } from './common/providers/window.provider';
 import { SettingsState } from './common/states/settings.state';
 import { CategoriesState } from './features/categories/states/categories.state';
 import { CommentsState } from './features/comments/states/comments.state';
+import { SearchPostsPageService } from './features/posts/pages/search-posts-page/search-posts-page.service';
 import { CategoryPostsState } from './features/posts/states/category-posts.state';
 import { LatestPostsState } from './features/posts/states/latest-posts.state';
 import { RandomPostsState } from './features/posts/states/random-posts.state';
-import { SearchPostsState } from './features/posts/states/search-posts.state';
 import { PostState } from './features/posts/states/post.state';
 import { routes } from './app.routes';
 
@@ -43,7 +43,6 @@ export const appConfig: ApplicationConfig = {
         LatestPostsState,
         RandomPostsState,
         CategoryPostsState,
-        SearchPostsState,
         PostState,
       ],
       withNgxsStoragePlugin({ keys: [SettingsState], namespace: 'ngdeer' }),
@@ -53,6 +52,7 @@ export const appConfig: ApplicationConfig = {
     provideClipboard(),
     provideDocumentDataset(),
     provideWindow(),
+    SearchPostsPageService,
   ],
 };
 
