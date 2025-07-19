@@ -1,7 +1,7 @@
-@for (category of categories$ | async; track category.id) {
+@for (category of categoriesSignal(); track category.id) {
   <ngd-category-card [category]="category" />
 }
 
-@if (isLoading$ | async) {
+@if (loadingSignal()) {
   <ngd-loading-stub />
 }

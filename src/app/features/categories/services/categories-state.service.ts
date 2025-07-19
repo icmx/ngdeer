@@ -1,0 +1,49 @@
+import { DestroyRef, inject, Injectable, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { concatMap, of, Subscription, tap } from 'rxjs';
+import { Category } from '../models/category.model';
+import { CategoriesApiService } from './categories-api.service';
+import { extractCategoriesFromReply } from '../operators/extract-categories-from-reply.operator';
+
+export type CategoriesStateModel = {
+  loading: boolean;
+  done: boolean;
+  entries: Category[];
+};
+
+@Injectable()
+export class CategoriesStateService {
+  private _destroyRef = inject(DestroyRef);
+
+  private _categoriesApiService = inject(CategoriesApiService);
+
+  private _state = signal<CategoriesStateModel>({
+    loading: false,
+    done: false,
+    entries: [],
+  });
+
+  state = this._state.asReadonly();
+
+  load(): void {
+    if (this._state().done || this._state().loading) {
+      return;
+    }
+
+    of(null)
+      .pipe(
+        tap(() => {
+          this._state.set({ loading: true, done: false, entries: [] });
+        }),
+        concatMap(() => {
+          return this._categoriesApiService.getCategories();
+        }),
+        extractCategoriesFromReply(),
+        tap((entries) => {
+          this._state.set({ loading: false, done: true, entries });
+        }),
+        takeUntilDestroyed(this._destroyRef),
+      )
+      .subscribe();
+  }
+}

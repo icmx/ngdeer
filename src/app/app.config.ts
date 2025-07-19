@@ -13,9 +13,9 @@ import { provideClipboard } from './common/providers/clipboard.provider';
 import { provideDocumentDataset } from './common/providers/document-dataset.provider';
 import { provideWindow } from './common/providers/window.provider';
 import { SettingsState } from './common/states/settings.state';
-import { CategoriesState } from './features/categories/states/categories.state';
+import { CategoriesStateService } from './features/categories/services/categories-state.service';
 import { CommentsState } from './features/comments/states/comments.state';
-import { SearchPostsPageService } from './features/posts/pages/search-posts-page/search-posts-page.service';
+import { SearchPostsPageStateService } from './features/posts/services/search-posts-page-state.service';
 import { CategoryPostsState } from './features/posts/states/category-posts.state';
 import { LatestPostsState } from './features/posts/states/latest-posts.state';
 import { RandomPostsState } from './features/posts/states/random-posts.state';
@@ -38,7 +38,6 @@ export const appConfig: ApplicationConfig = {
     provideStore(
       [
         SettingsState,
-        CategoriesState,
         CommentsState,
         LatestPostsState,
         RandomPostsState,
@@ -52,7 +51,9 @@ export const appConfig: ApplicationConfig = {
     provideClipboard(),
     provideDocumentDataset(),
     provideWindow(),
-    SearchPostsPageService,
+
+    CategoriesStateService,
+    SearchPostsPageStateService,
   ],
 };
 
