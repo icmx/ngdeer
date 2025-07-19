@@ -1,5 +1,4 @@
-import { DOCUMENT } from '@angular/common';
-import { inject, InjectionToken, Provider } from '@angular/core';
+import { inject, InjectionToken, Provider, DOCUMENT } from '@angular/core';
 
 export const CLIPBOARD = new InjectionToken<Clipboard>('CLIPBOARD');
 
