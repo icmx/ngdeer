@@ -1,23 +1,21 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   DestroyRef,
+  inject,
   OnInit,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { AsyncPipe } from '@angular/common';
+import { tap } from 'rxjs';
 import { LoadingStubComponent } from '../../../../common/components/loading-stub/loading-stub.component';
 import { WindowScrollService } from '../../../../common/services/window-scroll.service';
 import { PostCardComponent } from '../../components/post-card/post-card.component';
-import { LatestPostsService } from '../../services/latest-posts.service';
-import { tap } from 'rxjs';
+import { LatestPostsStateService } from '../../services/latest-posts-state.service';
 
 @Component({
   selector: 'ngd-latest-posts-page',
   imports: [
-    // Angular Imports
-    AsyncPipe,
-
     // Internal Imports
     LoadingStubComponent,
     PostCardComponent,
@@ -27,26 +25,27 @@ import { tap } from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LatestPostsPageComponent implements OnInit {
-  isLoading$ = this._latestPostsService.selectLoading();
+  private _latestPostsStateService = inject(LatestPostsStateService);
 
-  posts$ = this._latestPostsService.selectEntries();
+  postsSignal = computed(() => this._latestPostsStateService.state().entries);
+
+  loadingSignal = computed(() => this._latestPostsStateService.state().loading);
 
   constructor(
     private _destroyRef: DestroyRef,
     private _windowScrollService: WindowScrollService,
-    private _latestPostsService: LatestPostsService,
   ) {}
 
   ngOnInit(): void {
     this._windowScrollService.scrollToBottom$
       .pipe(
         tap(() => {
-          this._latestPostsService.startLoadingMore();
+          this._latestPostsStateService.load();
         }),
         takeUntilDestroyed(this._destroyRef),
       )
       .subscribe();
 
-    this._latestPostsService.startLoading();
+    this._latestPostsStateService.load();
   }
 }
