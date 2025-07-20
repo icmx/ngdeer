@@ -1,11 +1,13 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   DestroyRef,
-  Input,
+  inject,
+  input,
   OnInit,
 } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { AsyncPipe } from '@angular/common';
 import { combineLatest, map, of, tap } from 'rxjs';
 import { LoadingStubComponent } from '../../../../common/components/loading-stub/loading-stub.component';
@@ -15,7 +17,7 @@ import { Comment } from '../../../comments/models/comment.model';
 import { CommentsService } from '../../../comments/services/comments.service';
 import { PostCardComponent } from '../../components/post-card/post-card.component';
 import { Post } from '../../models/post.model';
-import { PostService } from '../../services/post.service';
+import { PostStateService } from '../../services/post-state.service';
 
 @Component({
   selector: 'ngd-post-page',
@@ -33,11 +35,12 @@ import { PostService } from '../../services/post.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PostPageComponent implements OnInit {
-  @Input()
-  postId = '';
+  private _postStateService = inject(PostStateService);
+
+  postId = input.required<string>();
 
   isLoading$ = combineLatest([
-    this._postService.selectLoading(),
+    toObservable(computed(() => this._postStateService.state().loading)),
     this._commentsService.selectLoading(),
   ]).pipe(
     map((loadings) => {
@@ -45,14 +48,13 @@ export class PostPageComponent implements OnInit {
     }),
   );
 
-  post$ = of<Post | null>(null);
+  post$ = of<Post | undefined>(undefined);
 
   comments$ = of<Comment[]>([]);
 
   constructor(
     private _destroyRef: DestroyRef,
     private _windowScrollService: WindowScrollService,
-    private _postService: PostService,
     private _commentsService: CommentsService,
   ) {}
 
@@ -60,16 +62,19 @@ export class PostPageComponent implements OnInit {
     this._windowScrollService.scrollToBottom$
       .pipe(
         tap(() => {
-          this._commentsService.startLoadingMorePostComments(this.postId);
+          this._commentsService.startLoadingMorePostComments(this.postId());
         }),
         takeUntilDestroyed(this._destroyRef),
       )
       .subscribe();
 
-    this.post$ = this._postService.selectEntry();
-    this._postService.startLoading(this.postId);
+    this.post$ = toObservable(
+      computed(() => this._postStateService.state().entry),
+    );
 
-    this.comments$ = this._commentsService.selectPostComments(this.postId);
-    this._commentsService.startLoadingPostComments(this.postId);
+    this._postStateService.load(this.postId());
+
+    this.comments$ = this._commentsService.selectPostComments(this.postId());
+    this._commentsService.startLoadingPostComments(this.postId());
   }
 }
