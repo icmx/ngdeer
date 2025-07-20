@@ -1,12 +1,12 @@
-@if (post$ | async; as post) {
+@if (postSignal(); as post) {
   <ngd-post-card [post]="post" />
   <hr />
 }
 
-@for (comment of comments$ | async; track comment.id) {
+@for (comment of commentsSignal(); track comment.id) {
   <ngd-comments-branch [rootComment]="comment" />
 }
 
-@if (isLoading$ | async) {
+@if (loadingSignal()) {
   <ngd-loading-stub />
 }

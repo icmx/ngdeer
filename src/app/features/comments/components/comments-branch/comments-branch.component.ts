@@ -1,23 +1,19 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  Input,
-  OnInit,
+  computed,
+  inject,
+  input,
 } from '@angular/core';
-import { AsyncPipe } from '@angular/common';
-import { Observable, of } from 'rxjs';
 import { ButtonComponent } from '../../../../common/components/button/button.component';
 import { LoadingStubComponent } from '../../../../common/components/loading-stub/loading-stub.component';
+import { CommentsStateService } from '../../services/comments-state.service';
 import { Comment } from '../../models/comment.model';
-import { CommentsService } from '../../services/comments.service';
 import { CommentCardComponent } from '../comment-card/comment-card.component';
 
 @Component({
   selector: 'ngd-comments-branch',
   imports: [
-    // Angular Imports
-    AsyncPipe,
-
     // Internal Imports
     ButtonComponent,
     LoadingStubComponent,
@@ -27,32 +23,57 @@ import { CommentCardComponent } from '../comment-card/comment-card.component';
   styleUrl: './comments-branch.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CommentsBranchComponent implements OnInit {
-  @Input({ required: true })
-  rootComment!: Comment;
+export class CommentsBranchComponent {
+  private _commentsStateService = inject(CommentsStateService);
 
-  isLoading$: Observable<boolean> = of(false);
+  rootComment = input.required<Comment>();
 
-  childComments$: Observable<Comment[]> = of([]);
+  childComments = computed(() => {
+    return this._commentsStateService
+      .state()
+      .entries.filter((entry) => entry.rootId === this.rootComment().id);
+  });
 
-  showLoadMoreButton$: Observable<boolean> = of(false);
+  loadingSignal = computed(() => {
+    return this._commentsStateService.state().loading === this.rootComment().id;
+  });
 
-  constructor(private _commentsService: CommentsService) {}
+  shouldShowLoadMoreButtonSignal = computed(() => {
+    const rootCommentId = this.rootComment().id;
+    const { loading, entries } = this._commentsStateService.state();
 
-  ngOnInit(): void {
-    const rootId = this.rootComment.id;
+    if (loading === rootCommentId) {
+      return false;
+    }
 
-    this.isLoading$ = this._commentsService.selectLoading(rootId);
+    const root = entries.find((entry) => entry.id === rootCommentId);
 
-    this.childComments$ = this._commentsService.selectBranchComments(rootId);
+    if (!root) {
+      return false;
+    }
 
-    this.showLoadMoreButton$ =
-      this._commentsService.selectCanLoadMoreBranchComments(rootId);
-  }
+    const { length } = entries.filter(
+      (entry) => entry.rootId === rootCommentId,
+    );
+
+    if (length === 0) {
+      return false;
+    }
+
+    const { branchSize } = root;
+
+    if (branchSize !== null && branchSize > 0 && branchSize !== length) {
+      return true;
+    }
+
+    const PAGE_SIZE = 30;
+
+    return length % PAGE_SIZE === 0;
+  });
 
   handleLoadMoreButtonClick(): void {
-    const rootId = this.rootComment.id;
+    const rootCommentId = this.rootComment().id;
 
-    this._commentsService.startLoadingBranchComments(rootId);
+    this._commentsStateService.loadBranch(rootCommentId);
   }
 }

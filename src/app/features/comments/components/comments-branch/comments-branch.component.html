@@ -1,12 +1,12 @@
-<ngd-comment-card [comment]="rootComment" />
+<ngd-comment-card [comment]="rootComment()" />
 
-@if (rootComment.branchSize) {
+@if (rootComment().branchSize) {
   <section>
-    @for (childComment of childComments$ | async; track childComment.id) {
+    @for (childComment of childComments(); track childComment.id) {
       <ngd-comment-card [comment]="childComment" />
     }
 
-    @if (showLoadMoreButton$ | async) {
+    @if (shouldShowLoadMoreButtonSignal()) {
       <button
         ngd-button
         appearance="section"
@@ -16,7 +16,7 @@
       </button>
     }
 
-    @if (isLoading$ | async) {
+    @if (loadingSignal()) {
       <ngd-loading-stub />
     }
   </section>

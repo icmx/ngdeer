@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { TimestampDirective } from '../../../../common/directives/timestamp.directive';
 import { Comment } from '../../models/comment.model';
 
@@ -13,6 +13,5 @@ import { Comment } from '../../models/comment.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CommentCardComponent {
-  @Input({ required: true })
-  comment!: Comment;
+  comment = input.required<Comment>();
 }

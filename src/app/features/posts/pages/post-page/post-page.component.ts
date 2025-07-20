@@ -7,24 +7,19 @@ import {
   input,
   OnInit,
 } from '@angular/core';
-import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
-import { AsyncPipe } from '@angular/common';
-import { combineLatest, map, of, tap } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { tap } from 'rxjs';
 import { LoadingStubComponent } from '../../../../common/components/loading-stub/loading-stub.component';
 import { WindowScrollService } from '../../../../common/services/window-scroll.service';
 import { CommentsBranchComponent } from '../../../comments/components/comments-branch/comments-branch.component';
-import { Comment } from '../../../comments/models/comment.model';
-import { CommentsService } from '../../../comments/services/comments.service';
 import { PostCardComponent } from '../../components/post-card/post-card.component';
-import { Post } from '../../models/post.model';
 import { PostStateService } from '../../services/post-state.service';
+import { CommentsStateService } from '../../../comments/services/comments-state.service';
+import { CommentsLoading } from '../../../comments/enums/comments-loading.enum';
 
 @Component({
   selector: 'ngd-post-page',
   imports: [
-    // Angular Imports
-    AsyncPipe,
-
     // Internal Imports
     PostCardComponent,
     CommentsBranchComponent,
@@ -37,44 +32,43 @@ import { PostStateService } from '../../services/post-state.service';
 export class PostPageComponent implements OnInit {
   private _postStateService = inject(PostStateService);
 
+  private _commentsStateService = inject(CommentsStateService);
+
   postId = input.required<string>();
 
-  isLoading$ = combineLatest([
-    toObservable(computed(() => this._postStateService.state().loading)),
-    this._commentsService.selectLoading(),
-  ]).pipe(
-    map((loadings) => {
-      return loadings.some((loading) => loading === true);
-    }),
+  postSignal = computed(() => this._postStateService.state().entry);
+
+  commentsSignal = computed(() =>
+    this._commentsStateService
+      .state()
+      .entries.filter(
+        (entry) => entry.rootId === null && entry.postId === this.postId(),
+      ),
   );
 
-  post$ = of<Post | undefined>(undefined);
-
-  comments$ = of<Comment[]>([]);
+  loadingSignal = computed(() => {
+    return (
+      this._postStateService.state().loading ||
+      this._commentsStateService.state().loading !== CommentsLoading.None
+    );
+  });
 
   constructor(
     private _destroyRef: DestroyRef,
     private _windowScrollService: WindowScrollService,
-    private _commentsService: CommentsService,
   ) {}
 
   ngOnInit(): void {
     this._windowScrollService.scrollToBottom$
       .pipe(
         tap(() => {
-          this._commentsService.startLoadingMorePostComments(this.postId());
+          this._commentsStateService.load(this.postId());
         }),
         takeUntilDestroyed(this._destroyRef),
       )
       .subscribe();
 
-    this.post$ = toObservable(
-      computed(() => this._postStateService.state().entry),
-    );
-
     this._postStateService.load(this.postId());
-
-    this.comments$ = this._commentsService.selectPostComments(this.postId());
-    this._commentsService.startLoadingPostComments(this.postId());
+    this._commentsStateService.load(this.postId());
   }
 }
