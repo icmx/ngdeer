@@ -15,8 +15,8 @@ import { provideWindow } from './common/providers/window.provider';
 import { SettingsState } from './common/states/settings.state';
 import { CategoriesStateService } from './features/categories/services/categories-state.service';
 import { CommentsState } from './features/comments/states/comments.state';
-import { SearchPostsPageStateService } from './features/posts/services/search-posts-page-state.service';
-import { CategoryPostsState } from './features/posts/states/category-posts.state';
+import { SearchPostsStateService } from './features/posts/services/search-posts-state.service';
+import { CategoryPostsStateService } from './features/posts/services/category-posts-state.service';
 import { LatestPostsState } from './features/posts/states/latest-posts.state';
 import { RandomPostsState } from './features/posts/states/random-posts.state';
 import { PostState } from './features/posts/states/post.state';
@@ -41,7 +41,6 @@ export const appConfig: ApplicationConfig = {
         CommentsState,
         LatestPostsState,
         RandomPostsState,
-        CategoryPostsState,
         PostState,
       ],
       withNgxsStoragePlugin({ keys: [SettingsState], namespace: 'ngdeer' }),
@@ -53,7 +52,8 @@ export const appConfig: ApplicationConfig = {
     provideWindow(),
 
     CategoriesStateService,
-    SearchPostsPageStateService,
+    CategoryPostsStateService,
+    SearchPostsStateService,
   ],
 };
 

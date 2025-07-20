@@ -1,25 +1,23 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   DestroyRef,
+  inject,
+  input,
   Input,
   OnInit,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { AsyncPipe } from '@angular/common';
-import { of, tap } from 'rxjs';
+import { tap } from 'rxjs';
 import { LoadingStubComponent } from '../../../../common/components/loading-stub/loading-stub.component';
 import { WindowScrollService } from '../../../../common/services/window-scroll.service';
 import { PostCardComponent } from '../../components/post-card/post-card.component';
-import { Post } from '../../models/post.model';
-import { CategoryPostsService } from '../../services/category-posts.service';
+import { CategoryPostsStateService } from '../../services/category-posts-state.service';
 
 @Component({
   selector: 'ngd-category-posts-page',
   imports: [
-    // Angular Imports
-    AsyncPipe,
-
     // Internal Imports
     LoadingStubComponent,
     PostCardComponent,
@@ -29,31 +27,31 @@ import { CategoryPostsService } from '../../services/category-posts.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CategoryPostsPageComponent implements OnInit {
-  @Input({ required: true })
-  categoryId = '';
+  private _categoryPostsStateService = inject(CategoryPostsStateService);
 
-  isLoading$ = this._categoryPostsService.selectLoading();
+  categoryId = input.required<string>();
 
-  posts$ = of<Post[]>([]);
+  postsSignal = computed(() => this._categoryPostsStateService.state().entries);
+
+  loadingSignal = computed(
+    () => this._categoryPostsStateService.state().loading,
+  );
 
   constructor(
     private _destroyRef: DestroyRef,
     private _windowScrollService: WindowScrollService,
-    private _categoryPostsService: CategoryPostsService,
   ) {}
 
   ngOnInit(): void {
     this._windowScrollService.scrollToBottom$
       .pipe(
         tap(() => {
-          this._categoryPostsService.startLoadingMore(this.categoryId);
+          this._categoryPostsStateService.load(this.categoryId());
         }),
         takeUntilDestroyed(this._destroyRef),
       )
       .subscribe();
 
-    this.posts$ = this._categoryPostsService.selectEntries(this.categoryId);
-
-    this._categoryPostsService.startLoading(this.categoryId);
+    this._categoryPostsStateService.load(this.categoryId());
   }
 }

@@ -1,5 +1,7 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { CategoryPostsStateService } from './features/posts/services/category-posts-state.service';
+import { SearchPostsStateService } from './features/posts/services/search-posts-state.service';
 import { APP_LINKS } from './app.config';
 
 @Component({
@@ -15,5 +17,14 @@ import { APP_LINKS } from './app.config';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent {
+  private _categoryPostsStateService = inject(CategoryPostsStateService);
+
+  private _searchPostsStateService = inject(SearchPostsStateService);
+
   links = APP_LINKS;
+
+  handleHeaderLinkClick(): void {
+    this._categoryPostsStateService.drop();
+    this._searchPostsStateService.drop();
+  }
 }
