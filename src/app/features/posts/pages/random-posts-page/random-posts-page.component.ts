@@ -1,23 +1,21 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   DestroyRef,
+  inject,
   OnInit,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { AsyncPipe } from '@angular/common';
 import { tap } from 'rxjs';
 import { LoadingStubComponent } from '../../../../common/components/loading-stub/loading-stub.component';
-import { PostCardComponent } from '../../components/post-card/post-card.component';
-import { RandomPostsService } from '../../services/random-posts.service';
 import { WindowScrollService } from '../../../../common/services/window-scroll.service';
+import { PostCardComponent } from '../../components/post-card/post-card.component';
+import { RandomPostsStateService } from '../../services/random-posts-state.service';
 
 @Component({
   selector: 'ngd-random-posts-page',
   imports: [
-    // Angular Imports
-    AsyncPipe,
-
     // Internal Imports
     LoadingStubComponent,
     PostCardComponent,
@@ -27,26 +25,27 @@ import { WindowScrollService } from '../../../../common/services/window-scroll.s
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RandomPostsPageComponent implements OnInit {
-  isLoading$ = this._randomPostsService.selectLoading();
+  private _randomPostsStateService = inject(RandomPostsStateService);
 
-  posts$ = this._randomPostsService.selectEntries();
+  postsSignal = computed(() => this._randomPostsStateService.state().entries);
+
+  loadingSignal = computed(() => this._randomPostsStateService.state().loading);
 
   constructor(
     private _destroyRef: DestroyRef,
     private _windowScrollService: WindowScrollService,
-    private _randomPostsService: RandomPostsService,
   ) {}
 
   ngOnInit(): void {
     this._windowScrollService.scrollToBottom$
       .pipe(
         tap(() => {
-          this._randomPostsService.startLoadMore();
+          this._randomPostsStateService.load();
         }),
         takeUntilDestroyed(this._destroyRef),
       )
       .subscribe();
 
-    this._randomPostsService.startLoading();
+    this._randomPostsStateService.load();
   }
 }

@@ -18,7 +18,7 @@ import { CommentsState } from './features/comments/states/comments.state';
 import { SearchPostsStateService } from './features/posts/services/search-posts-state.service';
 import { CategoryPostsStateService } from './features/posts/services/category-posts-state.service';
 import { LatestPostsState } from './features/posts/states/latest-posts.state';
-import { RandomPostsState } from './features/posts/states/random-posts.state';
+import { RandomPostsStateService } from './features/posts/services/random-posts-state.service';
 import { PostState } from './features/posts/states/post.state';
 import { routes } from './app.routes';
 
@@ -36,13 +36,7 @@ export const appConfig: ApplicationConfig = {
     ),
     provideHttpClient(),
     provideStore(
-      [
-        SettingsState,
-        CommentsState,
-        LatestPostsState,
-        RandomPostsState,
-        PostState,
-      ],
+      [SettingsState, CommentsState, LatestPostsState, PostState],
       withNgxsStoragePlugin({ keys: [SettingsState], namespace: 'ngdeer' }),
     ),
     provideBaseTitle(),
@@ -52,6 +46,7 @@ export const appConfig: ApplicationConfig = {
     provideWindow(),
 
     CategoriesStateService,
+    RandomPostsStateService,
     CategoryPostsStateService,
     SearchPostsStateService,
   ],
