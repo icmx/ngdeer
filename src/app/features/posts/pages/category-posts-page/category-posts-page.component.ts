@@ -5,7 +5,6 @@ import {
   DestroyRef,
   inject,
   input,
-  Input,
   OnInit,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -27,6 +26,10 @@ import { CategoryPostsStateService } from '../../services/category-posts-state.s
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CategoryPostsPageComponent implements OnInit {
+  private _destroyRef = inject(DestroyRef);
+
+  private _windowScrollService = inject(WindowScrollService);
+
   private _categoryPostsStateService = inject(CategoryPostsStateService);
 
   categoryId = input.required<string>();
@@ -36,11 +39,6 @@ export class CategoryPostsPageComponent implements OnInit {
   loadingSignal = computed(
     () => this._categoryPostsStateService.state().loading,
   );
-
-  constructor(
-    private _destroyRef: DestroyRef,
-    private _windowScrollService: WindowScrollService,
-  ) {}
 
   ngOnInit(): void {
     this._windowScrollService.scrollToBottom$

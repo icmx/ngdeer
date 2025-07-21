@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Inject, Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { BASE_URL } from '../../../common/providers/base-url.provider';
 import { WithApiCategories } from '../types/with-api-categories.type';
@@ -8,11 +8,9 @@ import { WithApiCategories } from '../types/with-api-categories.type';
   providedIn: 'root',
 })
 export class CategoriesApiService {
-  constructor(
-    private _http: HttpClient,
-    @Inject(BASE_URL)
-    private _baseUrl: string,
-  ) {}
+  private _http = inject(HttpClient);
+
+  private _baseUrl = inject(BASE_URL);
 
   getCategories(): Observable<WithApiCategories> {
     return this._http.get<WithApiCategories>(`${this._baseUrl}/categories`);

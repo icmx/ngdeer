@@ -30,6 +30,10 @@ import { CommentsLoading } from '../../../comments/enums/comments-loading.enum';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PostPageComponent implements OnInit {
+  private _destroyRef = inject(DestroyRef);
+
+  private _windowScrollService = inject(WindowScrollService);
+
   private _postStateService = inject(PostStateService);
 
   private _commentsStateService = inject(CommentsStateService);
@@ -52,11 +56,6 @@ export class PostPageComponent implements OnInit {
       this._commentsStateService.state().loading !== CommentsLoading.None
     );
   });
-
-  constructor(
-    private _destroyRef: DestroyRef,
-    private _windowScrollService: WindowScrollService,
-  ) {}
 
   ngOnInit(): void {
     this._windowScrollService.scrollToBottom$

@@ -5,7 +5,7 @@ import {
   DestroyRef,
   HostBinding,
   HostListener,
-  Inject,
+  inject,
   Input,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -20,6 +20,12 @@ import { CLIPBOARD } from '../../providers/clipboard.provider';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ClipboardButtonComponent {
+  private _changeDetectorRef = inject(ChangeDetectorRef);
+
+  private _destroyRef = inject(DestroyRef);
+
+  private _clipboard = inject(CLIPBOARD);
+
   @Input()
   copyText = 'Поделиться';
 
@@ -31,13 +37,6 @@ export class ClipboardButtonComponent {
 
   text = this.copyText;
 
-  constructor(
-    private _cdRef: ChangeDetectorRef,
-    private _destroyRef: DestroyRef,
-    @Inject(CLIPBOARD)
-    private _clipboard: Clipboard,
-  ) {}
-
   @HostBinding('disabled')
   disabled = false;
 
@@ -48,7 +47,7 @@ export class ClipboardButtonComponent {
         tap(() => {
           this.text = this.copiedText;
           this.disabled = true;
-          this._cdRef.markForCheck();
+          this._changeDetectorRef.markForCheck();
         }),
         exhaustMap(() => {
           return from(this._clipboard.writeText(this.content));
@@ -57,7 +56,7 @@ export class ClipboardButtonComponent {
         tap(() => {
           this.text = this.copyText;
           this.disabled = false;
-          this._cdRef.markForCheck();
+          this._changeDetectorRef.markForCheck();
         }),
         takeUntilDestroyed(this._destroyRef),
       )

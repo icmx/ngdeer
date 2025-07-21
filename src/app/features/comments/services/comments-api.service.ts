@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { BASE_URL } from '../../../common/providers/base-url.provider';
@@ -15,11 +15,9 @@ export type GetPostCommentsOptions = RequestOptions<{
   providedIn: 'root',
 })
 export class CommentsApiService {
-  constructor(
-    private _http: HttpClient,
-    @Inject(BASE_URL)
-    private _baseUrl: string,
-  ) {}
+  private _http = inject(HttpClient);
+
+  private _baseUrl = inject(BASE_URL);
 
   getPostComments(
     postId: Param,

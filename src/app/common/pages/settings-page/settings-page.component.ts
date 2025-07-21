@@ -40,16 +40,17 @@ export class SettingsPageComponentFormGroup extends FormGroup<{
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingsPageComponent implements OnInit {
+  private _destroyRef = inject(DestroyRef);
+
   private _settingsStateService = inject(SettingsStateService);
+
+  private _themesService = inject(ThemesService);
 
   themesSignal = computed(() => this._themesService.value());
 
   formGroup = new SettingsPageComponentFormGroup();
 
-  constructor(
-    private _destoryRef: DestroyRef,
-    private _themesService: ThemesService,
-  ) {
+  constructor() {
     const value = this._settingsStateService.state();
     this.formGroup.setValue(value, { emitEvent: false });
   }
@@ -60,7 +61,7 @@ export class SettingsPageComponent implements OnInit {
         tap((value) => {
           this._settingsStateService.setState({ theme: Theme.Light, ...value });
         }),
-        takeUntilDestroyed(this._destoryRef),
+        takeUntilDestroyed(this._destroyRef),
       )
       .subscribe();
   }

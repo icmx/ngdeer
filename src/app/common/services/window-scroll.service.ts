@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { distinctUntilChanged, filter, fromEvent, map } from 'rxjs';
 import { WINDOW } from '../providers/window.provider';
 
@@ -6,10 +6,7 @@ import { WINDOW } from '../providers/window.provider';
   providedIn: 'root',
 })
 export class WindowScrollService {
-  constructor(
-    @Inject(WINDOW)
-    private _window: Window,
-  ) {}
+  private _window = inject(WINDOW);
 
   scroll$ = fromEvent(this._window, 'scroll').pipe(
     filter((event): event is Event & { target: Document } => {

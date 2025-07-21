@@ -53,6 +53,14 @@ export class SearchPostsPageComponentFormGroup extends FormGroup<{
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SearchPostsPageComponent implements OnInit {
+  private _destroyRef = inject(DestroyRef);
+
+  private _router = inject(Router);
+
+  private _activatedRoute = inject(ActivatedRoute);
+
+  private _windowScrollService = inject(WindowScrollService);
+
   private _categoriesStateService = inject(CategoriesStateService);
 
   private _searchPostsStateService = inject(SearchPostsStateService);
@@ -88,13 +96,6 @@ export class SearchPostsPageComponent implements OnInit {
 
   private _queryParams$: Observable<WithText & WithCategoryId> =
     this._activatedRoute.queryParams;
-
-  constructor(
-    private _destroyRef: DestroyRef,
-    private _router: Router,
-    private _activatedRoute: ActivatedRoute,
-    private _windowScrollService: WindowScrollService,
-  ) {}
 
   ngOnInit(): void {
     this._windowScrollService.scrollToBottom$

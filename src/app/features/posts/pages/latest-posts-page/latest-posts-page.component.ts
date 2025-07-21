@@ -25,16 +25,15 @@ import { LatestPostsStateService } from '../../services/latest-posts-state.servi
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LatestPostsPageComponent implements OnInit {
+  private _destroyRef = inject(DestroyRef);
+
+  private _windowScrollService = inject(WindowScrollService);
+
   private _latestPostsStateService = inject(LatestPostsStateService);
 
   postsSignal = computed(() => this._latestPostsStateService.state().entries);
 
   loadingSignal = computed(() => this._latestPostsStateService.state().loading);
-
-  constructor(
-    private _destroyRef: DestroyRef,
-    private _windowScrollService: WindowScrollService,
-  ) {}
 
   ngOnInit(): void {
     this._windowScrollService.scrollToBottom$

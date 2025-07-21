@@ -25,16 +25,15 @@ import { RandomPostsStateService } from '../../services/random-posts-state.servi
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RandomPostsPageComponent implements OnInit {
+  private _destroyRef = inject(DestroyRef);
+
+  private _windowScrollService = inject(WindowScrollService);
+
   private _randomPostsStateService = inject(RandomPostsStateService);
 
   postsSignal = computed(() => this._randomPostsStateService.state().entries);
 
   loadingSignal = computed(() => this._randomPostsStateService.state().loading);
-
-  constructor(
-    private _destroyRef: DestroyRef,
-    private _windowScrollService: WindowScrollService,
-  ) {}
 
   ngOnInit(): void {
     this._windowScrollService.scrollToBottom$

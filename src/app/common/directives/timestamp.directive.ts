@@ -3,6 +3,7 @@ import {
   Directive,
   ElementRef,
   HostBinding,
+  inject,
   Input,
 } from '@angular/core';
 import { toAbsoluteDateString } from '../utils/to-absolute-date-string.util';
@@ -14,10 +15,10 @@ import { DateInit } from '../types/date-init.type';
   standalone: true,
 })
 export class TimestampDirective implements AfterViewInit {
+  private _elementRef = inject<ElementRef<HTMLTimeElement>>(ElementRef);
+
   @Input({ required: true })
   timestamp!: DateInit;
-
-  constructor(private _elementRef: ElementRef<HTMLTimeElement>) {}
 
   @HostBinding('attr.datetime')
   get attrDatetime(): string {

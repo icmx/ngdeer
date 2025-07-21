@@ -1,4 +1,4 @@
-import { Injectable, Provider } from '@angular/core';
+import { inject, Injectable, Provider } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { RouterStateSnapshot, TitleStrategy } from '@angular/router';
 
@@ -6,9 +6,7 @@ export const BASE_TITLE = 'ngdeer';
 
 @Injectable()
 export class BaseTitleStrategy extends TitleStrategy {
-  constructor(private _title: Title) {
-    super();
-  }
+  private _title = inject(Title);
 
   override updateTitle(routerStateSnapshot: RouterStateSnapshot): void {
     const title = this.buildTitle(routerStateSnapshot);
