@@ -28,10 +28,6 @@ export class RandomPostsStateService {
   state = this._state.asReadonly();
 
   load(): void {
-    if (this._state().loading) {
-      return;
-    }
-
     of(null)
       .pipe(
         tap(() => {

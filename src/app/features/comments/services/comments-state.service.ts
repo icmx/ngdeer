@@ -28,10 +28,6 @@ export class CommentsStateService {
   state = this._state.asReadonly();
 
   load(postId: string): void {
-    if (this._state().loading !== CommentsLoading.None) {
-      return;
-    }
-
     of(null)
       .pipe(
         tap(() => {

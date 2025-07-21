@@ -7,7 +7,7 @@ import {
   OnInit,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { tap } from 'rxjs';
+import { filter, tap } from 'rxjs';
 import { LoadingStubComponent } from '../../../../common/components/loading-stub/loading-stub.component';
 import { WindowScrollService } from '../../../../common/services/window-scroll.service';
 import { PostCardComponent } from '../../components/post-card/post-card.component';
@@ -31,6 +31,14 @@ export class LatestPostsPageComponent implements OnInit {
 
   private _latestPostsStateService = inject(LatestPostsStateService);
 
+  private _runFirstLoadSignal = computed(
+    () => this._latestPostsStateService.state().entries.length === 0,
+  );
+
+  private _runNextLoadsSignal = computed(
+    () => !this._latestPostsStateService.state().loading,
+  );
+
   postsSignal = computed(() => this._latestPostsStateService.state().entries);
 
   loadingSignal = computed(() => this._latestPostsStateService.state().loading);
@@ -38,6 +46,9 @@ export class LatestPostsPageComponent implements OnInit {
   ngOnInit(): void {
     this._windowScrollService.scrollToBottom$
       .pipe(
+        filter(() => {
+          return this._runNextLoadsSignal();
+        }),
         tap(() => {
           this._latestPostsStateService.load();
         }),
@@ -45,6 +56,8 @@ export class LatestPostsPageComponent implements OnInit {
       )
       .subscribe();
 
-    this._latestPostsStateService.load();
+    if (this._runFirstLoadSignal()) {
+      this._latestPostsStateService.load();
+    }
   }
 }

@@ -8,7 +8,7 @@ import {
   OnInit,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { tap } from 'rxjs';
+import { filter, tap } from 'rxjs';
 import { LoadingStubComponent } from '../../../../common/components/loading-stub/loading-stub.component';
 import { WindowScrollService } from '../../../../common/services/window-scroll.service';
 import { PostCardComponent } from '../../components/post-card/post-card.component';
@@ -32,6 +32,14 @@ export class CategoryPostsPageComponent implements OnInit {
 
   private _categoryPostsStateService = inject(CategoryPostsStateService);
 
+  private _runFirstLoadSignal = computed(
+    () => this._categoryPostsStateService.state().entries.length === 0,
+  );
+
+  private _runNextLoadsSignal = computed(
+    () => !this._categoryPostsStateService.state().loading,
+  );
+
   categoryId = input.required<string>();
 
   postsSignal = computed(() => this._categoryPostsStateService.state().entries);
@@ -43,6 +51,9 @@ export class CategoryPostsPageComponent implements OnInit {
   ngOnInit(): void {
     this._windowScrollService.scrollToBottom$
       .pipe(
+        filter(() => {
+          return this._runNextLoadsSignal();
+        }),
         tap(() => {
           this._categoryPostsStateService.load(this.categoryId());
         }),
@@ -50,6 +61,8 @@ export class CategoryPostsPageComponent implements OnInit {
       )
       .subscribe();
 
-    this._categoryPostsStateService.load(this.categoryId());
+    if (this._runFirstLoadSignal()) {
+      this._categoryPostsStateService.load(this.categoryId());
+    }
   }
 }

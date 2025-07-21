@@ -1,10 +1,10 @@
 import { DestroyRef, inject, Injectable, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { concatMap, of, tap } from 'rxjs';
 import { Post } from '../models/post.model';
+import { extractPostsFromReply } from '../operators/extract-posts-from-reply.operator';
 import { GetPostsRequestOptions, PostsApiService } from './posts-api.service';
 import { PostsCacheService } from './posts-cache.service';
-import { concatMap, of, tap } from 'rxjs';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { extractPostsFromReply } from '../operators/extract-posts-from-reply.operator';
 
 export type CategoryPostsStateModel = {
   loading: boolean;
@@ -27,10 +27,6 @@ export class CategoryPostsStateService {
   state = this._state.asReadonly();
 
   load(categoryId: string): void {
-    if (this._state().loading) {
-      return;
-    }
-
     of(null)
       .pipe(
         tap(() => {

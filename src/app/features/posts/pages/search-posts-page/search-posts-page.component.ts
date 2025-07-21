@@ -9,7 +9,7 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { debounceTime, map, Observable, tap } from 'rxjs';
+import { debounceTime, filter, map, Observable, tap } from 'rxjs';
 import { CaptionComponent } from '../../../../common/components/caption/caption.component';
 import { ControlComponent } from '../../../../common/components/control/control.component';
 import { ButtonComponent } from '../../../../common/components/button/button.component';
@@ -65,6 +65,16 @@ export class SearchPostsPageComponent implements OnInit {
 
   private _searchPostsStateService = inject(SearchPostsStateService);
 
+  private _runCategoriesLoadSignal = computed(() => {
+    const { loading, done } = this._categoriesStateService.state();
+
+    return !done && !loading;
+  });
+
+  private _runPostsLoadSignal = computed(
+    () => !this._searchPostsStateService.state().loading,
+  );
+
   formGroup = new SearchPostsPageComponentFormGroup();
 
   categoriesSignal = computed(() => {
@@ -100,6 +110,9 @@ export class SearchPostsPageComponent implements OnInit {
   ngOnInit(): void {
     this._windowScrollService.scrollToBottom$
       .pipe(
+        filter(() => {
+          return this._runPostsLoadSignal();
+        }),
         tap(() => {
           this._searchPostsStateService.load(this.formGroup.value);
         }),
@@ -136,6 +149,8 @@ export class SearchPostsPageComponent implements OnInit {
       )
       .subscribe();
 
-    this._categoriesStateService.load();
+    if (this._runCategoriesLoadSignal()) {
+      this._categoriesStateService.load();
+    }
   }
 }

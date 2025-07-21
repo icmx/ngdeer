@@ -32,10 +32,6 @@ export class SearchPostsStateService {
   state = this._state.asReadonly();
 
   load(params: WithText & WithCategoryId): void {
-    if (this._state().loading) {
-      return;
-    }
-
     of(null)
       .pipe(
         tap(() => {

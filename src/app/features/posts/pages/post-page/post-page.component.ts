@@ -8,7 +8,7 @@ import {
   OnInit,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { tap } from 'rxjs';
+import { filter, tap } from 'rxjs';
 import { LoadingStubComponent } from '../../../../common/components/loading-stub/loading-stub.component';
 import { WindowScrollService } from '../../../../common/services/window-scroll.service';
 import { CommentsBranchComponent } from '../../../comments/components/comments-branch/comments-branch.component';
@@ -38,6 +38,14 @@ export class PostPageComponent implements OnInit {
 
   private _commentsStateService = inject(CommentsStateService);
 
+  private _runFirstCommentsLoadSignal = computed(
+    () => this._commentsStateService.state().entries.length === 0,
+  );
+
+  private _runNextCommentsLoadsSignal = computed(
+    () => this._commentsStateService.state().loading === CommentsLoading.None,
+  );
+
   postId = input.required<string>();
 
   postSignal = computed(() => this._postStateService.state().entry);
@@ -58,16 +66,24 @@ export class PostPageComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    const postId = this.postId();
+
     this._windowScrollService.scrollToBottom$
       .pipe(
+        filter(() => {
+          return this._runNextCommentsLoadsSignal();
+        }),
         tap(() => {
-          this._commentsStateService.load(this.postId());
+          this._commentsStateService.load(postId);
         }),
         takeUntilDestroyed(this._destroyRef),
       )
       .subscribe();
 
-    this._postStateService.load(this.postId());
-    this._commentsStateService.load(this.postId());
+    this._postStateService.load(postId);
+
+    if (this._runFirstCommentsLoadSignal()) {
+      this._commentsStateService.load(postId);
+    }
   }
 }
