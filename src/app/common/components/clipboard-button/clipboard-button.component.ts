@@ -6,7 +6,7 @@ import {
   HostBinding,
   HostListener,
   inject,
-  Input,
+  input,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { delay, exhaustMap, from, of, tap } from 'rxjs';
@@ -26,16 +26,13 @@ export class ClipboardButtonComponent {
 
   private _clipboard = inject(CLIPBOARD);
 
-  @Input()
-  copyText = 'Поделиться';
+  copyText = input('Поделиться');
 
-  @Input()
-  copiedText = 'Скопировано ✨';
+  copiedText = input('Скопировано ✨');
 
-  @Input({ required: true })
-  content!: string;
+  content = input.required<string>();
 
-  text = this.copyText;
+  text = this.copyText();
 
   @HostBinding('disabled')
   disabled = false;
@@ -45,16 +42,16 @@ export class ClipboardButtonComponent {
     of(null)
       .pipe(
         tap(() => {
-          this.text = this.copiedText;
+          this.text = this.copiedText();
           this.disabled = true;
           this._changeDetectorRef.markForCheck();
         }),
         exhaustMap(() => {
-          return from(this._clipboard.writeText(this.content));
+          return from(this._clipboard.writeText(this.content()));
         }),
         delay(1200),
         tap(() => {
-          this.text = this.copyText;
+          this.text = this.copyText();
           this.disabled = false;
           this._changeDetectorRef.markForCheck();
         }),

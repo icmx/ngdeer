@@ -1,10 +1,10 @@
 import {
-  AfterViewInit,
   Directive,
+  effect,
   ElementRef,
   HostBinding,
   inject,
-  Input,
+  input,
 } from '@angular/core';
 import { toAbsoluteDateString } from '../utils/to-absolute-date-string.util';
 import { toRelativeDateString } from '../utils/to-relative-date-string.util';
@@ -14,22 +14,28 @@ import { DateInit } from '../types/date-init.type';
   selector: 'time[timestamp]',
   standalone: true,
 })
-export class TimestampDirective implements AfterViewInit {
+export class TimestampDirective {
   private _elementRef = inject<ElementRef<HTMLTimeElement>>(ElementRef);
 
-  @Input({ required: true })
-  timestamp!: DateInit;
+  timestamp = input.required<DateInit>();
 
   @HostBinding('attr.datetime')
-  get attrDatetime(): string {
-    const attrDatetime = toAbsoluteDateString(this.timestamp);
+  attrDatetime: string | undefined = undefined;
 
-    return attrDatetime;
-  }
+  @HostBinding('attr.title')
+  attrTitle: string | undefined = undefined;
 
-  ngAfterViewInit(): void {
-    const innerText = toRelativeDateString(this.timestamp);
+  constructor() {
+    effect(() => {
+      const timestamp = this.timestamp();
 
-    this._elementRef.nativeElement.innerText = innerText;
+      const absolute = toAbsoluteDateString(timestamp);
+      const relative = toRelativeDateString(timestamp);
+
+      this.attrDatetime = absolute;
+      this.attrTitle = absolute;
+
+      this._elementRef.nativeElement.innerText = relative;
+    });
   }
 }

@@ -1,15 +1,17 @@
+@let postValue = post();
+
 <header>
-  @if (post.commentsCount > 0) {
-    <a [routerLink]="post.link">#{{ post.id }}</a>
+  @if (postValue.commentsCount > 0) {
+    <a [routerLink]="postValue.link">#{{ postValue.id }}</a>
   } @else {
-    <span>#{{ post.id }}</span>
+    <span>#{{ postValue.id }}</span>
   }
-  <time [timestamp]="post.timestamp"></time>
+  <time [timestamp]="postValue.timestamp"></time>
 </header>
 <section>
-  {{ post.text }}
+  {{ postValue.text }}
 </section>
 <footer>
-  <a [routerLink]="post.categoryLink">{{ post.categoryName }}</a>
-  <button ngd-clipboard-button [content]="post.contentToShare"></button>
+  <a [routerLink]="postValue.categoryLink">{{ postValue.categoryName }}</a>
+  <button ngd-clipboard-button [content]="postValue.contentToShare"></button>
 </footer>
