@@ -27,7 +27,7 @@ export class RandomPostsStateService {
 
   state = this._state.asReadonly();
 
-  load(): void {
+  private _load(): void {
     of(null)
       .pipe(
         tap(() => {
@@ -48,6 +48,22 @@ export class RandomPostsStateService {
         takeUntilDestroyed(this._destroyRef),
       )
       .subscribe();
+  }
+
+  load(): void {
+    if (this._state().entries.length > 0) {
+      return;
+    }
+
+    this._load();
+  }
+
+  loadMore(): void {
+    if (this._state().loading) {
+      return;
+    }
+
+    this._load();
   }
 
   drop(): void {

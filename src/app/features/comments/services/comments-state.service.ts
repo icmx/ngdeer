@@ -10,7 +10,7 @@ import {
 } from './comments-api.service';
 
 export type CommentsStateModel = {
-  loading: string;
+  loading: Record<string, boolean>;
   entries: Comment[];
 };
 
@@ -21,19 +21,19 @@ export class CommentsStateService {
   private _commentsApiService = inject(CommentsApiService);
 
   private _state = signal<CommentsStateModel>({
-    loading: CommentsLoading.None,
+    loading: {},
     entries: [],
   });
 
   state = this._state.asReadonly();
 
-  load(postId: string): void {
+  private _loadPostCommentsByPostId(postId: string): void {
     of(null)
       .pipe(
         tap(() => {
           this._state.update((state) => ({
             ...state,
-            loading: CommentsLoading.Root,
+            loading: { ...state.loading, [CommentsLoading.Root]: true },
           }));
         }),
         concatMap(() => {
@@ -54,7 +54,7 @@ export class CommentsStateService {
         extractCommentsFromReply(),
         tap((entries) => {
           this._state.update((state) => ({
-            loading: CommentsLoading.None,
+            loading: { ...state.loading, [CommentsLoading.Root]: false },
             entries: [...state.entries, ...entries],
           }));
         }),
@@ -63,15 +63,14 @@ export class CommentsStateService {
       .subscribe();
   }
 
-  loadBranch(rootCommentId: string): void {
-    if (this._state().loading === rootCommentId) {
-      return;
-    }
-
+  private _loadCommentsBranchByRootCommentId(rootCommentId: string): void {
     of(null)
       .pipe(
         tap(() => {
-          this._state.update((state) => ({ ...state, loading: rootCommentId }));
+          this._state.update((state) => ({
+            ...state,
+            loading: { ...state.loading, [rootCommentId]: true },
+          }));
         }),
         concatMap(() => {
           return this._commentsApiService.getCommentBranch(rootCommentId);
@@ -79,7 +78,7 @@ export class CommentsStateService {
         extractCommentsFromReply(),
         tap((entries) => {
           this._state.update((state) => ({
-            loading: CommentsLoading.None,
+            loading: { ...state.loading, [rootCommentId]: false },
             entries: [
               ...state.entries.filter(
                 (entry) => entry.rootId !== rootCommentId,
@@ -91,5 +90,32 @@ export class CommentsStateService {
         takeUntilDestroyed(this._destroyRef),
       )
       .subscribe();
+  }
+
+  loadPostCommentsByPostId(postId: string): void {
+    if (
+      this._state().entries.filter((entry) => entry.postId === postId).length >
+      0
+    ) {
+      return;
+    }
+
+    this._loadPostCommentsByPostId(postId);
+  }
+
+  loadMorePostCommentsByPostId(postId: string): void {
+    if (this._state().loading[CommentsLoading.Root]) {
+      return;
+    }
+
+    this._loadPostCommentsByPostId(postId);
+  }
+
+  loadCommentsBranchByRootCommentId(rootCommentId: string): void {
+    if (this._state().loading[rootCommentId]) {
+      return;
+    }
+
+    this._loadCommentsBranchByRootCommentId(rootCommentId);
   }
 }

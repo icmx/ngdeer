@@ -35,14 +35,14 @@ export class CommentsBranchComponent {
   });
 
   loadingSignal = computed(() => {
-    return this._commentsStateService.state().loading === this.rootComment().id;
+    return this._commentsStateService.state().loading[this.rootComment().id];
   });
 
   shouldShowLoadMoreButtonSignal = computed(() => {
     const rootCommentId = this.rootComment().id;
     const { loading, entries } = this._commentsStateService.state();
 
-    if (loading === rootCommentId) {
+    if (loading[rootCommentId]) {
       return false;
     }
 
@@ -74,6 +74,6 @@ export class CommentsBranchComponent {
   handleLoadMoreButtonClick(): void {
     const rootCommentId = this.rootComment().id;
 
-    this._commentsStateService.loadBranch(rootCommentId);
+    this._commentsStateService.loadCommentsBranchByRootCommentId(rootCommentId);
   }
 }

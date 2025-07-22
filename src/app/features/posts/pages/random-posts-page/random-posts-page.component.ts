@@ -7,7 +7,7 @@ import {
   OnInit,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { filter, tap } from 'rxjs';
+import { tap } from 'rxjs';
 import { LoadingStubComponent } from '../../../../common/components/loading-stub/loading-stub.component';
 import { WindowScrollService } from '../../../../common/services/window-scroll.service';
 import { PostCardComponent } from '../../components/post-card/post-card.component';
@@ -31,14 +31,6 @@ export class RandomPostsPageComponent implements OnInit {
 
   private _randomPostsStateService = inject(RandomPostsStateService);
 
-  private _runFirstLoadSignal = computed(
-    () => this._randomPostsStateService.state().entries.length === 0,
-  );
-
-  private _runNextLoadsSignal = computed(
-    () => !this._randomPostsStateService.state().loading,
-  );
-
   postsSignal = computed(() => this._randomPostsStateService.state().entries);
 
   loadingSignal = computed(() => this._randomPostsStateService.state().loading);
@@ -46,18 +38,13 @@ export class RandomPostsPageComponent implements OnInit {
   ngOnInit(): void {
     this._windowScrollService.scrollToBottom$
       .pipe(
-        filter(() => {
-          return this._runNextLoadsSignal();
-        }),
         tap(() => {
-          this._randomPostsStateService.load();
+          this._randomPostsStateService.loadMore();
         }),
         takeUntilDestroyed(this._destroyRef),
       )
       .subscribe();
 
-    if (this._runFirstLoadSignal()) {
-      this._randomPostsStateService.load();
-    }
+    this._randomPostsStateService.load();
   }
 }

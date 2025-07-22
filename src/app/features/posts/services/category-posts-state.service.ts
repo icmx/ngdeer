@@ -26,7 +26,7 @@ export class CategoryPostsStateService {
 
   state = this._state.asReadonly();
 
-  load(categoryId: string): void {
+  private _load(categoryId: string): void {
     of(null)
       .pipe(
         tap(() => {
@@ -59,6 +59,22 @@ export class CategoryPostsStateService {
         takeUntilDestroyed(this._destroyRef),
       )
       .subscribe();
+  }
+
+  load(categoryId: string): void {
+    if (this._state().entries.length > 0) {
+      return;
+    }
+
+    this._load(categoryId);
+  }
+
+  loadMore(categoryId: string): void {
+    if (this._state().loading) {
+      return;
+    }
+
+    this._load(categoryId);
   }
 
   drop(): void {

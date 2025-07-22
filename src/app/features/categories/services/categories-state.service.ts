@@ -25,7 +25,7 @@ export class CategoriesStateService {
 
   state = this._state.asReadonly();
 
-  load(): void {
+  private _load(): void {
     of(null)
       .pipe(
         tap(() => {
@@ -41,5 +41,15 @@ export class CategoriesStateService {
         takeUntilDestroyed(this._destroyRef),
       )
       .subscribe();
+  }
+
+  load(): void {
+    const { loading, done } = this._state();
+
+    if (done || loading) {
+      return;
+    }
+
+    this._load();
   }
 }

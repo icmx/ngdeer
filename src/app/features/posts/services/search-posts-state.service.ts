@@ -31,7 +31,7 @@ export class SearchPostsStateService {
 
   state = this._state.asReadonly();
 
-  load(params: WithText & WithCategoryId): void {
+  private _load(params: WithText & WithCategoryId): void {
     of(null)
       .pipe(
         tap(() => {
@@ -76,6 +76,18 @@ export class SearchPostsStateService {
         takeUntilDestroyed(this._destroyRef),
       )
       .subscribe();
+  }
+
+  load(params: WithText & WithCategoryId): void {
+    this._load(params);
+  }
+
+  loadMore(params: WithText & WithCategoryId): void {
+    if (this._state().loading) {
+      return;
+    }
+
+    return this._load(params);
   }
 
   drop(): void {

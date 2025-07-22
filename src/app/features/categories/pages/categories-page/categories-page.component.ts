@@ -23,12 +23,6 @@ import { CategoriesStateService } from '../../services/categories-state.service'
 export class CategoriesPageComponent implements OnInit {
   private _categoriesStateService = inject(CategoriesStateService);
 
-  private _runCategoriesLoadSignal = computed(() => {
-    const { loading, done } = this._categoriesStateService.state();
-
-    return !done && !loading;
-  });
-
   categoriesSignal = computed(
     () => this._categoriesStateService.state().entries,
   );
@@ -36,8 +30,6 @@ export class CategoriesPageComponent implements OnInit {
   loadingSignal = computed(() => this._categoriesStateService.state().loading);
 
   ngOnInit(): void {
-    if (this._runCategoriesLoadSignal()) {
-      this._categoriesStateService.load();
-    }
+    this._categoriesStateService.load();
   }
 }
