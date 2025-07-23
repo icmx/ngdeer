@@ -42,13 +42,15 @@ export class PostPageComponent implements OnInit {
 
   postSignal = computed(() => this._postStateService.state().entry);
 
-  commentsSignal = computed(() =>
-    this._commentsStateService
+  commentsSignal = computed(() => {
+    const postId = this.postId();
+
+    return this._commentsStateService
       .state()
       .entries.filter(
-        (entry) => entry.rootId === null && entry.postId === this.postId(),
-      ),
-  );
+        (entry) => entry.rootId === null && entry.postId === postId,
+      );
+  });
 
   loadingSignal = computed(() => {
     return (

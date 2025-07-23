@@ -29,9 +29,11 @@ export class CommentsBranchComponent {
   rootComment = input.required<Comment>();
 
   childComments = computed(() => {
+    const rootCommentId = this.rootComment().id;
+
     return this._commentsStateService
       .state()
-      .entries.filter((entry) => entry.rootId === this.rootComment().id);
+      .entries.filter((entry) => entry.rootId === rootCommentId);
   });
 
   loadingSignal = computed(() => {
