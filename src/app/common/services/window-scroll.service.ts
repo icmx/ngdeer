@@ -23,7 +23,7 @@ export class WindowScrollService {
       const element = event.target.documentElement;
 
       const limit = element.scrollHeight - element.clientHeight;
-      const thresold = limit * 0.005; // it is 0.5%
+      const thresold = limit * 0.1; // it is 10%
 
       const isBottom = limit - element.scrollTop < thresold;
       return [isBottom, event];
