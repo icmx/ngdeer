@@ -11,6 +11,7 @@ import {
 
 export type CommentsStateModel = {
   loading: Record<string, boolean>;
+  done: Record<string, boolean>;
   entries: Comment[];
 };
 
@@ -22,6 +23,7 @@ export class CommentsStateService {
 
   private _state = signal<CommentsStateModel>({
     loading: {},
+    done: {},
     entries: [],
   });
 
@@ -54,7 +56,14 @@ export class CommentsStateService {
         extractCommentsFromReply(),
         tap((entries) => {
           this._state.update((state) => ({
-            loading: { ...state.loading, [CommentsLoading.Root]: false },
+            loading: {
+              ...state.loading,
+              [CommentsLoading.Root]: false,
+            },
+            done: {
+              ...state.done,
+              [CommentsLoading.Root]: entries.length === 0,
+            },
             entries: [...state.entries, ...entries],
           }));
         }),
@@ -78,7 +87,14 @@ export class CommentsStateService {
         extractCommentsFromReply(),
         tap((entries) => {
           this._state.update((state) => ({
-            loading: { ...state.loading, [rootCommentId]: false },
+            loading: {
+              ...state.loading,
+              [rootCommentId]: false,
+            },
+            done: {
+              ...state.done,
+              [rootCommentId]: entries.length === 0,
+            },
             entries: [
               ...state.entries.filter(
                 (entry) => entry.rootId !== rootCommentId,
@@ -104,7 +120,9 @@ export class CommentsStateService {
   }
 
   loadMorePostCommentsByPostId(postId: string): void {
-    if (this._state().loading[CommentsLoading.Root]) {
+    const { loading, done } = this._state();
+
+    if (loading[CommentsLoading.Root] || done[CommentsLoading.Root]) {
       return;
     }
 

@@ -8,6 +8,7 @@ import { PostsCacheService } from './posts-cache.service';
 
 export type CategoryPostsStateModel = {
   loading: boolean;
+  done: boolean;
   entries: Post[];
 };
 
@@ -21,6 +22,7 @@ export class CategoryPostsStateService {
 
   private _state = signal<CategoryPostsStateModel>({
     loading: false,
+    done: false,
     entries: [],
   });
 
@@ -53,6 +55,7 @@ export class CategoryPostsStateService {
 
           this._state.update((state) => ({
             loading: false,
+            done: entries.length === 0,
             entries: [...state.entries, ...entries],
           }));
         }),
@@ -70,7 +73,9 @@ export class CategoryPostsStateService {
   }
 
   loadMore(categoryId: string): void {
-    if (this._state().loading) {
+    const { loading, done } = this._state();
+
+    if (loading || done) {
       return;
     }
 
@@ -78,6 +83,6 @@ export class CategoryPostsStateService {
   }
 
   drop(): void {
-    this._state.set({ loading: false, entries: [] });
+    this._state.set({ loading: false, done: false, entries: [] });
   }
 }

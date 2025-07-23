@@ -9,6 +9,7 @@ import { PostsCacheService } from './posts-cache.service';
 
 export type LatestPostsStateModel = {
   loading: boolean;
+  done: boolean;
   entries: Post[];
 };
 
@@ -22,6 +23,7 @@ export class LatestPostsStateService {
 
   private _state = signal<LatestPostsStateModel>({
     loading: false,
+    done: false,
     entries: [],
   });
 
@@ -50,6 +52,7 @@ export class LatestPostsStateService {
 
           this._state.update((state) => ({
             loading: false,
+            done: entries.length === 0,
             entries: [...state.entries, ...entries],
           }));
         }),
@@ -67,7 +70,9 @@ export class LatestPostsStateService {
   }
 
   loadMore(): void {
-    if (this._state().loading) {
+    const { loading, done } = this._state();
+
+    if (loading || done) {
       return;
     }
 
@@ -75,6 +80,6 @@ export class LatestPostsStateService {
   }
 
   drop(): void {
-    this._state.set({ loading: false, entries: [] });
+    this._state.set({ loading: false, done: false, entries: [] });
   }
 }

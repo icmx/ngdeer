@@ -13,6 +13,7 @@ import { PostsCacheService } from '../services/posts-cache.service';
 
 export type SearchPostsStateModel = {
   loading: boolean;
+  done: boolean;
   entries: Post[];
 };
 
@@ -26,6 +27,7 @@ export class SearchPostsStateService {
 
   private _state = signal<SearchPostsStateModel>({
     loading: false,
+    done: false,
     entries: [],
   });
 
@@ -70,6 +72,7 @@ export class SearchPostsStateService {
 
           this._state.update((state) => ({
             loading: false,
+            done: entries.length === 0,
             entries: [...state.entries, ...entries],
           }));
         }),
@@ -83,7 +86,9 @@ export class SearchPostsStateService {
   }
 
   loadMore(params: WithText & WithCategoryId): void {
-    if (this._state().loading) {
+    const { loading, done } = this._state();
+
+    if (loading || done) {
       return;
     }
 
@@ -91,6 +96,6 @@ export class SearchPostsStateService {
   }
 
   drop(): void {
-    this._state.set({ loading: false, entries: [] });
+    this._state.set({ loading: false, done: false, entries: [] });
   }
 }

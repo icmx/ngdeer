@@ -5,7 +5,6 @@ import { Post } from '../models/post.model';
 import { extractPostsFromReply } from '../operators/extract-posts-from-reply.operator';
 import { PostsApiService } from './posts-api.service';
 import { PostsCacheService } from './posts-cache.service';
-import { SearchPostsStateModel } from './search-posts-state.service';
 
 export type RandomPostsStateModel = {
   loading: boolean;
@@ -20,7 +19,7 @@ export class RandomPostsStateService {
 
   private _postsCacheService = inject(PostsCacheService);
 
-  private _state = signal<SearchPostsStateModel>({
+  private _state = signal<RandomPostsStateModel>({
     loading: false,
     entries: [],
   });

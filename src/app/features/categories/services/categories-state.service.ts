@@ -46,7 +46,7 @@ export class CategoriesStateService {
   load(): void {
     const { loading, done } = this._state();
 
-    if (done || loading) {
+    if (loading || done) {
       return;
     }
 
