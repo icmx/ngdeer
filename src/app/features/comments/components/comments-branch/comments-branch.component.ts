@@ -42,35 +42,17 @@ export class CommentsBranchComponent {
 
   shouldShowLoadMoreButtonSignal = computed(() => {
     const rootCommentId = this.rootComment().id;
-    const { loading, entries } = this._commentsStateService.state();
+    const { loading, done } = this._commentsStateService.state();
 
     if (loading[rootCommentId]) {
       return false;
     }
 
-    const root = entries.find((entry) => entry.id === rootCommentId);
-
-    if (!root) {
+    if (done[rootCommentId]) {
       return false;
     }
 
-    const { length } = entries.filter(
-      (entry) => entry.rootId === rootCommentId,
-    );
-
-    if (length === 0) {
-      return false;
-    }
-
-    const { branchSize } = root;
-
-    if (branchSize !== null && branchSize > 0 && branchSize !== length) {
-      return true;
-    }
-
-    const PAGE_SIZE = 30;
-
-    return length % PAGE_SIZE === 0;
+    return true;
   });
 
   handleLoadMoreButtonClick(): void {

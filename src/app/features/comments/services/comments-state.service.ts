@@ -44,7 +44,9 @@ export class CommentsStateService {
           };
 
           const later = this._state()
-            .entries.filter((entry) => entry.postId === postId)
+            .entries.filter(
+              (entry) => entry.rootId === null && entry.postId === postId,
+            )
             .at(-1)?.id;
 
           if (later) {
@@ -55,16 +57,34 @@ export class CommentsStateService {
         }),
         extractCommentsFromReply(),
         tap((entries) => {
+          const { loading, done, entries: prevEntries } = this._state();
+
+          const nextEntries = [...prevEntries, ...entries];
+
+          const nextLoading: CommentsStateModel['loading'] = {
+            ...loading,
+            [CommentsLoading.Root]: false,
+          };
+
+          const nextDone: CommentsStateModel['done'] = {
+            ...done,
+            [CommentsLoading.Root]: entries.length === 0,
+          };
+
+          nextEntries.forEach((entry) => {
+            if (
+              entry.rootId === null &&
+              (entry.branchSize === null || entry.branchSize < 3)
+            ) {
+              nextDone[entry.id] = true;
+            }
+          });
+
           this._state.update((state) => ({
-            loading: {
-              ...state.loading,
-              [CommentsLoading.Root]: false,
-            },
-            done: {
-              ...state.done,
-              [CommentsLoading.Root]: entries.length === 0,
-            },
-            entries: [...state.entries, ...entries],
+            ...state,
+            loading: nextLoading,
+            done: nextDone,
+            entries: nextEntries,
           }));
         }),
         takeUntilDestroyed(this._destroyRef),
@@ -86,21 +106,25 @@ export class CommentsStateService {
         }),
         extractCommentsFromReply(),
         tap((entries) => {
+          const { loading, done, entries: prevEntries } = this._state();
+
+          const nextEntries = [...prevEntries, ...entries.slice(2)];
+
+          const nextLoading: CommentsStateModel['loading'] = {
+            ...loading,
+            [rootCommentId]: false,
+          };
+
+          const nextDone: CommentsStateModel['done'] = {
+            ...done,
+            [rootCommentId]: entries.length < 30,
+          };
+
           this._state.update((state) => ({
-            loading: {
-              ...state.loading,
-              [rootCommentId]: false,
-            },
-            done: {
-              ...state.done,
-              [rootCommentId]: entries.length === 0,
-            },
-            entries: [
-              ...state.entries.filter(
-                (entry) => entry.rootId !== rootCommentId,
-              ),
-              ...entries,
-            ],
+            ...state,
+            loading: nextLoading,
+            done: nextDone,
+            entries: nextEntries,
           }));
         }),
         takeUntilDestroyed(this._destroyRef),
