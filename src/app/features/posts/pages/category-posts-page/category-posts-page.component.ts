@@ -1,24 +1,22 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  Input,
+  computed,
+  DestroyRef,
+  inject,
+  input,
   OnInit,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { AsyncPipe } from '@angular/common';
-import { of } from 'rxjs';
+import { tap } from 'rxjs';
 import { LoadingStubComponent } from '../../../../common/components/loading-stub/loading-stub.component';
 import { WindowScrollService } from '../../../../common/services/window-scroll.service';
 import { PostCardComponent } from '../../components/post-card/post-card.component';
-import { Post } from '../../models/post.model';
-import { CategoryPostsService } from '../../services/category-posts.service';
+import { CategoryPostsStateService } from '../../services/category-posts-state.service';
 
 @Component({
   selector: 'ngd-category-posts-page',
   imports: [
-    // Angular Imports
-    AsyncPipe,
-
     // Internal Imports
     LoadingStubComponent,
     PostCardComponent,
@@ -28,27 +26,32 @@ import { CategoryPostsService } from '../../services/category-posts.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CategoryPostsPageComponent implements OnInit {
-  @Input({ required: true })
-  categoryId = '';
+  private _destroyRef = inject(DestroyRef);
 
-  isLoading$ = this._categoryPostsService.selectLoading();
+  private _windowScrollService = inject(WindowScrollService);
 
-  posts$ = of<Post[]>([]);
+  private _categoryPostsStateService = inject(CategoryPostsStateService);
 
-  constructor(
-    private _windowScrollService: WindowScrollService,
-    private _categoryPostsService: CategoryPostsService,
-  ) {
-    this._windowScrollService.scrollToBottom$
-      .pipe(takeUntilDestroyed())
-      .subscribe(() => {
-        this._categoryPostsService.startLoadingMore(this.categoryId);
-      });
-  }
+  categoryId = input.required<string>();
+
+  postsSignal = computed(() => this._categoryPostsStateService.state().entries);
+
+  loadingSignal = computed(
+    () => this._categoryPostsStateService.state().loading,
+  );
 
   ngOnInit(): void {
-    this.posts$ = this._categoryPostsService.selectEntries(this.categoryId);
+    const categoryId = this.categoryId();
 
-    this._categoryPostsService.startLoading(this.categoryId);
+    this._windowScrollService.scrollToBottom$
+      .pipe(
+        tap(() => {
+          this._categoryPostsStateService.loadMore(categoryId);
+        }),
+        takeUntilDestroyed(this._destroyRef),
+      )
+      .subscribe();
+
+    this._categoryPostsStateService.load(categoryId);
   }
 }

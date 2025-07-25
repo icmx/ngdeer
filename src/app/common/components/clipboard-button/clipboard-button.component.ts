@@ -5,8 +5,8 @@ import {
   DestroyRef,
   HostBinding,
   HostListener,
-  Inject,
-  Input,
+  inject,
+  input,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { delay, exhaustMap, from, of, tap } from 'rxjs';
@@ -20,23 +20,19 @@ import { CLIPBOARD } from '../../providers/clipboard.provider';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ClipboardButtonComponent {
-  @Input()
-  copyText = 'Поделиться';
+  private _changeDetectorRef = inject(ChangeDetectorRef);
 
-  @Input()
-  copiedText = 'Скопировано ✨';
+  private _destroyRef = inject(DestroyRef);
 
-  @Input({ required: true })
-  content!: string;
+  private _clipboard = inject(CLIPBOARD);
 
-  text = this.copyText;
+  copyText = input('Поделиться');
 
-  constructor(
-    private _cdRef: ChangeDetectorRef,
-    private _destroyRef: DestroyRef,
-    @Inject(CLIPBOARD)
-    private _clipboard: Clipboard,
-  ) {}
+  copiedText = input('Скопировано ✨');
+
+  content = input.required<string>();
+
+  text = this.copyText();
 
   @HostBinding('disabled')
   disabled = false;
@@ -46,18 +42,18 @@ export class ClipboardButtonComponent {
     of(null)
       .pipe(
         tap(() => {
-          this.text = this.copiedText;
+          this.text = this.copiedText();
           this.disabled = true;
-          this._cdRef.markForCheck();
+          this._changeDetectorRef.markForCheck();
         }),
         exhaustMap(() => {
-          return from(this._clipboard.writeText(this.content));
+          return from(this._clipboard.writeText(this.content()));
         }),
         delay(1200),
         tap(() => {
-          this.text = this.copyText;
+          this.text = this.copyText();
           this.disabled = false;
-          this._cdRef.markForCheck();
+          this._changeDetectorRef.markForCheck();
         }),
         takeUntilDestroyed(this._destroyRef),
       )

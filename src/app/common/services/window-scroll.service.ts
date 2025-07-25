@@ -1,15 +1,12 @@
-import { Inject, Injectable } from '@angular/core';
-import { distinctUntilChanged, filter, fromEvent, map } from 'rxjs';
+import { inject, Injectable } from '@angular/core';
+import { filter, fromEvent, map, repeat } from 'rxjs';
 import { WINDOW } from '../providers/window.provider';
 
 @Injectable({
   providedIn: 'root',
 })
 export class WindowScrollService {
-  constructor(
-    @Inject(WINDOW)
-    private _window: Window,
-  ) {}
+  private _window = inject(WINDOW);
 
   scroll$ = fromEvent(this._window, 'scroll').pipe(
     filter((event): event is Event & { target: Document } => {
@@ -22,19 +19,17 @@ export class WindowScrollService {
   );
 
   scrollToBottom$ = this.scroll$.pipe(
-    map((event): [boolean, typeof event] => {
+    map((event) => {
       const element = event.target.documentElement;
 
       const limit = element.scrollHeight - element.clientHeight;
-      const thresold = limit * 0.005; // it is 0.5%
+      const thresold = limit * 0.1; // it is 10%
 
       const isBottom = limit - element.scrollTop < thresold;
-      return [isBottom, event];
+
+      return isBottom ? event : null;
     }),
-    distinctUntilChanged(
-      ([prevIsBottom], [nextIsBottom]) => prevIsBottom === nextIsBottom,
-    ),
-    filter(([isBottom]) => isBottom === true),
-    map(([, event]) => event),
+    filter((event) => event !== null),
+    repeat(),
   );
 }

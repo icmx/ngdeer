@@ -1,17 +1,21 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  DestroyRef,
+  inject,
+  OnInit,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { AsyncPipe } from '@angular/common';
+import { tap } from 'rxjs';
 import { LoadingStubComponent } from '../../../../common/components/loading-stub/loading-stub.component';
-import { PostCardComponent } from '../../components/post-card/post-card.component';
-import { RandomPostsService } from '../../services/random-posts.service';
 import { WindowScrollService } from '../../../../common/services/window-scroll.service';
+import { PostCardComponent } from '../../components/post-card/post-card.component';
+import { RandomPostsStateService } from '../../services/random-posts-state.service';
 
 @Component({
   selector: 'ngd-random-posts-page',
   imports: [
-    // Angular Imports
-    AsyncPipe,
-
     // Internal Imports
     LoadingStubComponent,
     PostCardComponent,
@@ -21,22 +25,26 @@ import { WindowScrollService } from '../../../../common/services/window-scroll.s
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RandomPostsPageComponent implements OnInit {
-  isLoading$ = this._randomPostsService.selectLoading();
+  private _destroyRef = inject(DestroyRef);
 
-  posts$ = this._randomPostsService.selectEntries();
+  private _windowScrollService = inject(WindowScrollService);
 
-  constructor(
-    private _windowScrollService: WindowScrollService,
-    private _randomPostsService: RandomPostsService,
-  ) {
-    this._windowScrollService.scrollToBottom$
-      .pipe(takeUntilDestroyed())
-      .subscribe(() => {
-        this._randomPostsService.startLoadMore();
-      });
-  }
+  private _randomPostsStateService = inject(RandomPostsStateService);
+
+  postsSignal = computed(() => this._randomPostsStateService.state().entries);
+
+  loadingSignal = computed(() => this._randomPostsStateService.state().loading);
 
   ngOnInit(): void {
-    this._randomPostsService.startLoading();
+    this._windowScrollService.scrollToBottom$
+      .pipe(
+        tap(() => {
+          this._randomPostsStateService.loadMore();
+        }),
+        takeUntilDestroyed(this._destroyRef),
+      )
+      .subscribe();
+
+    this._randomPostsStateService.load();
   }
 }

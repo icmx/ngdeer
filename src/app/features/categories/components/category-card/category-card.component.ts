@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Category } from '../../models/category.model';
 
@@ -13,6 +13,5 @@ import { Category } from '../../models/category.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CategoryCardComponent {
-  @Input({ required: true })
-  category!: Category;
+  category = input.required<Category>();
 }

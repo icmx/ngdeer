@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ClipboardButtonComponent } from '../../../../common/components/clipboard-button/clipboard-button.component';
 import { TimestampDirective } from '../../../../common/directives/timestamp.directive';
@@ -19,6 +19,5 @@ import { Post } from '../../models/post.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PostCardComponent {
-  @Input({ required: true })
-  post!: Post;
+  post = input.required<Post>();
 }

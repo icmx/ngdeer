@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Inject, Injectable } from '@angular/core';
+import { inject, Inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { BASE_URL } from '../../../common/providers/base-url.provider';
 import { RequestOptions } from '../../../common/types/request-options.type';
@@ -30,11 +30,9 @@ export type GetPostsRandomRequestOptions = RequestOptions<{
   providedIn: 'root',
 })
 export class PostsApiService {
-  constructor(
-    private _http: HttpClient,
-    @Inject(BASE_URL)
-    private _baseUrl: string,
-  ) {}
+  private _http = inject(HttpClient);
+
+  private _baseUrl = inject(BASE_URL);
 
   getPost(postId: string): Observable<WithApiPost> {
     return this._http.get<WithApiPost>(`${this._baseUrl}/posts/${postId}`);

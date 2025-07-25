@@ -1,7 +1,9 @@
+@let commentValue = comment();
+
 <header>
-  <span>{{ comment.username }}</span>
-  <time [timestamp]="comment.timestamp"></time>
+  <span>{{ commentValue.username }}</span>
+  <time [timestamp]="commentValue.timestamp"></time>
 </header>
 <section>
-  {{ comment.text }}
+  {{ commentValue.text }}
 </section>

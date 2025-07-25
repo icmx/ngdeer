@@ -1,15 +1,17 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { AsyncPipe } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  OnInit,
+} from '@angular/core';
 import { LoadingStubComponent } from '../../../../common/components/loading-stub/loading-stub.component';
 import { CategoryCardComponent } from '../../components/category-card/category-card.component';
-import { CategoriesService } from '../../services/categories.service';
+import { CategoriesStateService } from '../../services/categories-state.service';
 
 @Component({
   selector: 'ngd-categories-page',
   imports: [
-    // Angular Imports
-    AsyncPipe,
-
     // Internal Imports
     LoadingStubComponent,
     CategoryCardComponent,
@@ -19,13 +21,15 @@ import { CategoriesService } from '../../services/categories.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CategoriesPageComponent implements OnInit {
-  categories$ = this._categoriesService.selectEntries();
+  private _categoriesStateService = inject(CategoriesStateService);
 
-  isLoading$ = this._categoriesService.selectLoading();
+  categoriesSignal = computed(
+    () => this._categoriesStateService.state().entries,
+  );
 
-  constructor(private _categoriesService: CategoriesService) {}
+  loadingSignal = computed(() => this._categoriesStateService.state().loading);
 
   ngOnInit(): void {
-    this._categoriesService.startLoading();
+    this._categoriesStateService.load();
   }
 }

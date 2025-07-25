@@ -5,21 +5,21 @@ import {
   withComponentInputBinding,
   withInMemoryScrolling,
 } from '@angular/router';
-import { provideStore } from '@ngxs/store';
-import { withNgxsStoragePlugin } from '@ngxs/storage-plugin';
 import { provideBaseTitle } from './common/providers/base-title.provider';
 import { provideBaseUrl } from './common/providers/base-url.provider';
 import { provideClipboard } from './common/providers/clipboard.provider';
 import { provideDocumentDataset } from './common/providers/document-dataset.provider';
+import { provideLocalStorage } from './common/providers/local-storage.provider';
 import { provideWindow } from './common/providers/window.provider';
-import { SettingsState } from './common/states/settings.state';
-import { CategoriesState } from './features/categories/states/categories.state';
-import { CommentsState } from './features/comments/states/comments.state';
-import { CategoryPostsState } from './features/posts/states/category-posts.state';
-import { LatestPostsState } from './features/posts/states/latest-posts.state';
-import { RandomPostsState } from './features/posts/states/random-posts.state';
-import { SearchPostsState } from './features/posts/states/search-posts.state';
-import { PostState } from './features/posts/states/post.state';
+import { SettingsStateService } from './common/services/settings-state.service';
+import { ThemesService } from './common/services/themes.service';
+import { CategoriesStateService } from './features/categories/services/categories-state.service';
+import { CommentsStateService } from './features/comments/services/comments-state.service';
+import { CategoryPostsStateService } from './features/posts/services/category-posts-state.service';
+import { LatestPostsStateService } from './features/posts/services/latest-posts-state.service';
+import { PostStateService } from './features/posts/services/post-state.service';
+import { RandomPostsStateService } from './features/posts/services/random-posts-state.service';
+import { SearchPostsStateService } from './features/posts/services/search-posts-state.service';
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
@@ -35,24 +35,21 @@ export const appConfig: ApplicationConfig = {
       }),
     ),
     provideHttpClient(),
-    provideStore(
-      [
-        SettingsState,
-        CategoriesState,
-        CommentsState,
-        LatestPostsState,
-        RandomPostsState,
-        CategoryPostsState,
-        SearchPostsState,
-        PostState,
-      ],
-      withNgxsStoragePlugin({ keys: [SettingsState], namespace: 'ngdeer' }),
-    ),
     provideBaseTitle(),
     provideBaseUrl('https://podslyshano.com/api/v3.5'),
     provideClipboard(),
     provideDocumentDataset(),
     provideWindow(),
+    provideLocalStorage(),
+    ThemesService,
+    SettingsStateService,
+    CategoriesStateService,
+    PostStateService,
+    CommentsStateService,
+    LatestPostsStateService,
+    RandomPostsStateService,
+    CategoryPostsStateService,
+    SearchPostsStateService,
   ],
 };
 

@@ -1,12 +1,19 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  DestroyRef,
+  inject,
+  OnInit,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { AsyncPipe } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { tap } from 'rxjs';
 import { CaptionComponent } from '../../components/caption/caption.component';
 import { ControlComponent } from '../../components/control/control.component';
 import { FieldComponent } from '../../components/field/field.component';
 import { Theme } from '../../enums/theme.enum';
-import { SettingsService } from '../../services/settings.service';
+import { SettingsStateService } from '../../services/settings-state.service';
 import { ThemesService } from '../../services/themes.service';
 
 export class SettingsPageComponentFormGroup extends FormGroup<{
@@ -22,7 +29,7 @@ export class SettingsPageComponentFormGroup extends FormGroup<{
 @Component({
   selector: 'ngd-settings-page',
   imports: [
-    AsyncPipe,
+    // Angular Imports
     ReactiveFormsModule,
     FieldComponent,
     CaptionComponent,
@@ -32,22 +39,30 @@ export class SettingsPageComponentFormGroup extends FormGroup<{
   styleUrl: './settings-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SettingsPageComponent {
-  themes$ = this._themesService.getThemes();
+export class SettingsPageComponent implements OnInit {
+  private _destroyRef = inject(DestroyRef);
+
+  private _settingsStateService = inject(SettingsStateService);
+
+  private _themesService = inject(ThemesService);
+
+  themesSignal = computed(() => this._themesService.value());
 
   formGroup = new SettingsPageComponentFormGroup();
 
-  constructor(
-    private _settingsService: SettingsService,
-    private _themesService: ThemesService,
-  ) {
-    const value = this._settingsService.getSettings();
+  constructor() {
+    const value = this._settingsStateService.state();
     this.formGroup.setValue(value, { emitEvent: false });
+  }
 
-    this.formGroup.controls.theme.valueChanges
-      .pipe(takeUntilDestroyed())
-      .subscribe((theme) => {
-        this._settingsService.setSettings({ theme });
-      });
+  ngOnInit(): void {
+    this.formGroup.valueChanges
+      .pipe(
+        tap((value) => {
+          this._settingsStateService.setState({ theme: Theme.Light, ...value });
+        }),
+        takeUntilDestroyed(this._destroyRef),
+      )
+      .subscribe();
   }
 }

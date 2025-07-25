@@ -6,7 +6,7 @@ Check it on **[ngdeer.netlify.app](https://ngdeer.netlify.app/)!**
 
 ## Features
 
-  - Built with [Angular 19](https://angular.dev/)
+  - Built with [Angular 20](https://angular.dev/)
   - Uses official ideer API
   - Nearly-classic experience: latest and random stories, categories and search, comments
   - Infinite scroll loading for stories and comments pages

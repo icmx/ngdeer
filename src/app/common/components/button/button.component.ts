@@ -1,8 +1,9 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  effect,
   HostBinding,
-  Input,
+  input,
 } from '@angular/core';
 
 export type NgdButtonAppearance = 'default' | 'icon' | 'section';
@@ -15,9 +16,12 @@ export type NgdButtonAppearance = 'default' | 'icon' | 'section';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ButtonComponent {
-  @Input()
-  set appearance(appearance: NgdButtonAppearance) {
-    this.className = appearance;
+  appearance = input<NgdButtonAppearance>('default');
+
+  constructor() {
+    effect(() => {
+      this.className = this.appearance();
+    });
   }
 
   @HostBinding('class')

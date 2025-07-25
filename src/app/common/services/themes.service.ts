@@ -1,17 +1,14 @@
-import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Injectable, signal } from '@angular/core';
 import { Theme } from '../enums/theme.enum';
 import { ThemeItem } from '../types/theme-item.type';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class ThemesService {
-  getThemes(): Observable<ThemeItem[]> {
-    return of([
-      { text: 'Как в системе', value: Theme.System },
-      { text: 'Светлая', value: Theme.Light },
-      { text: 'Темная', value: Theme.Dark },
-    ]);
-  }
+  private _value = signal<ThemeItem[]>([
+    { text: 'Как в системе', value: Theme.System },
+    { text: 'Светлая', value: Theme.Light },
+    { text: 'Темная', value: Theme.Dark },
+  ]);
+
+  value = this._value.asReadonly();
 }
