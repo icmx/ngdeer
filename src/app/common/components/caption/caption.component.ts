@@ -1,13 +1,15 @@
-import { ChangeDetectionStrategy, Component, HostBinding } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
   imports: [],
   selector: 'label[ngdCaption]',
   templateUrl: './caption.component.html',
   styleUrl: './caption.component.scss',
+  host: {
+    '[attr.for]': 'attrFor',
+  },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CaptionComponent {
-  @HostBinding('attr.for')
-  attrFor: null | string = null;
+  attrFor: string | null = null;
 }

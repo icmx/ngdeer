@@ -2,8 +2,6 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
-  HostBinding,
-  HostListener,
   inject,
   ViewChild,
   ViewContainerRef,
@@ -15,6 +13,11 @@ import { DialogRef } from '../../classes/dialog-ref.class';
   selector: 'dialog[ngd-dialog]',
   templateUrl: './dialog.component.html',
   styleUrl: './dialog.component.scss',
+  host: {
+    '[attr.open]': 'attrOpen',
+    '(document:keydown.escape)': 'handleEscapeKeydown()',
+    '(click)': 'handleClick($event)',
+  },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DialogComponent<TComponent, TResult> {
@@ -25,15 +28,12 @@ export class DialogComponent<TComponent, TResult> {
   @ViewChild('dialogContent', { read: ViewContainerRef, static: true })
   viewContainerRef!: ViewContainerRef;
 
-  @HostBinding('attr.open')
   attrOpen = 'open';
 
-  @HostListener('document:keydown.escape')
   handleEscapeKeydown(): void {
     this._dialogRef.close(null);
   }
 
-  @HostListener('click', ['$event'])
   handleClick($event: MouseEvent): void {
     const isBackdropClicked = $event.target === this._elementRef.nativeElement;
 
