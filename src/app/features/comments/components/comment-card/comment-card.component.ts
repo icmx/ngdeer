@@ -3,11 +3,11 @@ import { TimestampDirective } from '../../../../common/directives/timestamp.dire
 import { Comment } from '../../models/comment.model';
 
 @Component({
-  selector: 'ngd-comment-card',
   imports: [
     // Internal Imports
     TimestampDirective,
   ],
+  selector: 'ngd-comment-card',
   templateUrl: './comment-card.component.html',
   styleUrl: './comment-card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

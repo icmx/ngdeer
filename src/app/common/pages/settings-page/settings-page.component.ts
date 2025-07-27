@@ -27,7 +27,6 @@ export class SettingsPageComponentFormGroup extends FormGroup<{
 }
 
 @Component({
-  selector: 'ngd-settings-page',
   imports: [
     // Angular Imports
     ReactiveFormsModule,
@@ -35,6 +34,7 @@ export class SettingsPageComponentFormGroup extends FormGroup<{
     CaptionComponent,
     ControlComponent,
   ],
+  selector: 'ngd-settings-page',
   templateUrl: './settings-page.component.html',
   styleUrl: './settings-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

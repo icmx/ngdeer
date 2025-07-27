@@ -10,12 +10,12 @@ import { CategoryCardComponent } from '../../components/category-card/category-c
 import { CategoriesStateService } from '../../services/categories-state.service';
 
 @Component({
-  selector: 'ngd-categories-page',
   imports: [
     // Internal Imports
     LoadingStubComponent,
     CategoryCardComponent,
   ],
+  selector: 'ngd-categories-page',
   templateUrl: './categories-page.component.html',
   styleUrl: './categories-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

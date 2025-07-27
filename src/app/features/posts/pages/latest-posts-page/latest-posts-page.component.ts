@@ -14,12 +14,12 @@ import { PostCardComponent } from '../../components/post-card/post-card.componen
 import { LatestPostsStateService } from '../../services/latest-posts-state.service';
 
 @Component({
-  selector: 'ngd-latest-posts-page',
   imports: [
     // Internal Imports
     LoadingStubComponent,
     PostCardComponent,
   ],
+  selector: 'ngd-latest-posts-page',
   templateUrl: './latest-posts-page.component.html',
   styleUrl: './latest-posts-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, HostBinding } from '@angular/core';
 
 @Component({
-  selector: 'label[ngdCaption]',
   imports: [],
+  selector: 'label[ngdCaption]',
   templateUrl: './caption.component.html',
   styleUrl: './caption.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

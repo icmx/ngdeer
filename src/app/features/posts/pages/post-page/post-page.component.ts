@@ -18,13 +18,13 @@ import { CommentsStateService } from '../../../comments/services/comments-state.
 import { CommentsLoading } from '../../../comments/enums/comments-loading.enum';
 
 @Component({
-  selector: 'ngd-post-page',
   imports: [
     // Internal Imports
     PostCardComponent,
     CommentsBranchComponent,
     LoadingStubComponent,
   ],
+  selector: 'ngd-post-page',
   templateUrl: './post-page.component.html',
   styleUrl: './post-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

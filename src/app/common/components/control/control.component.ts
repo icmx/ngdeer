@@ -2,8 +2,8 @@ import { ChangeDetectionStrategy, Component, HostBinding } from '@angular/core';
 import { createId } from '../../utils/get-id.util';
 
 @Component({
-  selector: 'input[ngdControl],select[ngdControl]',
   imports: [],
+  selector: 'input[ngdControl],select[ngdControl]',
   templateUrl: './control.component.html',
   styleUrl: './control.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

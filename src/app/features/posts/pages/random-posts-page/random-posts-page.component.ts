@@ -14,12 +14,12 @@ import { PostCardComponent } from '../../components/post-card/post-card.componen
 import { RandomPostsStateService } from '../../services/random-posts-state.service';
 
 @Component({
-  selector: 'ngd-random-posts-page',
   imports: [
     // Internal Imports
     LoadingStubComponent,
     PostCardComponent,
   ],
+  selector: 'ngd-random-posts-page',
   templateUrl: './random-posts-page.component.html',
   styleUrl: './random-posts-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

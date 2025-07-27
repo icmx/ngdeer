@@ -8,8 +8,8 @@ import { CaptionComponent } from '../../components/caption/caption.component';
 import { ControlComponent } from '../../components/control/control.component';
 
 @Component({
-  selector: 'ngd-field',
   imports: [],
+  selector: 'ngd-field',
   templateUrl: './field.component.html',
   styleUrl: './field.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

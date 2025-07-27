@@ -12,13 +12,13 @@ import { Comment } from '../../models/comment.model';
 import { CommentCardComponent } from '../comment-card/comment-card.component';
 
 @Component({
-  selector: 'ngd-comments-branch',
   imports: [
     // Internal Imports
     ButtonComponent,
     LoadingStubComponent,
     CommentCardComponent,
   ],
+  selector: 'ngd-comments-branch',
   templateUrl: './comments-branch.component.html',
   styleUrl: './comments-branch.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

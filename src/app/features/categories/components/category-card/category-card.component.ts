@@ -3,11 +3,11 @@ import { RouterLink } from '@angular/router';
 import { Category } from '../../models/category.model';
 
 @Component({
-  selector: 'ngd-category-card',
   imports: [
     // Angular Imports
     RouterLink,
   ],
+  selector: 'ngd-category-card',
   templateUrl: './category-card.component.html',
   styleUrl: './category-card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

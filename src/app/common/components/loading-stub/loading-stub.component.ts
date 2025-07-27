@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
-  selector: 'ngd-loading-stub',
   imports: [],
+  selector: 'ngd-loading-stub',
   templateUrl: './loading-stub.component.html',
   styleUrl: './loading-stub.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

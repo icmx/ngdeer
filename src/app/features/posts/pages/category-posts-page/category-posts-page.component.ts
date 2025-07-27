@@ -15,12 +15,12 @@ import { PostCardComponent } from '../../components/post-card/post-card.componen
 import { CategoryPostsStateService } from '../../services/category-posts-state.service';
 
 @Component({
-  selector: 'ngd-category-posts-page',
   imports: [
     // Internal Imports
     LoadingStubComponent,
     PostCardComponent,
   ],
+  selector: 'ngd-category-posts-page',
   templateUrl: './category-posts-page.component.html',
   styleUrl: './category-posts-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

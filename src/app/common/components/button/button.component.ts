@@ -9,8 +9,8 @@ import {
 export type NgdButtonAppearance = 'default' | 'icon' | 'section';
 
 @Component({
-  selector: 'button[ngd-button]',
   imports: [],
+  selector: 'button[ngd-button]',
   templateUrl: './button.component.html',
   styleUrl: './button.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

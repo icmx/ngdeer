@@ -13,8 +13,8 @@ import { delay, exhaustMap, from, of, tap } from 'rxjs';
 import { CLIPBOARD } from '../../providers/clipboard.provider';
 
 @Component({
-  selector: 'button[ngd-clipboard-button]',
   imports: [],
+  selector: 'button[ngd-clipboard-button]',
   templateUrl: './clipboard-button.component.html',
   styleUrl: './clipboard-button.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

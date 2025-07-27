@@ -35,7 +35,6 @@ export class SearchPostsPageComponentFormGroup extends FormGroup<{
 }
 
 @Component({
-  selector: 'ngd-search-posts-page',
   imports: [
     // Angular Imports
     ReactiveFormsModule,
@@ -48,6 +47,7 @@ export class SearchPostsPageComponentFormGroup extends FormGroup<{
     LoadingStubComponent,
     PostCardComponent,
   ],
+  selector: 'ngd-search-posts-page',
   templateUrl: './search-posts-page.component.html',
   styleUrl: './search-posts-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

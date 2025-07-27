@@ -7,13 +7,13 @@ import { SearchPostsStateService } from './features/posts/services/search-posts-
 import { APP_LINKS } from './app.config';
 
 @Component({
-  selector: 'ngd-root',
   imports: [
     // Angular Imports
     RouterLink,
     RouterLinkActive,
     RouterOutlet,
   ],
+  selector: 'ngd-root',
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
