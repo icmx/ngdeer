@@ -51,8 +51,9 @@ export class SettingsPageComponent implements OnInit {
   formGroup = new SettingsPageComponentFormGroup();
 
   constructor() {
-    const value = this._settingsStateService.state();
-    this.formGroup.setValue(value, { emitEvent: false });
+    const state = this._settingsStateService.state();
+
+    this.formGroup.controls.theme.setValue(state.theme);
   }
 
   ngOnInit(): void {
