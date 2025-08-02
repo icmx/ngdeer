@@ -8,6 +8,9 @@ import {
 } from '@angular/core';
 import { DialogRef } from '../../classes/dialog-ref.class';
 
+/**
+ * @todo Add 'appearance' option to configure shell appearance (toast or window e.g.)
+ */
 @Component({
   imports: [],
   selector: 'dialog[ngd-dialog]',
@@ -15,13 +18,13 @@ import { DialogRef } from '../../classes/dialog-ref.class';
   styleUrl: './dialog.component.scss',
   host: {
     '[attr.open]': 'attrOpen',
+    '(document:click)': 'handleClick($event)',
     '(document:keydown.escape)': 'handleEscapeKeydown()',
-    '(click)': 'handleClick($event)',
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DialogComponent<TComponent, TResult> {
-  private _elementRef = inject(ElementRef);
+  private _elementRef = inject<ElementRef<HTMLDialogElement>>(ElementRef);
 
   private _dialogRef = inject<DialogRef<TComponent, TResult>>(DialogRef);
 
@@ -35,7 +38,9 @@ export class DialogComponent<TComponent, TResult> {
   }
 
   handleClick($event: MouseEvent): void {
-    const isBackdropClicked = $event.target === this._elementRef.nativeElement;
+    const target = $event.target instanceof Node ? $event.target : null;
+    const contains = this._elementRef.nativeElement.contains(target);
+    const isBackdropClicked = !contains;
 
     if (isBackdropClicked) {
       this._dialogRef.close(null);

@@ -1,7 +1,29 @@
-// @todo: This should NOT be styled for now
-
 :host {
+  display: block;
+  padding: 0;
+  border: 0;
+
   position: fixed;
-  top: 0;
   left: 0;
+  top: 0;
+}
+
+.shell {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 2rem;
+
+  max-width: 32rem;
+
+  margin: 0 auto;
+  padding: 0 1rem;
+
+  border: solid 1px var(--field-border-color);
+  border-radius: 1.5rem;
+
+  color: var(--color);
+  background-color: var(--background-color);
+
+  box-shadow: 0 0 64px 4px rgba(0, 0, 0, 0.3);
 }

@@ -59,7 +59,10 @@ export class SettingsPageComponent implements OnInit {
     this.formGroup.valueChanges
       .pipe(
         tap((value) => {
-          this._settingsStateService.setState({ theme: Theme.Light, ...value });
+          this._settingsStateService.setState((state) => ({
+            ...state,
+            ...value,
+          }));
         }),
         takeUntilDestroyed(this._destroyRef),
       )

@@ -5,6 +5,7 @@ import { LOCAL_STORAGE } from '../providers/local-storage.provider';
 
 export type SettingsStateModel = {
   theme: Theme;
+  isDisclaimerShown: boolean;
 };
 
 @Injectable()
@@ -44,8 +45,8 @@ export class SettingsStateService {
     this._localStorage.setItem('ngdeer:settings', storageItem);
   }
 
-  setState(nextState: SettingsStateModel): void {
-    this._state.update((prevState) => ({ ...prevState, ...nextState }));
+  setState(update: (state: SettingsStateModel) => SettingsStateModel): void {
+    this._state.update(update);
 
     const state = this._state();
 
