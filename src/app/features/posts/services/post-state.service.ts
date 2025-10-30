@@ -6,11 +6,6 @@ import { extractPostFromReply } from '../operators/extract-post-from-reply.opera
 import { PostsApiService } from './posts-api.service';
 import { PostsCacheService } from './posts-cache.service';
 
-export type PostStateModel = {
-  loading: boolean;
-  entry: Post | undefined;
-};
-
 @Injectable()
 export class PostStateService {
   private _destroyRef = inject(DestroyRef);
@@ -19,18 +14,20 @@ export class PostStateService {
 
   private _postsCacheService = inject(PostsCacheService);
 
-  private _state = signal<PostStateModel>({
-    loading: false,
-    entry: undefined,
-  });
+  private _isLoading = signal<boolean>(false);
 
-  state = this._state.asReadonly();
+  private _entry = signal<Post | null>(null);
+
+  isLoading = this._isLoading.asReadonly();
+
+  entry = this._entry.asReadonly();
 
   load(postId: string): void {
     of(null)
       .pipe(
         tap(() => {
-          this._state.update(() => ({ loading: true, entry: undefined }));
+          this._isLoading.set(true);
+          this._entry.set(null);
         }),
         concatMap(() => {
           const cachedEntry = this._postsCacheService.get(postId);
@@ -44,7 +41,8 @@ export class PostStateService {
             .pipe(extractPostFromReply());
         }),
         tap((entry) => {
-          this._state.update(() => ({ loading: false, entry }));
+          this._isLoading.set(false);
+          this._entry.set(entry);
         }),
         takeUntilDestroyed(this._destroyRef),
       )

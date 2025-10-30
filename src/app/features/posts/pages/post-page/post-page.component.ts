@@ -40,7 +40,7 @@ export class PostPageComponent implements OnInit {
 
   postId = input.required<string>();
 
-  post = computed(() => this._postStateService.state().entry);
+  post = computed(() => this._postStateService.entry());
 
   comments = computed(() => {
     const postId = this.postId();
@@ -50,9 +50,9 @@ export class PostPageComponent implements OnInit {
       .filter((entry) => entry.rootId === null && entry.postId === postId);
   });
 
-  loading = computed(() => {
+  isLoading = computed(() => {
     return (
-      this._postStateService.state().loading ||
+      this._postStateService.isLoading() ||
       this._commentsStateService.isLoadingBy()[CommentsLoading.Root]
     );
   });

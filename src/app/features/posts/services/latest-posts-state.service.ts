@@ -7,12 +7,6 @@ import { extractPostsFromReply } from '../operators/extract-posts-from-reply.ope
 import { PostsApiService } from './posts-api.service';
 import { PostsCacheService } from './posts-cache.service';
 
-export type LatestPostsStateModel = {
-  loading: boolean;
-  done: boolean;
-  entries: Post[];
-};
-
 @Injectable()
 export class LatestPostsStateService {
   private _destroyRef = inject(DestroyRef);
