@@ -34,11 +34,9 @@ export class CategoryPostsPageComponent implements OnInit {
 
   categoryId = input.required<string>();
 
-  posts = computed(() => this._categoryPostsStateService.state().entries);
+  posts = computed(() => this._categoryPostsStateService.entries());
 
-  loading = computed(
-    () => this._categoryPostsStateService.state().loading,
-  );
+  loading = computed(() => this._categoryPostsStateService.isLoading());
 
   ngOnInit(): void {
     const categoryId = this.categoryId();
