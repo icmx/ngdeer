@@ -70,7 +70,7 @@ export class SearchPostsPageComponent implements OnInit {
   categories = computed(() => {
     return [
       { id: '', postsLink: '', text: 'Без категории' },
-      ...this._categoriesStateService.state().entries,
+      ...this._categoriesStateService.entries(),
     ];
   });
 
@@ -78,7 +78,7 @@ export class SearchPostsPageComponent implements OnInit {
 
   loading = computed(() => {
     return (
-      this._categoriesStateService.state().loading ||
+      this._categoriesStateService.isLoading ||
       this._searchPostsStateService.state().loading
     );
   });
