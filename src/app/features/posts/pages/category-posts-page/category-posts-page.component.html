@@ -1,7 +1,7 @@
-@for (post of postsSignal(); track post.id) {
+@for (post of posts(); track post.id) {
   <ngd-post-card [post]="post" />
 }
 
-@if (loadingSignal()) {
+@if (loading()) {
   <ngd-loading-stub />
 }

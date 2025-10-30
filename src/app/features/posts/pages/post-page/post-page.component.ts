@@ -40,9 +40,9 @@ export class PostPageComponent implements OnInit {
 
   postId = input.required<string>();
 
-  postSignal = computed(() => this._postStateService.state().entry);
+  post = computed(() => this._postStateService.state().entry);
 
-  commentsSignal = computed(() => {
+  comments = computed(() => {
     const postId = this.postId();
 
     return this._commentsStateService
@@ -52,7 +52,7 @@ export class PostPageComponent implements OnInit {
       );
   });
 
-  loadingSignal = computed(() => {
+  loading = computed(() => {
     return (
       this._postStateService.state().loading ||
       this._commentsStateService.state().loading[CommentsLoading.Root]

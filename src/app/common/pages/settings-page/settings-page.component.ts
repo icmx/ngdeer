@@ -46,7 +46,7 @@ export class SettingsPageComponent implements OnInit {
 
   private _themesService = inject(ThemesService);
 
-  themesSignal = computed(() => this._themesService.value());
+  themes = computed(() => this._themesService.value());
 
   formGroup = new SettingsPageComponentFormGroup();
 

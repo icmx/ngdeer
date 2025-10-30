@@ -36,11 +36,11 @@ export class CommentsBranchComponent {
       .entries.filter((entry) => entry.rootId === rootCommentId);
   });
 
-  loadingSignal = computed(() => {
+  loading = computed(() => {
     return this._commentsStateService.state().loading[this.rootComment().id];
   });
 
-  shouldShowLoadMoreButtonSignal = computed(() => {
+  shouldShowLoadMoreButton = computed(() => {
     const rootCommentId = this.rootComment().id;
     const { loading, done } = this._commentsStateService.state();
 

@@ -23,11 +23,11 @@ import { CategoriesStateService } from '../../services/categories-state.service'
 export class CategoriesPageComponent implements OnInit {
   private _categoriesStateService = inject(CategoriesStateService);
 
-  categoriesSignal = computed(
+  categories = computed(
     () => this._categoriesStateService.state().entries,
   );
 
-  loadingSignal = computed(() => this._categoriesStateService.state().loading);
+  loading = computed(() => this._categoriesStateService.state().loading);
 
   ngOnInit(): void {
     this._categoriesStateService.load();

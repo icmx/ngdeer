@@ -67,16 +67,16 @@ export class SearchPostsPageComponent implements OnInit {
 
   formGroup = new SearchPostsPageComponentFormGroup();
 
-  categoriesSignal = computed(() => {
+  categories = computed(() => {
     return [
       { id: '', postsLink: '', text: 'Без категории' },
       ...this._categoriesStateService.state().entries,
     ];
   });
 
-  postsSignal = computed(() => this._searchPostsStateService.state().entries);
+  posts = computed(() => this._searchPostsStateService.state().entries);
 
-  loadingSignal = computed(() => {
+  loading = computed(() => {
     return (
       this._categoriesStateService.state().loading ||
       this._searchPostsStateService.state().loading

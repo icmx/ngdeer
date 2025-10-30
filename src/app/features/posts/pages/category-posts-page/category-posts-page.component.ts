@@ -34,9 +34,9 @@ export class CategoryPostsPageComponent implements OnInit {
 
   categoryId = input.required<string>();
 
-  postsSignal = computed(() => this._categoryPostsStateService.state().entries);
+  posts = computed(() => this._categoryPostsStateService.state().entries);
 
-  loadingSignal = computed(
+  loading = computed(
     () => this._categoryPostsStateService.state().loading,
   );
 
