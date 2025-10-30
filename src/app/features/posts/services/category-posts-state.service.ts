@@ -6,12 +6,6 @@ import { extractPostsFromReply } from '../operators/extract-posts-from-reply.ope
 import { GetPostsRequestOptions, PostsApiService } from './posts-api.service';
 import { PostsCacheService } from './posts-cache.service';
 
-export type CategoryPostsStateModel = {
-  loading: boolean;
-  done: boolean;
-  entries: Post[];
-};
-
 @Injectable()
 export class CategoryPostsStateService {
   private _destroyRef = inject(DestroyRef);
@@ -75,8 +69,6 @@ export class CategoryPostsStateService {
   }
 
   loadMore(categoryId: string): void {
-    // const { loading, done } = this._state();
-
     if (this._isLoading() || this._isDone()) {
       return;
     }

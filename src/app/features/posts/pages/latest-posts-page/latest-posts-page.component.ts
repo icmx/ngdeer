@@ -31,9 +31,9 @@ export class LatestPostsPageComponent implements OnInit {
 
   private _latestPostsStateService = inject(LatestPostsStateService);
 
-  posts = computed(() => this._latestPostsStateService.state().entries);
+  posts = computed(() => this._latestPostsStateService.entries());
 
-  loading = computed(() => this._latestPostsStateService.state().loading);
+  isLoading = computed(() => this._latestPostsStateService.isLoading());
 
   ngOnInit(): void {
     this._windowScrollService.scrollToBottom$
