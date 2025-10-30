@@ -32,23 +32,22 @@ export class CommentsBranchComponent {
     const rootCommentId = this.rootComment().id;
 
     return this._commentsStateService
-      .state()
-      .entries.filter((entry) => entry.rootId === rootCommentId);
+      .entries()
+      .filter((entry) => entry.rootId === rootCommentId);
   });
 
   loading = computed(() => {
-    return this._commentsStateService.state().loading[this.rootComment().id];
+    return this._commentsStateService.isLoadingBy()[this.rootComment().id];
   });
 
   shouldShowLoadMoreButton = computed(() => {
     const rootCommentId = this.rootComment().id;
-    const { loading, done } = this._commentsStateService.state();
 
-    if (loading[rootCommentId]) {
+    if (this._commentsStateService.isLoadingBy()[rootCommentId]) {
       return false;
     }
 
-    if (done[rootCommentId]) {
+    if (this._commentsStateService.isDoneBy()[rootCommentId]) {
       return false;
     }
 
