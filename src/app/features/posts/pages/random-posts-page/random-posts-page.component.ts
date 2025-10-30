@@ -31,9 +31,9 @@ export class RandomPostsPageComponent implements OnInit {
 
   private _randomPostsStateService = inject(RandomPostsStateService);
 
-  posts = computed(() => this._randomPostsStateService.state().entries);
+  posts = computed(() => this._randomPostsStateService.entries());
 
-  loading = computed(() => this._randomPostsStateService.state().loading);
+  isLoading = computed(() => this._randomPostsStateService.isLoading());
 
   ngOnInit(): void {
     this._windowScrollService.scrollToBottom$

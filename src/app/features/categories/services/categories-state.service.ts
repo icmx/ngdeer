@@ -17,9 +17,9 @@ export class CategoriesStateService {
 
   private _categoriesApiService = inject(CategoriesApiService);
 
-  private _isLoading = signal<boolean>(false);
+  private _isLoading = signal(false);
 
-  private _isDone = signal<boolean>(false);
+  private _isDone = signal(false);
 
   private _entries = signal<Category[]>([]);
 

@@ -14,9 +14,9 @@ export class CategoryPostsStateService {
 
   private _postsCacheService = inject(PostsCacheService);
 
-  private _isLoading = signal<boolean>(false);
+  private _isLoading = signal(false);
 
-  private _isDone = signal<boolean>(false);
+  private _isDone = signal(false);
 
   private _entries = signal<Post[]>([]);
 

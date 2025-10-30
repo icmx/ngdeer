@@ -14,7 +14,7 @@ export class PostStateService {
 
   private _postsCacheService = inject(PostsCacheService);
 
-  private _isLoading = signal<boolean>(false);
+  private _isLoading = signal(false);
 
   private _entry = signal<Post | null>(null);
 
