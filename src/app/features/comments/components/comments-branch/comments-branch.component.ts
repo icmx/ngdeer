@@ -36,7 +36,7 @@ export class CommentsBranchComponent {
       .filter((entry) => entry.rootId === rootCommentId);
   });
 
-  loading = computed(() => {
+  isLoading = computed(() => {
     return this._commentsStateService.isLoadingBy()[this.rootComment().id];
   });
 

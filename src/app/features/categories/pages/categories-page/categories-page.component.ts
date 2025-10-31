@@ -25,7 +25,7 @@ export class CategoriesPageComponent implements OnInit {
 
   categories = computed(() => this._categoriesStateService.entries());
 
-  loading = computed(() => this._categoriesStateService.isLoading());
+  isLoading = computed(() => this._categoriesStateService.isLoading());
 
   ngOnInit(): void {
     this._categoriesStateService.load();

@@ -74,12 +74,12 @@ export class SearchPostsPageComponent implements OnInit {
     ];
   });
 
-  posts = computed(() => this._searchPostsStateService.state().entries);
+  posts = computed(() => this._searchPostsStateService.entries());
 
-  loading = computed(() => {
+  isLoading = computed(() => {
     return (
-      this._categoriesStateService.isLoading ||
-      this._searchPostsStateService.state().loading
+      this._categoriesStateService.isLoading() ||
+      this._searchPostsStateService.isLoading()
     );
   });
 

@@ -11,12 +11,6 @@ import {
 } from '../services/posts-api.service';
 import { PostsCacheService } from '../services/posts-cache.service';
 
-export type SearchPostsStateModel = {
-  loading: boolean;
-  done: boolean;
-  entries: Post[];
-};
-
 @Injectable()
 export class SearchPostsStateService {
   private _destroyRef = inject(DestroyRef);
@@ -25,26 +19,30 @@ export class SearchPostsStateService {
 
   private _postsCacheService = inject(PostsCacheService);
 
-  private _state = signal<SearchPostsStateModel>({
-    loading: false,
-    done: false,
-    entries: [],
-  });
+  private _isLoading = signal(false);
 
-  state = this._state.asReadonly();
+  private _isDone = signal(false);
+
+  private _entries = signal<Post[]>([]);
+
+  isLoading = this._isLoading.asReadonly();
+
+  isDone = this._isDone.asReadonly();
+
+  entries = this._entries.asReadonly();
 
   private _load(params: WithText & WithCategoryId): void {
     of(null)
       .pipe(
         tap(() => {
-          this._state.update((state) => ({ ...state, loading: true }));
+          this._isLoading.set(true);
         }),
         concatMap(() => {
           const options: GetPostsRequestOptions = {
             params: {},
           };
 
-          const from = this._state().entries.at(-1)?.id;
+          const from = this._entries().at(-1)?.id;
 
           if (from) {
             options.params = { ...options.params, from: from };
@@ -70,11 +68,9 @@ export class SearchPostsStateService {
         tap((entries) => {
           this._postsCacheService.add(...entries);
 
-          this._state.update((state) => ({
-            loading: false,
-            done: entries.length === 0,
-            entries: [...state.entries, ...entries],
-          }));
+          this._isLoading.set(false);
+          this._isDone.set(entries.length === 0);
+          this._entries.update((prevEntries) => [...prevEntries, ...entries]);
         }),
         takeUntilDestroyed(this._destroyRef),
       )
@@ -86,9 +82,7 @@ export class SearchPostsStateService {
   }
 
   loadMore(params: WithText & WithCategoryId): void {
-    const { loading, done } = this._state();
-
-    if (loading || done) {
+    if (this._isLoading() || this._isDone()) {
       return;
     }
 
@@ -96,6 +90,8 @@ export class SearchPostsStateService {
   }
 
   drop(): void {
-    this._state.set({ loading: false, done: false, entries: [] });
+    this._isLoading.set(false);
+    this._isDone.set(false);
+    this._entries.set([]);
   }
 }
