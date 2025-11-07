@@ -1,0 +1,22 @@
+<header>{{ user.fullname }}</header>
+<section>
+  @if (user.bio; as bio) {
+    <p class="bio-row">
+      {{ bio }}
+    </p>
+  }
+
+  @if (user.location; as location) {
+    <p class="location-row">Откуда: {{ location }}</p>
+  }
+</section>
+<footer>
+  <button
+    type="button"
+    ngd-button
+    appearance="default"
+    (click)="handleButtonClick()"
+  >
+    Закрыть
+  </button>
+</footer>

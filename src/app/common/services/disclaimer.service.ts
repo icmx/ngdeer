@@ -24,7 +24,9 @@ export class DisclaimerService {
           return !isDisclaimerShown;
         }),
         exhaustMap(() => {
-          return this._dialogService.open(DisclaimerComponent).afterClosed();
+          return this._dialogService
+            .open(DisclaimerComponent, { config: { appearance: 'toast' } })
+            .afterClosed();
         }),
         tap(() => {
           this._settingsStateService.setState((state) => ({

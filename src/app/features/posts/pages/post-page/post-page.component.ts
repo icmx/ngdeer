@@ -45,9 +45,9 @@ export class PostPageComponent implements OnInit {
   comments = computed(() => {
     const postId = this.postId();
 
-    return this._commentsStateService
-      .entries()
-      .filter((entry) => entry.rootId === null && entry.postId === postId);
+    return this._commentsStateService.entries().filter((entry) => {
+      return entry.rootId === null && entry.postId === postId;
+    });
   });
 
   isLoading = computed(() => {

@@ -10,7 +10,7 @@ export const extractPostsFromReply = () => {
       map((reply) => {
         return (reply.posts || [])
           .filter((post) => post.type === ApiPostType.Post && !!post.note)
-          .map(toPost());
+          .map(toPost);
       }),
     );
   };

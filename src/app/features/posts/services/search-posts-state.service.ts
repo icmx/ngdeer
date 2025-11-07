@@ -5,11 +5,11 @@ import { WithCategoryId } from '../../../common/types/with-category-id.type';
 import { WithText } from '../../../common/types/with-text.type';
 import { Post } from '../models/post.model';
 import { extractPostsFromReply } from '../operators/extract-posts-from-reply.operator';
+import { POST_ENTRIES_CACHE_SERVICE } from '../providers/post-entries-cache-service.provider';
 import {
   GetPostsRequestOptions,
   PostsApiService,
 } from '../services/posts-api.service';
-import { PostsCacheService } from '../services/posts-cache.service';
 
 @Injectable()
 export class SearchPostsStateService {
@@ -17,7 +17,7 @@ export class SearchPostsStateService {
 
   private _postsApiService = inject(PostsApiService);
 
-  private _postsCacheService = inject(PostsCacheService);
+  private _postEntriesCacheService = inject(POST_ENTRIES_CACHE_SERVICE);
 
   private _isLoading = signal(false);
 
@@ -66,7 +66,7 @@ export class SearchPostsStateService {
         }),
         extractPostsFromReply(),
         tap((entries) => {
-          this._postsCacheService.add(...entries);
+          this._postEntriesCacheService.add(...entries);
 
           this._isLoading.set(false);
           this._isDone.set(entries.length === 0);

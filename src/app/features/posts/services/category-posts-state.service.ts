@@ -3,8 +3,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { concatMap, of, tap } from 'rxjs';
 import { Post } from '../models/post.model';
 import { extractPostsFromReply } from '../operators/extract-posts-from-reply.operator';
+import { POST_ENTRIES_CACHE_SERVICE } from '../providers/post-entries-cache-service.provider';
 import { GetPostsRequestOptions, PostsApiService } from './posts-api.service';
-import { PostsCacheService } from './posts-cache.service';
 
 @Injectable()
 export class CategoryPostsStateService {
@@ -12,7 +12,7 @@ export class CategoryPostsStateService {
 
   private _postsApiService = inject(PostsApiService);
 
-  private _postsCacheService = inject(PostsCacheService);
+  private _postEntriesCacheService = inject(POST_ENTRIES_CACHE_SERVICE);
 
   private _isLoading = signal(false);
 
@@ -49,7 +49,7 @@ export class CategoryPostsStateService {
         }),
         extractPostsFromReply(),
         tap((entries) => {
-          this._postsCacheService.add(...entries);
+          this._postEntriesCacheService.add(...entries);
 
           this._isLoading.set(false);
           this._isDone.set(entries.length === 0);

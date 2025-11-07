@@ -4,6 +4,8 @@ import { concatMap, of, tap } from 'rxjs';
 import { CommentsLoading } from '../enums/comments-loading.enum';
 import { Comment } from '../models/comment.model';
 import { extractCommentsFromReply } from '../operators/extract-comments-from-reply.operator';
+import { toUser } from '../../users/mappers/to-user.mapper';
+import { USER_ENTRIES_CACHE_SERVICE } from '../../users/providers/user-entries-cache-service.provider';
 import {
   CommentsApiService,
   GetPostCommentsOptions,
@@ -14,6 +16,8 @@ export class CommentsStateService {
   private _destroyRef = inject(DestroyRef);
 
   private _commentsApiService = inject(CommentsApiService);
+
+  private _userEntriesCacheService = inject(USER_ENTRIES_CACHE_SERVICE);
 
   private _isLoadingBy = signal<Record<string, boolean>>({});
 
@@ -49,7 +53,17 @@ export class CommentsStateService {
             options.params = { ...options.params, later };
           }
 
-          return this._commentsApiService.getPostComments(postId, options);
+          return this._commentsApiService.getPostsCommentsByPostId(
+            postId,
+            options,
+          );
+        }),
+        tap((reply) => {
+          const entries = reply.comments
+            .map((comment) => comment.user)
+            .map(toUser);
+
+          this._userEntriesCacheService.add(...entries);
         }),
         extractCommentsFromReply(),
         tap((entries) => {
@@ -95,7 +109,16 @@ export class CommentsStateService {
           }));
         }),
         concatMap(() => {
-          return this._commentsApiService.getCommentBranch(rootCommentId);
+          return this._commentsApiService.getCommentsBranchByRootCommentId(
+            rootCommentId,
+          );
+        }),
+        tap((reply) => {
+          const entries = reply.comments
+            .map((comment) => comment.user)
+            .map(toUser);
+
+          this._userEntriesCacheService.add(...entries);
         }),
         extractCommentsFromReply(),
         tap((entries) => {

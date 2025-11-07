@@ -15,13 +15,12 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DialogRef } from '../classes/dialog-ref.class';
 import { DialogComponent } from '../components/dialog/dialog.component';
 
-/**
- * @todo: This will be implemented later when alert will be introduced
- */
-export type DialogConfig = {};
+export type DialogConfig = {
+  appearance: 'modal' | 'toast';
+};
 
 export type DialogOpenOptions<TData> = {
-  config?: DialogConfig;
+  config?: Partial<DialogConfig>;
   data?: TData;
 };
 
@@ -47,10 +46,15 @@ export class DialogService {
   ): DialogRef<TComponent, TResult> {
     const dialogRef = new DialogRef<TComponent, TResult>();
 
+    const config: DialogConfig = {
+      appearance: 'modal',
+      ...(options?.config || {}),
+    };
+
     const injector = Injector.create({
       providers: [
         { provide: DialogRef, useValue: dialogRef },
-        { provide: DIALOG_CONFIG, useValue: options?.config },
+        { provide: DIALOG_CONFIG, useValue: config },
         { provide: DIALOG_DATA, useValue: options?.data },
       ],
     });

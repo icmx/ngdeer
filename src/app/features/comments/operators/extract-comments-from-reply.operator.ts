@@ -7,7 +7,7 @@ export const extractCommentsFromReply = () => {
   return (source$: Observable<WithApiComments>): Observable<Comment[]> => {
     return source$.pipe(
       map((reply) => {
-        return (reply.comments || []).map(toComment());
+        return (reply.comments || []).map(toComment);
       }),
     );
   };

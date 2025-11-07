@@ -7,7 +7,7 @@ export const extractCategoriesFromReply = () => {
   return (source$: Observable<WithApiCategories>): Observable<Category[]> => {
     return source$.pipe(
       map((reply) => {
-        return (reply.categories || []).map(toCategory());
+        return (reply.categories || []).map(toCategory);
       }),
     );
   };

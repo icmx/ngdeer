@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { DialogRef } from '../../classes/dialog-ref.class';
 import { ButtonComponent } from '../button/button.component';
 
@@ -10,6 +10,7 @@ import { ButtonComponent } from '../button/button.component';
   selector: 'ngd-disclaimer',
   templateUrl: './disclaimer.component.html',
   styleUrl: './disclaimer.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DisclaimerComponent {
   private _dialogRef = inject(DialogRef);

@@ -7,19 +7,18 @@ import {
   ViewContainerRef,
 } from '@angular/core';
 import { DialogRef } from '../../classes/dialog-ref.class';
+import { DIALOG_CONFIG } from '../../services/dialog.service';
 
-/**
- * @todo Add 'appearance' option to configure shell appearance (toast or window e.g.)
- */
 @Component({
   imports: [],
   selector: 'dialog[ngd-dialog]',
   templateUrl: './dialog.component.html',
   styleUrl: './dialog.component.scss',
   host: {
-    '[attr.open]': 'attrOpen',
-    '(document:click)': 'handleClick($event)',
-    '(document:keydown.escape)': 'handleEscapeKeydown()',
+    '[open]': '"open"',
+    '[class]': 'className',
+    '(click)': 'handleClick($event)',
+    '(document:keydown.escape)': 'handleDocumentEscapeKeydown()',
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -28,22 +27,25 @@ export class DialogComponent<TComponent, TResult> {
 
   private _dialogRef = inject<DialogRef<TComponent, TResult>>(DialogRef);
 
+  private _dialogConfig = inject(DIALOG_CONFIG);
+
   @ViewChild('dialogContent', { read: ViewContainerRef, static: true })
   viewContainerRef!: ViewContainerRef;
 
-  attrOpen = 'open';
-
-  handleEscapeKeydown(): void {
-    this._dialogRef.close(null);
+  get className(): string {
+    return `ngd-dialog is-${this._dialogConfig.appearance}`;
   }
 
   handleClick($event: MouseEvent): void {
-    const target = $event.target instanceof Node ? $event.target : null;
-    const contains = this._elementRef.nativeElement.contains(target);
-    const isBackdropClicked = !contains;
+    const target = $event.target instanceof Element ? $event.target : null;
+    const isSelf = target === this._elementRef.nativeElement;
 
-    if (isBackdropClicked) {
+    if (isSelf) {
       this._dialogRef.close(null);
     }
+  }
+
+  handleDocumentEscapeKeydown(): void {
+    this._dialogRef.close(null);
   }
 }
