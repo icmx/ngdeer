@@ -13,7 +13,6 @@ import { CaptionComponent } from '../../components/caption/caption.component';
 import { ControlComponent } from '../../components/control/control.component';
 import { FieldComponent } from '../../components/field/field.component';
 import { Theme } from '../../enums/theme.enum';
-import { SettingsStateService } from '../../services/settings-state.service';
 import { ThemesService } from '../../services/themes.service';
 
 export class SettingsPageComponentFormGroup extends FormGroup<{
@@ -42,28 +41,22 @@ export class SettingsPageComponentFormGroup extends FormGroup<{
 export class SettingsPageComponent implements OnInit {
   private _destroyRef = inject(DestroyRef);
 
-  private _settingsStateService = inject(SettingsStateService);
-
   private _themesService = inject(ThemesService);
 
-  themes = computed(() => this._themesService.value());
+  themes = computed(() => this._themesService.themeItems());
 
   formGroup = new SettingsPageComponentFormGroup();
 
   constructor() {
-    const state = this._settingsStateService.state();
-
-    this.formGroup.controls.theme.setValue(state.theme);
+    const theme = this._themesService.theme();
+    this.formGroup.controls.theme.setValue(theme);
   }
 
   ngOnInit(): void {
-    this.formGroup.valueChanges
+    this.formGroup.controls.theme.valueChanges
       .pipe(
-        tap((value) => {
-          this._settingsStateService.setState((state) => ({
-            ...state,
-            ...value,
-          }));
+        tap((theme) => {
+          this._themesService.setTheme(theme);
         }),
         takeUntilDestroyed(this._destroyRef),
       )

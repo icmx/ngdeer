@@ -11,7 +11,8 @@ import { provideClipboard } from './common/providers/clipboard.provider';
 import { provideDocumentDataset } from './common/providers/document-dataset.provider';
 import { provideLocalStorage } from './common/providers/local-storage.provider';
 import { provideWindow } from './common/providers/window.provider';
-import { SettingsStateService } from './common/services/settings-state.service';
+import { DisclaimerService } from './common/services/disclaimer.service';
+import { LocalStorageService } from './common/services/local-storage.service';
 import { ThemesService } from './common/services/themes.service';
 import { CategoriesStateService } from './features/categories/services/categories-state.service';
 import { CommentsStateService } from './features/comments/services/comments-state.service';
@@ -45,8 +46,9 @@ export const appConfig: ApplicationConfig = {
     provideDocumentDataset(),
     provideWindow(),
     provideLocalStorage(),
+    LocalStorageService,
+    DisclaimerService,
     ThemesService,
-    SettingsStateService,
     CategoriesStateService,
     providePostEntriesCacheService(),
     PostStateService,
