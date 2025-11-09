@@ -8,3 +8,14 @@ form {
 ngd-field {
   flex-basis: 100%;
 }
+
+h2 {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+button[ngd-user-label] {
+  flex-basis: 100%;
+  display: block;
+  text-align: left;
+}

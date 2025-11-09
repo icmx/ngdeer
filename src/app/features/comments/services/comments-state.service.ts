@@ -4,16 +4,12 @@ import { concatMap, of, tap } from 'rxjs';
 import { CommentsLoading } from '../enums/comments-loading.enum';
 import { Comment } from '../models/comment.model';
 import { extractCommentsFromReply } from '../operators/extract-comments-from-reply.operator';
+import { toUser } from '../../users/mappers/to-user.mapper';
+import { USER_ENTRIES_CACHE_SERVICE } from '../../users/providers/user-entries-cache-service.provider';
 import {
   CommentsApiService,
   GetPostCommentsOptions,
 } from './comments-api.service';
-
-export type CommentsStateModel = {
-  loading: Record<string, boolean>;
-  done: Record<string, boolean>;
-  entries: Comment[];
-};
 
 @Injectable()
 export class CommentsStateService {
@@ -21,21 +17,27 @@ export class CommentsStateService {
 
   private _commentsApiService = inject(CommentsApiService);
 
-  private _state = signal<CommentsStateModel>({
-    loading: {},
-    done: {},
-    entries: [],
-  });
+  private _userEntriesCacheService = inject(USER_ENTRIES_CACHE_SERVICE);
 
-  state = this._state.asReadonly();
+  private _isLoadingBy = signal<Record<string, boolean>>({});
+
+  private _isDoneBy = signal<Record<string, boolean>>({});
+
+  private _entries = signal<Comment[]>([]);
+
+  isLoadingBy = this._isLoadingBy.asReadonly();
+
+  isDoneBy = this._isDoneBy.asReadonly();
+
+  entries = this._entries.asReadonly();
 
   private _loadPostCommentsByPostId(postId: string): void {
     of(null)
       .pipe(
         tap(() => {
-          this._state.update((state) => ({
-            ...state,
-            loading: { ...state.loading, [CommentsLoading.Root]: true },
+          this._isLoadingBy.update((isLoadingBy) => ({
+            ...isLoadingBy,
+            [CommentsLoading.Root]: true,
           }));
         }),
         concatMap(() => {
@@ -43,48 +45,53 @@ export class CommentsStateService {
             params: {},
           };
 
-          const later = this._state()
-            .entries.filter(
-              (entry) => entry.rootId === null && entry.postId === postId,
-            )
+          const later = this._entries()
+            .filter((entry) => entry.rootId === null && entry.postId === postId)
             .at(-1)?.id;
 
           if (later) {
             options.params = { ...options.params, later };
           }
 
-          return this._commentsApiService.getPostComments(postId, options);
+          return this._commentsApiService.getPostsCommentsByPostId(
+            postId,
+            options,
+          );
+        }),
+        tap((reply) => {
+          const entries = reply.comments
+            .map((comment) => comment.user)
+            .map(toUser);
+
+          this._userEntriesCacheService.add(...entries);
         }),
         extractCommentsFromReply(),
         tap((entries) => {
-          const { loading, done, entries: prevEntries } = this._state();
-
+          const prevEntries = this._entries();
           const nextEntries = [...prevEntries, ...entries];
 
-          const nextLoading: CommentsStateModel['loading'] = {
-            ...loading,
-            [CommentsLoading.Root]: false,
-          };
+          this._entries.set(nextEntries);
 
-          const nextDone: CommentsStateModel['done'] = {
-            ...done,
-            [CommentsLoading.Root]: entries.length === 0,
-          };
+          this._isDoneBy.update((prevIsDoneBy) => {
+            const nextIsDoneBy = { ...prevIsDoneBy };
 
-          nextEntries.forEach((entry) => {
-            if (
-              entry.rootId === null &&
-              (entry.branchSize === null || entry.branchSize < 3)
-            ) {
-              nextDone[entry.id] = true;
-            }
+            nextIsDoneBy[CommentsLoading.Root] = entries.length === 0;
+
+            nextEntries.forEach((entry) => {
+              if (
+                entry.rootId === null &&
+                (entry.branchSize === null || entry.branchSize < 3)
+              ) {
+                nextIsDoneBy[entry.id] = true;
+              }
+            });
+
+            return nextIsDoneBy;
           });
 
-          this._state.update((state) => ({
-            ...state,
-            loading: nextLoading,
-            done: nextDone,
-            entries: nextEntries,
+          this._isLoadingBy.update((isLoadingBy) => ({
+            ...isLoadingBy,
+            [CommentsLoading.Root]: false,
           }));
         }),
         takeUntilDestroyed(this._destroyRef),
@@ -96,35 +103,38 @@ export class CommentsStateService {
     of(null)
       .pipe(
         tap(() => {
-          this._state.update((state) => ({
-            ...state,
-            loading: { ...state.loading, [rootCommentId]: true },
+          this._isLoadingBy.update((isLoadingBy) => ({
+            ...isLoadingBy,
+            [rootCommentId]: true,
           }));
         }),
         concatMap(() => {
-          return this._commentsApiService.getCommentBranch(rootCommentId);
+          return this._commentsApiService.getCommentsBranchByRootCommentId(
+            rootCommentId,
+          );
+        }),
+        tap((reply) => {
+          const entries = reply.comments
+            .map((comment) => comment.user)
+            .map(toUser);
+
+          this._userEntriesCacheService.add(...entries);
         }),
         extractCommentsFromReply(),
         tap((entries) => {
-          const { loading, done, entries: prevEntries } = this._state();
+          this._entries.update((prevEntries) => [
+            ...prevEntries,
+            ...entries.slice(2),
+          ]);
 
-          const nextEntries = [...prevEntries, ...entries.slice(2)];
-
-          const nextLoading: CommentsStateModel['loading'] = {
-            ...loading,
+          this._isLoadingBy.update((isLoadingBy) => ({
+            ...isLoadingBy,
             [rootCommentId]: false,
-          };
+          }));
 
-          const nextDone: CommentsStateModel['done'] = {
-            ...done,
+          this._isDoneBy.update((isDoneBy) => ({
+            ...isDoneBy,
             [rootCommentId]: entries.length < 30,
-          };
-
-          this._state.update((state) => ({
-            ...state,
-            loading: nextLoading,
-            done: nextDone,
-            entries: nextEntries,
           }));
         }),
         takeUntilDestroyed(this._destroyRef),
@@ -133,10 +143,7 @@ export class CommentsStateService {
   }
 
   loadPostCommentsByPostId(postId: string): void {
-    if (
-      this._state().entries.filter((entry) => entry.postId === postId).length >
-      0
-    ) {
+    if (this._entries().filter((entry) => entry.postId === postId).length > 0) {
       return;
     }
 
@@ -144,9 +151,10 @@ export class CommentsStateService {
   }
 
   loadMorePostCommentsByPostId(postId: string): void {
-    const { loading, done } = this._state();
-
-    if (loading[CommentsLoading.Root] || done[CommentsLoading.Root]) {
+    if (
+      this._isLoadingBy()[CommentsLoading.Root] ||
+      this._isDoneBy()[CommentsLoading.Root]
+    ) {
       return;
     }
 
@@ -154,7 +162,7 @@ export class CommentsStateService {
   }
 
   loadCommentsBranchByRootCommentId(rootCommentId: string): void {
-    if (this._state().loading[rootCommentId]) {
+    if (this.isLoadingBy()[rootCommentId]) {
       return;
     }
 

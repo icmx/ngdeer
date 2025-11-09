@@ -5,6 +5,6 @@ import { WithApiPost } from '../types/with-api-post.type';
 
 export const extractPostFromReply = () => {
   return (source$: Observable<WithApiPost>): Observable<Post> => {
-    return source$.pipe(map((reply) => toPost()(reply.post)));
+    return source$.pipe(map((reply) => toPost(reply.post)));
   };
 };

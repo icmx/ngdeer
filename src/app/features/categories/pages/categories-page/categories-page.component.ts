@@ -10,12 +10,12 @@ import { CategoryCardComponent } from '../../components/category-card/category-c
 import { CategoriesStateService } from '../../services/categories-state.service';
 
 @Component({
-  selector: 'ngd-categories-page',
   imports: [
     // Internal Imports
     LoadingStubComponent,
     CategoryCardComponent,
   ],
+  selector: 'ngd-categories-page',
   templateUrl: './categories-page.component.html',
   styleUrl: './categories-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -23,11 +23,9 @@ import { CategoriesStateService } from '../../services/categories-state.service'
 export class CategoriesPageComponent implements OnInit {
   private _categoriesStateService = inject(CategoriesStateService);
 
-  categoriesSignal = computed(
-    () => this._categoriesStateService.state().entries,
-  );
+  categories = computed(() => this._categoriesStateService.entries());
 
-  loadingSignal = computed(() => this._categoriesStateService.state().loading);
+  isLoading = computed(() => this._categoriesStateService.isLoading());
 
   ngOnInit(): void {
     this._categoriesStateService.load();

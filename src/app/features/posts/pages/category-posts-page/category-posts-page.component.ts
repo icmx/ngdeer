@@ -15,12 +15,12 @@ import { PostCardComponent } from '../../components/post-card/post-card.componen
 import { CategoryPostsStateService } from '../../services/category-posts-state.service';
 
 @Component({
-  selector: 'ngd-category-posts-page',
   imports: [
     // Internal Imports
     LoadingStubComponent,
     PostCardComponent,
   ],
+  selector: 'ngd-category-posts-page',
   templateUrl: './category-posts-page.component.html',
   styleUrl: './category-posts-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -34,11 +34,9 @@ export class CategoryPostsPageComponent implements OnInit {
 
   categoryId = input.required<string>();
 
-  postsSignal = computed(() => this._categoryPostsStateService.state().entries);
+  posts = computed(() => this._categoryPostsStateService.entries());
 
-  loadingSignal = computed(
-    () => this._categoryPostsStateService.state().loading,
-  );
+  isLoading = computed(() => this._categoryPostsStateService.isLoading());
 
   ngOnInit(): void {
     const categoryId = this.categoryId();

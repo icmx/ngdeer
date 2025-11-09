@@ -17,26 +17,34 @@ export class CategoriesStateService {
 
   private _categoriesApiService = inject(CategoriesApiService);
 
-  private _state = signal<CategoriesStateModel>({
-    loading: false,
-    done: false,
-    entries: [],
-  });
+  private _isLoading = signal(false);
 
-  state = this._state.asReadonly();
+  private _isDone = signal(false);
+
+  private _entries = signal<Category[]>([]);
+
+  isLoading = this._isLoading.asReadonly();
+
+  isDone = this._isDone.asReadonly();
+
+  entries = this._entries.asReadonly();
 
   private _load(): void {
     of(null)
       .pipe(
         tap(() => {
-          this._state.set({ loading: true, done: false, entries: [] });
+          this._isLoading.set(true);
+          this._isDone.set(false);
+          this._entries.set([]);
         }),
         concatMap(() => {
           return this._categoriesApiService.getCategories();
         }),
         extractCategoriesFromReply(),
         tap((entries) => {
-          this._state.set({ loading: false, done: true, entries });
+          this._isLoading.set(false);
+          this._isDone.set(true);
+          this._entries.set(entries);
         }),
         takeUntilDestroyed(this._destroyRef),
       )
@@ -44,9 +52,7 @@ export class CategoriesStateService {
   }
 
   load(): void {
-    const { loading, done } = this._state();
-
-    if (loading || done) {
+    if (this._isLoading() || this._isDone()) {
       return;
     }
 

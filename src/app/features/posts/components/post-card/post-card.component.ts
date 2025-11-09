@@ -5,7 +5,6 @@ import { TimestampDirective } from '../../../../common/directives/timestamp.dire
 import { Post } from '../../models/post.model';
 
 @Component({
-  selector: 'ngd-post-card',
   imports: [
     // Angular Imports
     RouterLink,
@@ -14,6 +13,7 @@ import { Post } from '../../models/post.model';
     ClipboardButtonComponent,
     TimestampDirective,
   ],
+  selector: 'ngd-post-card',
   templateUrl: './post-card.component.html',
   styleUrl: './post-card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

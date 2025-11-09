@@ -2,9 +2,14 @@
   <ngd-field>
     <label ngdCaption>Тема</label>
     <select formControlName="theme" ngdControl>
-      @for (theme of themesSignal(); track theme.value) {
+      @for (theme of themes(); track theme.value) {
         <option [value]="theme.value">{{ theme.text }}</option>
       }
     </select>
   </ngd-field>
+
+  <h2>Скрытые пользователи</h2>
+  @for (hiddenUser of hiddenUsers(); track hiddenUser.id) {
+    <button ngd-user-label [user]="hiddenUser"></button>
+  }
 </form>

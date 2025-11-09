@@ -11,15 +11,21 @@ import { provideClipboard } from './common/providers/clipboard.provider';
 import { provideDocumentDataset } from './common/providers/document-dataset.provider';
 import { provideLocalStorage } from './common/providers/local-storage.provider';
 import { provideWindow } from './common/providers/window.provider';
-import { SettingsStateService } from './common/services/settings-state.service';
+import { DisclaimerService } from './common/services/disclaimer.service';
+import { LocalStorageService } from './common/services/local-storage.service';
 import { ThemesService } from './common/services/themes.service';
 import { CategoriesStateService } from './features/categories/services/categories-state.service';
 import { CommentsStateService } from './features/comments/services/comments-state.service';
 import { CategoryPostsStateService } from './features/posts/services/category-posts-state.service';
 import { LatestPostsStateService } from './features/posts/services/latest-posts-state.service';
 import { PostStateService } from './features/posts/services/post-state.service';
+import { providePostEntriesCacheService } from './features/posts/providers/post-entries-cache-service.provider';
 import { RandomPostsStateService } from './features/posts/services/random-posts-state.service';
 import { SearchPostsStateService } from './features/posts/services/search-posts-state.service';
+import { provideUserEntriesCacheService } from './features/users/providers/user-entries-cache-service.provider';
+import { UserDialogService } from './features/users/components/user-dialog/user-dialog.service';
+import { UsersStateService } from './features/users/services/users-state.service';
+import { HiddenUsersIdsService } from './features/users/services/hidden-users-ids.service';
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
@@ -41,15 +47,21 @@ export const appConfig: ApplicationConfig = {
     provideDocumentDataset(),
     provideWindow(),
     provideLocalStorage(),
+    LocalStorageService,
+    DisclaimerService,
     ThemesService,
-    SettingsStateService,
     CategoriesStateService,
+    providePostEntriesCacheService(),
     PostStateService,
     CommentsStateService,
     LatestPostsStateService,
     RandomPostsStateService,
     CategoryPostsStateService,
     SearchPostsStateService,
+    UserDialogService,
+    HiddenUsersIdsService,
+    provideUserEntriesCacheService(),
+    UsersStateService,
   ],
 };
 

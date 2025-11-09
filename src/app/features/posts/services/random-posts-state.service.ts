@@ -3,13 +3,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { concatMap, of, tap } from 'rxjs';
 import { Post } from '../models/post.model';
 import { extractPostsFromReply } from '../operators/extract-posts-from-reply.operator';
+import { POST_ENTRIES_CACHE_SERVICE } from '../providers/post-entries-cache-service.provider';
 import { PostsApiService } from './posts-api.service';
-import { PostsCacheService } from './posts-cache.service';
-
-export type RandomPostsStateModel = {
-  loading: boolean;
-  entries: Post[];
-};
 
 @Injectable()
 export class RandomPostsStateService {
@@ -17,32 +12,31 @@ export class RandomPostsStateService {
 
   private _postsApiService = inject(PostsApiService);
 
-  private _postsCacheService = inject(PostsCacheService);
+  private _postEntriesCacheService = inject(POST_ENTRIES_CACHE_SERVICE);
 
-  private _state = signal<RandomPostsStateModel>({
-    loading: false,
-    entries: [],
-  });
+  private _isLoading = signal(false);
 
-  state = this._state.asReadonly();
+  private _entries = signal<Post[]>([]);
+
+  isLoading = this._isLoading.asReadonly();
+
+  entries = this._entries.asReadonly();
 
   private _load(): void {
     of(null)
       .pipe(
         tap(() => {
-          this._state.update((state) => ({ ...state, loading: true }));
+          this._isLoading.set(true);
         }),
         concatMap(() => {
           return this._postsApiService.getPostsRandom();
         }),
         extractPostsFromReply(),
         tap((entries) => {
-          this._postsCacheService.add(...entries);
+          this._postEntriesCacheService.add(...entries);
 
-          this._state.update((state) => ({
-            loading: false,
-            entries: [...state.entries, ...entries],
-          }));
+          this._isLoading.set(false);
+          this._entries.update((prevEntries) => [...prevEntries, ...entries]);
         }),
         takeUntilDestroyed(this._destroyRef),
       )
@@ -50,7 +44,7 @@ export class RandomPostsStateService {
   }
 
   load(): void {
-    if (this._state().entries.length > 0) {
+    if (this._entries().length > 0) {
       return;
     }
 
@@ -58,7 +52,7 @@ export class RandomPostsStateService {
   }
 
   loadMore(): void {
-    if (this._state().loading) {
+    if (this._isLoading()) {
       return;
     }
 
@@ -66,6 +60,7 @@ export class RandomPostsStateService {
   }
 
   drop(): void {
-    this._state.set({ loading: false, entries: [] });
+    this._isLoading.set(false);
+    this._entries.set([]);
   }
 }

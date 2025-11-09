@@ -5,17 +5,11 @@ import { WithCategoryId } from '../../../common/types/with-category-id.type';
 import { WithText } from '../../../common/types/with-text.type';
 import { Post } from '../models/post.model';
 import { extractPostsFromReply } from '../operators/extract-posts-from-reply.operator';
+import { POST_ENTRIES_CACHE_SERVICE } from '../providers/post-entries-cache-service.provider';
 import {
   GetPostsRequestOptions,
   PostsApiService,
 } from '../services/posts-api.service';
-import { PostsCacheService } from '../services/posts-cache.service';
-
-export type SearchPostsStateModel = {
-  loading: boolean;
-  done: boolean;
-  entries: Post[];
-};
 
 @Injectable()
 export class SearchPostsStateService {
@@ -23,28 +17,32 @@ export class SearchPostsStateService {
 
   private _postsApiService = inject(PostsApiService);
 
-  private _postsCacheService = inject(PostsCacheService);
+  private _postEntriesCacheService = inject(POST_ENTRIES_CACHE_SERVICE);
 
-  private _state = signal<SearchPostsStateModel>({
-    loading: false,
-    done: false,
-    entries: [],
-  });
+  private _isLoading = signal(false);
 
-  state = this._state.asReadonly();
+  private _isDone = signal(false);
+
+  private _entries = signal<Post[]>([]);
+
+  isLoading = this._isLoading.asReadonly();
+
+  isDone = this._isDone.asReadonly();
+
+  entries = this._entries.asReadonly();
 
   private _load(params: WithText & WithCategoryId): void {
     of(null)
       .pipe(
         tap(() => {
-          this._state.update((state) => ({ ...state, loading: true }));
+          this._isLoading.set(true);
         }),
         concatMap(() => {
           const options: GetPostsRequestOptions = {
             params: {},
           };
 
-          const from = this._state().entries.at(-1)?.id;
+          const from = this._entries().at(-1)?.id;
 
           if (from) {
             options.params = { ...options.params, from: from };
@@ -68,13 +66,11 @@ export class SearchPostsStateService {
         }),
         extractPostsFromReply(),
         tap((entries) => {
-          this._postsCacheService.add(...entries);
+          this._postEntriesCacheService.add(...entries);
 
-          this._state.update((state) => ({
-            loading: false,
-            done: entries.length === 0,
-            entries: [...state.entries, ...entries],
-          }));
+          this._isLoading.set(false);
+          this._isDone.set(entries.length === 0);
+          this._entries.update((prevEntries) => [...prevEntries, ...entries]);
         }),
         takeUntilDestroyed(this._destroyRef),
       )
@@ -86,9 +82,7 @@ export class SearchPostsStateService {
   }
 
   loadMore(params: WithText & WithCategoryId): void {
-    const { loading, done } = this._state();
-
-    if (loading || done) {
+    if (this._isLoading() || this._isDone()) {
       return;
     }
 
@@ -96,6 +90,8 @@ export class SearchPostsStateService {
   }
 
   drop(): void {
-    this._state.set({ loading: false, done: false, entries: [] });
+    this._isLoading.set(false);
+    this._isDone.set(false);
+    this._entries.set([]);
   }
 }

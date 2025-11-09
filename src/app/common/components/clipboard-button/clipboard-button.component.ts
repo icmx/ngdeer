@@ -3,8 +3,6 @@ import {
   ChangeDetectorRef,
   Component,
   DestroyRef,
-  HostBinding,
-  HostListener,
   inject,
   input,
 } from '@angular/core';
@@ -13,10 +11,14 @@ import { delay, exhaustMap, from, of, tap } from 'rxjs';
 import { CLIPBOARD } from '../../providers/clipboard.provider';
 
 @Component({
-  selector: 'button[ngd-clipboard-button]',
   imports: [],
+  selector: 'button[ngd-clipboard-button]',
   templateUrl: './clipboard-button.component.html',
   styleUrl: './clipboard-button.component.scss',
+  host: {
+    '[disabled]': 'disabled',
+    '(click)': 'handleClick()',
+  },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ClipboardButtonComponent {
@@ -34,16 +36,14 @@ export class ClipboardButtonComponent {
 
   text = this.copyText();
 
-  @HostBinding('disabled')
-  disabled = false;
+  disabled: 'disabled' | false = false;
 
-  @HostListener('click')
   handleClick(): void {
     of(null)
       .pipe(
         tap(() => {
           this.text = this.copiedText();
-          this.disabled = true;
+          this.disabled = 'disabled';
           this._changeDetectorRef.markForCheck();
         }),
         exhaustMap(() => {

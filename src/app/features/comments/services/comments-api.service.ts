@@ -19,7 +19,7 @@ export class CommentsApiService {
 
   private _baseUrl = inject(BASE_URL);
 
-  getPostComments(
+  getPostsCommentsByPostId(
     postId: Param,
     options?: GetPostCommentsOptions,
   ): Observable<WithApiComments> {
@@ -29,11 +29,20 @@ export class CommentsApiService {
     );
   }
 
-  getCommentBranch(
+  getCommentsBranchByRootCommentId(
     rootCommentId: Param,
   ): Observable<WithApiComments & WithApiRootComment> {
     return this._http.get<WithApiComments & WithApiRootComment>(
       `${this._baseUrl}/comments/branch/${rootCommentId}`,
+    );
+  }
+
+  /**
+   * @todo This will be used later
+   */
+  getCommentsForUserByUserId(userId: string): Observable<WithApiComments> {
+    return this._http.get<WithApiComments>(
+      `${this._baseUrl}/comments/for_user/${userId}`,
     );
   }
 }

@@ -14,12 +14,12 @@ import { PostCardComponent } from '../../components/post-card/post-card.componen
 import { LatestPostsStateService } from '../../services/latest-posts-state.service';
 
 @Component({
-  selector: 'ngd-latest-posts-page',
   imports: [
     // Internal Imports
     LoadingStubComponent,
     PostCardComponent,
   ],
+  selector: 'ngd-latest-posts-page',
   templateUrl: './latest-posts-page.component.html',
   styleUrl: './latest-posts-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -31,9 +31,9 @@ export class LatestPostsPageComponent implements OnInit {
 
   private _latestPostsStateService = inject(LatestPostsStateService);
 
-  postsSignal = computed(() => this._latestPostsStateService.state().entries);
+  posts = computed(() => this._latestPostsStateService.entries());
 
-  loadingSignal = computed(() => this._latestPostsStateService.state().loading);
+  isLoading = computed(() => this._latestPostsStateService.isLoading());
 
   ngOnInit(): void {
     this._windowScrollService.scrollToBottom$

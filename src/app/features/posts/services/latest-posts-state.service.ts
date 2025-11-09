@@ -4,14 +4,8 @@ import { concatMap, of, tap } from 'rxjs';
 import { WithFrom } from '../../../common/types/with-from.type';
 import { Post } from '../models/post.model';
 import { extractPostsFromReply } from '../operators/extract-posts-from-reply.operator';
+import { POST_ENTRIES_CACHE_SERVICE } from '../providers/post-entries-cache-service.provider';
 import { PostsApiService } from './posts-api.service';
-import { PostsCacheService } from './posts-cache.service';
-
-export type LatestPostsStateModel = {
-  loading: boolean;
-  done: boolean;
-  entries: Post[];
-};
 
 @Injectable()
 export class LatestPostsStateService {
@@ -19,26 +13,30 @@ export class LatestPostsStateService {
 
   private _postsApiService = inject(PostsApiService);
 
-  private _postsCacheService = inject(PostsCacheService);
+  private _postEntriesCacheService = inject(POST_ENTRIES_CACHE_SERVICE);
 
-  private _state = signal<LatestPostsStateModel>({
-    loading: false,
-    done: false,
-    entries: [],
-  });
+  private _isLoading = signal(false);
 
-  state = this._state.asReadonly();
+  private _isDone = signal(false);
+
+  private _entries = signal<Post[]>([]);
+
+  isLoading = this._isLoading.asReadonly();
+
+  isDone = this._isDone.asReadonly();
+
+  entries = this._entries.asReadonly();
 
   private _load(): void {
     of(null)
       .pipe(
         tap(() => {
-          this._state.update((state) => ({ ...state, loading: true }));
+          this._isLoading.set(true);
         }),
         concatMap(() => {
           const params: WithFrom = {};
 
-          const from = this._state().entries.at(-1)?.id;
+          const from = this.entries().at(-1)?.id;
 
           if (from) {
             params.from = from;
@@ -48,13 +46,11 @@ export class LatestPostsStateService {
         }),
         extractPostsFromReply(),
         tap((entries) => {
-          this._postsCacheService.add(...entries);
+          this._postEntriesCacheService.add(...entries);
 
-          this._state.update((state) => ({
-            loading: false,
-            done: entries.length === 0,
-            entries: [...state.entries, ...entries],
-          }));
+          this._isLoading.set(false);
+          this._isDone.set(entries.length === 0);
+          this._entries.update((prevEntries) => [...prevEntries, ...entries]);
         }),
         takeUntilDestroyed(this._destroyRef),
       )
@@ -62,7 +58,7 @@ export class LatestPostsStateService {
   }
 
   load(): void {
-    if (this._state().entries.length > 0) {
+    if (this._entries().length > 0) {
       return;
     }
 
@@ -70,9 +66,7 @@ export class LatestPostsStateService {
   }
 
   loadMore(): void {
-    const { loading, done } = this._state();
-
-    if (loading || done) {
+    if (this._isLoading() || this._isDone()) {
       return;
     }
 
@@ -80,6 +74,8 @@ export class LatestPostsStateService {
   }
 
   drop(): void {
-    this._state.set({ loading: false, done: false, entries: [] });
+    this._isLoading.set(false);
+    this._isDone.set(false);
+    this._entries.set([]);
   }
 }

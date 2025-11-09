@@ -6,7 +6,7 @@
       <ngd-comment-card [comment]="childComment" />
     }
 
-    @if (shouldShowLoadMoreButtonSignal()) {
+    @if (shouldShowLoadMoreButton()) {
       <button
         ngd-button
         appearance="section"
@@ -16,7 +16,7 @@
       </button>
     }
 
-    @if (loadingSignal()) {
+    @if (isLoading()) {
       <ngd-loading-stub />
     }
   </section>

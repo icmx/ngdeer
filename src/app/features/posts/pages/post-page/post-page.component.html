@@ -1,12 +1,12 @@
-@if (postSignal(); as post) {
+@if (post(); as post) {
   <ngd-post-card [post]="post" />
   <hr />
 }
 
-@for (comment of commentsSignal(); track comment.id) {
+@for (comment of comments(); track comment.id) {
   <ngd-comments-branch [rootComment]="comment" />
 }
 
-@if (loadingSignal()) {
+@if (isLoading()) {
   <ngd-loading-stub />
 }

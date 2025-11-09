@@ -1,7 +1,7 @@
-@for (category of categoriesSignal(); track category.id) {
+@for (category of categories(); track category.id) {
   <ngd-category-card [category]="category" />
 }
 
-@if (loadingSignal()) {
+@if (isLoading()) {
   <ngd-loading-stub />
 }

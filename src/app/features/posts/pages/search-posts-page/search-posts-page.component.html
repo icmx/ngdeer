@@ -6,7 +6,7 @@
   <ngd-field>
     <label ngdCaption>Категория</label>
     <select ngdControl formControlName="categoryId">
-      @for (category of categoriesSignal(); track category.id) {
+      @for (category of categories(); track category.id) {
         <option [value]="category.id">{{ category.text }}</option>
       }
     </select>
@@ -14,10 +14,10 @@
   <button ngd-button [appearance]="'section'" type="reset">Сбросить</button>
 </form>
 
-@for (post of postsSignal(); track post.id) {
+@for (post of posts(); track post.id) {
   <ngd-post-card [post]="post" />
 }
 
-@if (loadingSignal()) {
+@if (isLoading()) {
   <ngd-loading-stub />
 }

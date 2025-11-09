@@ -12,19 +12,20 @@ import { tap } from 'rxjs';
 import { LoadingStubComponent } from '../../../../common/components/loading-stub/loading-stub.component';
 import { WindowScrollService } from '../../../../common/services/window-scroll.service';
 import { CommentsBranchComponent } from '../../../comments/components/comments-branch/comments-branch.component';
-import { PostCardComponent } from '../../components/post-card/post-card.component';
-import { PostStateService } from '../../services/post-state.service';
 import { CommentsStateService } from '../../../comments/services/comments-state.service';
 import { CommentsLoading } from '../../../comments/enums/comments-loading.enum';
+import { HiddenUsersIdsService } from '../../../users/services/hidden-users-ids.service';
+import { PostCardComponent } from '../../components/post-card/post-card.component';
+import { PostStateService } from '../../services/post-state.service';
 
 @Component({
-  selector: 'ngd-post-page',
   imports: [
     // Internal Imports
     PostCardComponent,
     CommentsBranchComponent,
     LoadingStubComponent,
   ],
+  selector: 'ngd-post-page',
   templateUrl: './post-page.component.html',
   styleUrl: './post-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -38,24 +39,29 @@ export class PostPageComponent implements OnInit {
 
   private _commentsStateService = inject(CommentsStateService);
 
+  private _hiddenUsersIdsService = inject(HiddenUsersIdsService);
+
   postId = input.required<string>();
 
-  postSignal = computed(() => this._postStateService.state().entry);
+  post = computed(() => this._postStateService.entry());
 
-  commentsSignal = computed(() => {
+  comments = computed(() => {
     const postId = this.postId();
+    const userIds = this._hiddenUsersIdsService.ids();
 
-    return this._commentsStateService
-      .state()
-      .entries.filter(
-        (entry) => entry.rootId === null && entry.postId === postId,
+    return this._commentsStateService.entries().filter((entry) => {
+      return (
+        entry.rootId === null &&
+        entry.postId === postId &&
+        !userIds.includes(entry.user.id)
       );
+    });
   });
 
-  loadingSignal = computed(() => {
+  isLoading = computed(() => {
     return (
-      this._postStateService.state().loading ||
-      this._commentsStateService.state().loading[CommentsLoading.Root]
+      this._postStateService.isLoading() ||
+      this._commentsStateService.isLoadingBy()[CommentsLoading.Root]
     );
   });
 

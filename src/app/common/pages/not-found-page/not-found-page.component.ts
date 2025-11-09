@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
-  selector: 'ngd-not-found-page',
   imports: [],
+  selector: 'ngd-not-found-page',
   templateUrl: './not-found-page.component.html',
   styleUrl: './not-found-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

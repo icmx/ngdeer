@@ -1,9 +1,9 @@
-@let commentValue = comment();
+@let entry = comment();
 
 <header>
-  <span>{{ commentValue.username }}</span>
-  <time [timestamp]="commentValue.timestamp"></time>
+  <button ngd-user-label [user]="entry.user"></button>
+  <time [timestamp]="entry.timestamp"></time>
 </header>
 <section>
-  {{ commentValue.text }}
+  {{ entry.text }}
 </section>

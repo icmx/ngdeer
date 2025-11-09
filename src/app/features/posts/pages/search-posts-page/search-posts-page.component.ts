@@ -35,7 +35,6 @@ export class SearchPostsPageComponentFormGroup extends FormGroup<{
 }
 
 @Component({
-  selector: 'ngd-search-posts-page',
   imports: [
     // Angular Imports
     ReactiveFormsModule,
@@ -48,6 +47,7 @@ export class SearchPostsPageComponentFormGroup extends FormGroup<{
     LoadingStubComponent,
     PostCardComponent,
   ],
+  selector: 'ngd-search-posts-page',
   templateUrl: './search-posts-page.component.html',
   styleUrl: './search-posts-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -67,19 +67,19 @@ export class SearchPostsPageComponent implements OnInit {
 
   formGroup = new SearchPostsPageComponentFormGroup();
 
-  categoriesSignal = computed(() => {
+  categories = computed(() => {
     return [
       { id: '', postsLink: '', text: 'Без категории' },
-      ...this._categoriesStateService.state().entries,
+      ...this._categoriesStateService.entries(),
     ];
   });
 
-  postsSignal = computed(() => this._searchPostsStateService.state().entries);
+  posts = computed(() => this._searchPostsStateService.entries());
 
-  loadingSignal = computed(() => {
+  isLoading = computed(() => {
     return (
-      this._categoriesStateService.state().loading ||
-      this._searchPostsStateService.state().loading
+      this._categoriesStateService.isLoading() ||
+      this._searchPostsStateService.isLoading()
     );
   });
 
