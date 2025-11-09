@@ -12,10 +12,11 @@ import { tap } from 'rxjs';
 import { LoadingStubComponent } from '../../../../common/components/loading-stub/loading-stub.component';
 import { WindowScrollService } from '../../../../common/services/window-scroll.service';
 import { CommentsBranchComponent } from '../../../comments/components/comments-branch/comments-branch.component';
-import { PostCardComponent } from '../../components/post-card/post-card.component';
-import { PostStateService } from '../../services/post-state.service';
 import { CommentsStateService } from '../../../comments/services/comments-state.service';
 import { CommentsLoading } from '../../../comments/enums/comments-loading.enum';
+import { HiddenUsersIdsService } from '../../../users/services/hidden-users-ids.service';
+import { PostCardComponent } from '../../components/post-card/post-card.component';
+import { PostStateService } from '../../services/post-state.service';
 
 @Component({
   imports: [
@@ -38,15 +39,22 @@ export class PostPageComponent implements OnInit {
 
   private _commentsStateService = inject(CommentsStateService);
 
+  private _hiddenUsersIdsService = inject(HiddenUsersIdsService);
+
   postId = input.required<string>();
 
   post = computed(() => this._postStateService.entry());
 
   comments = computed(() => {
     const postId = this.postId();
+    const userIds = this._hiddenUsersIdsService.ids();
 
     return this._commentsStateService.entries().filter((entry) => {
-      return entry.rootId === null && entry.postId === postId;
+      return (
+        entry.rootId === null &&
+        entry.postId === postId &&
+        !userIds.includes(entry.user.id)
+      );
     });
   });
 

@@ -7,6 +7,7 @@ import {
 } from '@angular/core';
 import { ButtonComponent } from '../../../../common/components/button/button.component';
 import { LoadingStubComponent } from '../../../../common/components/loading-stub/loading-stub.component';
+import { HiddenUsersIdsService } from '../../../users/services/hidden-users-ids.service';
 import { CommentsStateService } from '../../services/comments-state.service';
 import { Comment } from '../../models/comment.model';
 import { CommentCardComponent } from '../comment-card/comment-card.component';
@@ -26,14 +27,17 @@ import { CommentCardComponent } from '../comment-card/comment-card.component';
 export class CommentsBranchComponent {
   private _commentsStateService = inject(CommentsStateService);
 
+  private _hiddenUsersIdsService = inject(HiddenUsersIdsService);
+
   rootComment = input.required<Comment>();
 
   childComments = computed(() => {
     const rootCommentId = this.rootComment().id;
+    const userIds = this._hiddenUsersIdsService.ids();
 
-    return this._commentsStateService
-      .entries()
-      .filter((entry) => entry.rootId === rootCommentId);
+    return this._commentsStateService.entries().filter((entry) => {
+      return entry.rootId === rootCommentId && !userIds.includes(entry.user.id);
+    });
   });
 
   isLoading = computed(() => {

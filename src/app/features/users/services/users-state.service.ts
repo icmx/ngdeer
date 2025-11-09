@@ -19,22 +19,27 @@ export class UsersStateService {
   entries = this._entries.asReadonly();
 
   load(id: string): void {
-    of(null).pipe(
-      concatMap(() => {
-        const cachedEntry = this._userEntriesCacheService.get(id);
+    of(null)
+      .pipe(
+        concatMap(() => {
+          const cachedEntry = this._userEntriesCacheService.get(id);
 
-        if (cachedEntry) {
-          return of(cachedEntry);
-        }
+          if (cachedEntry) {
+            return of(cachedEntry);
+          }
 
-        return this._usersApiService.getProfileByUserId(id).pipe(
-          extractUserFromReply(),
-          tap((entry) => {
-            this._userEntriesCacheService.add(entry);
-          }),
-        );
-      }),
-      takeUntilDestroyed(this._destroyRef),
-    );
+          return this._usersApiService.getProfileByUserId(id).pipe(
+            extractUserFromReply(),
+            tap((entry) => {
+              this._userEntriesCacheService.add(entry);
+            }),
+          );
+        }),
+        tap((entry) => {
+          this._entries.update((entries) => [...entries, entry]);
+        }),
+        takeUntilDestroyed(this._destroyRef),
+      )
+      .subscribe();
   }
 }

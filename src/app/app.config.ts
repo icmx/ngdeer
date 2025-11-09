@@ -25,6 +25,7 @@ import { SearchPostsStateService } from './features/posts/services/search-posts-
 import { provideUserEntriesCacheService } from './features/users/providers/user-entries-cache-service.provider';
 import { UserDialogService } from './features/users/components/user-dialog/user-dialog.service';
 import { UsersStateService } from './features/users/services/users-state.service';
+import { HiddenUsersIdsService } from './features/users/services/hidden-users-ids.service';
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
@@ -58,6 +59,7 @@ export const appConfig: ApplicationConfig = {
     CategoryPostsStateService,
     SearchPostsStateService,
     UserDialogService,
+    HiddenUsersIdsService,
     provideUserEntriesCacheService(),
     UsersStateService,
   ],

@@ -5,7 +5,7 @@ import { DOCUMENT_DATASET } from '../providers/document-dataset.provider';
 import { ThemeItem } from '../types/theme-item.type';
 
 export const THEME_PERSISTENCE = new InjectionToken<Persistence<Theme>>(
-  'THEME',
+  'THEME_PERSISTENCE',
   {
     factory: (): Persistence<Theme> => {
       return new Persistence({

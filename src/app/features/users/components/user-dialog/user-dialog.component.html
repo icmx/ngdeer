@@ -11,6 +11,28 @@
   }
 </section>
 <footer>
+  @if (shouldShowHideButton()) {
+    <button
+      type="button"
+      ngd-button
+      appearance="default"
+      (click)="handleHideButtonClick()"
+    >
+      Скрывать комментарии этого пользователя
+    </button>
+  }
+
+  @if (shouldShowShowButton()) {
+    <button
+      type="button"
+      ngd-button
+      appearance="default"
+      (click)="handleShowButtonClick()"
+    >
+      Показывать комментарии этого пользователя
+    </button>
+  }
+
   <button
     type="button"
     ngd-button
