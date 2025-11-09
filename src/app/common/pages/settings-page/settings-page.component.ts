@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { tap } from 'rxjs';
+import { bufferCount, concatMap, from, tap, timer } from 'rxjs';
 import { HiddenUsersIdsService } from '../../../features/users/services/hidden-users-ids.service';
 import { UsersStateService } from '../../../features/users/services/users-state.service';
 import { UserLabelComponent } from '../../../features/users/components/user-label/user-label.component';
@@ -79,8 +79,20 @@ export class SettingsPageComponent implements OnInit {
       )
       .subscribe();
 
-    this._hiddenUsersIdsService.ids().forEach((id) => {
-      this._usersStateService.load(id);
-    });
+    from(this._hiddenUsersIdsService.ids())
+      .pipe(
+        bufferCount(5),
+        concatMap((ids, index) => {
+          return timer(index * 5_000).pipe(
+            tap(() => {
+              ids.forEach((id) => {
+                this._usersStateService.load(id);
+              });
+            }),
+          );
+        }),
+        takeUntilDestroyed(this._destroyRef),
+      )
+      .subscribe();
   }
 }
