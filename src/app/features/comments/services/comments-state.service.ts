@@ -11,6 +11,10 @@ import {
   GetPostCommentsOptions,
 } from './comments-api.service';
 
+// this amount of comments is already loaded and visible before user
+// decides to load a full branch (if any)
+export const PREVIOUSLY_VISIBLE_COMMENTS_AMOUNT = 2;
+
 @Injectable()
 export class CommentsStateService {
   private _destroyRef = inject(DestroyRef);
@@ -124,7 +128,7 @@ export class CommentsStateService {
         tap((entries) => {
           this._entries.update((prevEntries) => [
             ...prevEntries,
-            ...entries.slice(2),
+            ...entries.slice(PREVIOUSLY_VISIBLE_COMMENTS_AMOUNT),
           ]);
 
           this._isLoadingBy.update((isLoadingBy) => ({
