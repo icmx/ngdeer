@@ -78,6 +78,10 @@ export class SearchPostsStateService {
   }
 
   load(params: WithText & WithCategoryId): void {
+    if (this._entries().length > 0) {
+      return;
+    }
+
     this._load(params);
   }
 
