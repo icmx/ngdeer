@@ -19,7 +19,7 @@ export class Persistence<TValue> {
     this._key = options.key;
 
     const initialValue =
-      this._localStorageService.getItem<TValue>(this._key) ||
+      this._localStorageService.getItem<TValue>(this._key) ??
       options.initialValue;
 
     this._value = signal(initialValue);
