@@ -1,5 +1,5 @@
 import { InjectionToken, Provider } from '@angular/core';
-import { EntriesCacheService } from '../../../common/services/entries-cache.serivce';
+import { EntriesCacheService } from '../../../common/services/entries-cache.service';
 import { Post } from '../models/post.model';
 
 export const POST_ENTRIES_CACHE_SERVICE = new InjectionToken<
