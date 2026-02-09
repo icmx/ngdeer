@@ -30,6 +30,5 @@ export class WindowScrollService {
       return isBottom ? event : null;
     }),
     filter((event) => event !== null),
-    repeat(),
   );
 }
