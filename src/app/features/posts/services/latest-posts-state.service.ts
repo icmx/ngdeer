@@ -46,7 +46,7 @@ export class LatestPostsStateService {
         }),
         extractPostsFromReply(),
         tap((entries) => {
-          this._postEntriesCacheService.add(...entries);
+          this._postEntriesCacheService.set(...entries);
 
           this._isLoading.set(false);
           this._isDone.set(entries.length === 0);

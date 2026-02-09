@@ -31,7 +31,7 @@ export class UsersStateService {
           return this._usersApiService.getProfileByUserId(id).pipe(
             extractUserFromReply(),
             tap((entry) => {
-              this._userEntriesCacheService.add(entry);
+              this._userEntriesCacheService.set(entry);
             }),
           );
         }),

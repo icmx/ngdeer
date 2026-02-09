@@ -67,7 +67,7 @@ export class CommentsStateService {
             .map((comment) => comment.user)
             .map(toUser);
 
-          this._userEntriesCacheService.add(...entries);
+          this._userEntriesCacheService.set(...entries);
         }),
         extractCommentsFromReply(),
         tap((entries) => {
@@ -122,7 +122,7 @@ export class CommentsStateService {
             .map((comment) => comment.user)
             .map(toUser);
 
-          this._userEntriesCacheService.add(...entries);
+          this._userEntriesCacheService.set(...entries);
         }),
         extractCommentsFromReply(),
         tap((entries) => {

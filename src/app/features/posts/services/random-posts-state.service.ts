@@ -1,6 +1,7 @@
 import { DestroyRef, inject, Injectable, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { concatMap, of, tap } from 'rxjs';
+import { toUnique } from '../../../common/utils/to-unique.util';
 import { Post } from '../models/post.model';
 import { extractPostsFromReply } from '../operators/extract-posts-from-reply.operator';
 import { POST_ENTRIES_CACHE_SERVICE } from '../providers/post-entries-cache-service.provider';
@@ -33,10 +34,12 @@ export class RandomPostsStateService {
         }),
         extractPostsFromReply(),
         tap((entries) => {
-          this._postEntriesCacheService.add(...entries);
+          this._postEntriesCacheService.set(...entries);
 
           this._isLoading.set(false);
-          this._entries.update((prevEntries) => [...prevEntries, ...entries]);
+          this._entries.update((prevEntries) =>
+            [...prevEntries, ...entries].filter(toUnique((entry) => entry.id)),
+          );
         }),
         takeUntilDestroyed(this._destroyRef),
       )
