@@ -1,6 +1,5 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   computed,
   DestroyRef,
@@ -24,8 +23,6 @@ import { CLIPBOARD } from '../../providers/clipboard.provider';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ClipboardButtonComponent {
-  private _changeDetectorRef = inject(ChangeDetectorRef);
-
   private _destroyRef = inject(DestroyRef);
 
   private _clipboard = inject(CLIPBOARD);
@@ -51,7 +48,6 @@ export class ClipboardButtonComponent {
       .pipe(
         tap(() => {
           this._copied.set(true);
-          this._changeDetectorRef.markForCheck();
         }),
         exhaustMap(() => {
           return from(this._clipboard.writeText(this.content()));
@@ -59,7 +55,6 @@ export class ClipboardButtonComponent {
         delay(1200),
         tap(() => {
           this._copied.set(false);
-          this._changeDetectorRef.markForCheck();
         }),
         takeUntilDestroyed(this._destroyRef),
       )
