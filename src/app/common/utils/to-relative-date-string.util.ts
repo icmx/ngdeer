@@ -18,7 +18,13 @@ const units: Intl.RelativeTimeFormatUnit[] = [
 ];
 
 export const toRelativeDateString = (init: DateInit): string => {
-  const delta = Math.round((new Date(init).getTime() - Date.now()) / 1000);
+  const time = new Date(init).getTime();
+
+  if (Number.isNaN(time)) {
+    return '';
+  }
+
+  const delta = Math.round((time - Date.now()) / 1000);
   const index = cutoffs.findIndex((cutoff) => cutoff > Math.abs(delta));
   const divisor = index ? cutoffs[index - 1] : 1;
 

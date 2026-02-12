@@ -7,7 +7,6 @@ export const toComment = (comment: ApiComment): Comment => {
     id: comment.id.toString(),
     rootId: comment.root_id?.toString() || null,
     postId: comment.post_id.toString(),
-    branch: null,
     branchSize: comment.branch_size,
     text: comment.text_fixed?.trim() || '',
     timestamp: new Date(comment.created_at).getTime(),

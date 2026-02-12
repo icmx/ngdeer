@@ -66,7 +66,7 @@ export class SearchPostsStateService {
         }),
         extractPostsFromReply(),
         tap((entries) => {
-          this._postEntriesCacheService.add(...entries);
+          this._postEntriesCacheService.set(...entries);
 
           this._isLoading.set(false);
           this._isDone.set(entries.length === 0);
@@ -78,6 +78,10 @@ export class SearchPostsStateService {
   }
 
   load(params: WithText & WithCategoryId): void {
+    if (this._entries().length > 0) {
+      return;
+    }
+
     this._load(params);
   }
 
