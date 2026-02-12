@@ -14,6 +14,7 @@ import { CaptionComponent } from '../../../../common/components/caption/caption.
 import { ControlComponent } from '../../../../common/components/control/control.component';
 import { ButtonComponent } from '../../../../common/components/button/button.component';
 import { FieldComponent } from '../../../../common/components/field/field.component';
+import { ErrorStubComponent } from '../../../../common/components/error-stub/error-stub.component';
 import { LoadingStubComponent } from '../../../../common/components/loading-stub/loading-stub.component';
 import { WindowScrollService } from '../../../../common/services/window-scroll.service';
 import { WithCategoryId } from '../../../../common/types/with-category-id.type';
@@ -44,6 +45,7 @@ export class SearchPostsPageComponentFormGroup extends FormGroup<{
     CaptionComponent,
     ControlComponent,
     FieldComponent,
+    ErrorStubComponent,
     LoadingStubComponent,
     PostCardComponent,
   ],
@@ -67,6 +69,20 @@ export class SearchPostsPageComponent implements OnInit {
 
   formGroup = new SearchPostsPageComponentFormGroup();
 
+  isLoading = computed(() => {
+    return (
+      this._categoriesStateService.isLoading() ||
+      this._searchPostsStateService.isLoading()
+    );
+  });
+
+  error = computed(() => {
+    return (
+      this._categoriesStateService.error() ||
+      this._searchPostsStateService.error()
+    );
+  });
+
   categories = computed(() => {
     return [
       { id: '', postsLink: '', text: 'Без категории' },
@@ -75,13 +91,6 @@ export class SearchPostsPageComponent implements OnInit {
   });
 
   posts = computed(() => this._searchPostsStateService.entries());
-
-  isLoading = computed(() => {
-    return (
-      this._categoriesStateService.isLoading() ||
-      this._searchPostsStateService.isLoading()
-    );
-  });
 
   private _formGroupValue$ = this.formGroup.valueChanges.pipe(
     map((value) => {

@@ -40,7 +40,6 @@ export class RandomPostsStateService {
         tap((entries) => {
           this._postEntriesCacheService.set(...entries);
 
-          this._isLoading.set(false);
           this._entries.update((prevEntries) =>
             [...prevEntries, ...entries].filter(toUnique((entry) => entry.id)),
           );
