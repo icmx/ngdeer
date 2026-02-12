@@ -1,6 +1,6 @@
 import { DestroyRef, inject, Injectable, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { concatMap, of, tap } from 'rxjs';
+import { catchError, concatMap, EMPTY, finalize, of, tap } from 'rxjs';
 import { Post } from '../models/post.model';
 import { extractPostFromReply } from '../operators/extract-post-from-reply.operator';
 import { POST_ENTRIES_CACHE_SERVICE } from '../providers/post-entries-cache-service.provider';
@@ -16,9 +16,13 @@ export class PostStateService {
 
   private _isLoading = signal(false);
 
+  private _error = signal<string | null>(null);
+
   private _entry = signal<Post | null>(null);
 
   isLoading = this._isLoading.asReadonly();
+
+  error = this._entry.asReadonly();
 
   entry = this._entry.asReadonly();
 
@@ -43,6 +47,14 @@ export class PostStateService {
         tap((entry) => {
           this._isLoading.set(false);
           this._entry.set(entry);
+        }),
+        catchError((error) => {
+          this._error.set(error?.message || 'Failed while fetching posts');
+
+          return EMPTY;
+        }),
+        finalize(() => {
+          this._isLoading.set(false);
         }),
         takeUntilDestroyed(this._destroyRef),
       )

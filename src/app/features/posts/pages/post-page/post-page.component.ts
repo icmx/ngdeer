@@ -9,6 +9,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { tap } from 'rxjs';
+import { ErrorStubComponent } from '../../../../common/components/error-stub/error-stub.component';
 import { LoadingStubComponent } from '../../../../common/components/loading-stub/loading-stub.component';
 import { WindowScrollService } from '../../../../common/services/window-scroll.service';
 import { CommentsBranchComponent } from '../../../comments/components/comments-branch/comments-branch.component';
@@ -23,6 +24,7 @@ import { PostStateService } from '../../services/post-state.service';
     // Internal Imports
     PostCardComponent,
     CommentsBranchComponent,
+    ErrorStubComponent,
     LoadingStubComponent,
   ],
   selector: 'ngd-post-page',
@@ -43,6 +45,17 @@ export class PostPageComponent implements OnInit {
 
   postId = input.required<string>();
 
+  isLoading = computed(() => {
+    return (
+      this._postStateService.isLoading() ||
+      this._commentsStateService.isLoadingBy()[CommentsLoading.Root]
+    );
+  });
+
+  error = computed(() => {
+    return this._postStateService.error();
+  });
+
   post = computed(() => this._postStateService.entry());
 
   comments = computed(() => {
@@ -56,13 +69,6 @@ export class PostPageComponent implements OnInit {
         !userIds.includes(entry.user.id)
       );
     });
-  });
-
-  isLoading = computed(() => {
-    return (
-      this._postStateService.isLoading() ||
-      this._commentsStateService.isLoadingBy()[CommentsLoading.Root]
-    );
   });
 
   ngOnInit(): void {
