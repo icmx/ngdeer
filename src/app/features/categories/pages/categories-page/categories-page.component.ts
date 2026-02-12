@@ -5,6 +5,7 @@ import {
   inject,
   OnInit,
 } from '@angular/core';
+import { ErrorStubComponent } from '../../../../common/components/error-stub/error-stub.component';
 import { LoadingStubComponent } from '../../../../common/components/loading-stub/loading-stub.component';
 import { CategoryCardComponent } from '../../components/category-card/category-card.component';
 import { CategoriesStateService } from '../../services/categories-state.service';
@@ -12,6 +13,7 @@ import { CategoriesStateService } from '../../services/categories-state.service'
 @Component({
   imports: [
     // Internal Imports
+    ErrorStubComponent,
     LoadingStubComponent,
     CategoryCardComponent,
   ],
@@ -23,9 +25,11 @@ import { CategoriesStateService } from '../../services/categories-state.service'
 export class CategoriesPageComponent implements OnInit {
   private _categoriesStateService = inject(CategoriesStateService);
 
-  categories = computed(() => this._categoriesStateService.entries());
-
   isLoading = computed(() => this._categoriesStateService.isLoading());
+
+  error = computed(() => this._categoriesStateService.error());
+
+  categories = computed(() => this._categoriesStateService.entries());
 
   ngOnInit(): void {
     this._categoriesStateService.load();
