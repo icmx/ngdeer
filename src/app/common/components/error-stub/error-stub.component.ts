@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
   imports: [],
@@ -7,6 +7,4 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
   styleUrl: './error-stub.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ErrorStubComponent {
-  error = input.required<string>();
-}
+export class ErrorStubComponent {}
