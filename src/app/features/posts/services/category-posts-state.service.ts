@@ -1,6 +1,6 @@
 import { DestroyRef, inject, Injectable, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { concatMap, of, tap } from 'rxjs';
+import { catchError, concatMap, EMPTY, finalize, of, tap } from 'rxjs';
 import { Post } from '../models/post.model';
 import { extractPostsFromReply } from '../operators/extract-posts-from-reply.operator';
 import { POST_ENTRIES_CACHE_SERVICE } from '../providers/post-entries-cache-service.provider';
@@ -18,9 +18,13 @@ export class CategoryPostsStateService {
 
   private _isDone = signal(false);
 
+  private _error = signal<string | null>(null);
+
   private _entries = signal<Post[]>([]);
 
   isLoading = this._isLoading.asReadonly();
+
+  error = this._error.asReadonly();
 
   isDone = this._isDone.asReadonly();
 
@@ -51,9 +55,16 @@ export class CategoryPostsStateService {
         tap((entries) => {
           this._postEntriesCacheService.set(...entries);
 
-          this._isLoading.set(false);
           this._isDone.set(entries.length === 0);
           this._entries.update((prevEntries) => [...prevEntries, ...entries]);
+        }),
+        catchError((error) => {
+          this._error.set(error?.message || 'Failed while fetching posts');
+
+          return EMPTY;
+        }),
+        finalize(() => {
+          this._isLoading.set(false);
         }),
         takeUntilDestroyed(this._destroyRef),
       )
@@ -79,6 +90,7 @@ export class CategoryPostsStateService {
   drop(): void {
     this._isLoading.set(false);
     this._isDone.set(false);
+    this._error.set(null);
     this._entries.set([]);
   }
 }

@@ -5,3 +5,7 @@
 @if (isLoading()) {
   <ngd-loading-stub />
 }
+
+@if (error(); as error) {
+  <ngd-error-stub [error]="error" />
+}

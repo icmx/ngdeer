@@ -9,6 +9,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { tap } from 'rxjs';
+import { ErrorStubComponent } from '../../../../common/components/error-stub/error-stub.component';
 import { LoadingStubComponent } from '../../../../common/components/loading-stub/loading-stub.component';
 import { WindowScrollService } from '../../../../common/services/window-scroll.service';
 import { PostCardComponent } from '../../components/post-card/post-card.component';
@@ -17,6 +18,7 @@ import { CategoryPostsStateService } from '../../services/category-posts-state.s
 @Component({
   imports: [
     // Internal Imports
+    ErrorStubComponent,
     LoadingStubComponent,
     PostCardComponent,
   ],
@@ -32,11 +34,13 @@ export class CategoryPostsPageComponent implements OnInit {
 
   private _categoryPostsStateService = inject(CategoryPostsStateService);
 
+  isLoading = computed(() => this._categoryPostsStateService.isLoading());
+
+  error = computed(() => this._categoryPostsStateService.error());
+
   categoryId = input.required<string>();
 
   posts = computed(() => this._categoryPostsStateService.entries());
-
-  isLoading = computed(() => this._categoryPostsStateService.isLoading());
 
   ngOnInit(): void {
     const categoryId = this.categoryId();
