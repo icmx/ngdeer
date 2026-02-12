@@ -1,6 +1,6 @@
 import { DestroyRef, inject, Injectable, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { concatMap, of, tap } from 'rxjs';
+import { catchError, concatMap, EMPTY, finalize, of, tap } from 'rxjs';
 import { toUnique } from '../../../common/utils/to-unique.util';
 import { Post } from '../models/post.model';
 import { extractPostsFromReply } from '../operators/extract-posts-from-reply.operator';
@@ -17,9 +17,13 @@ export class RandomPostsStateService {
 
   private _isLoading = signal(false);
 
+  private _error = signal<string | null>(null);
+
   private _entries = signal<Post[]>([]);
 
   isLoading = this._isLoading.asReadonly();
+
+  error = this._error.asReadonly();
 
   entries = this._entries.asReadonly();
 
@@ -40,6 +44,14 @@ export class RandomPostsStateService {
           this._entries.update((prevEntries) =>
             [...prevEntries, ...entries].filter(toUnique((entry) => entry.id)),
           );
+        }),
+        catchError((error) => {
+          this._error.set(error?.message || 'Failed while fetching posts');
+
+          return EMPTY;
+        }),
+        finalize(() => {
+          this._isLoading.set(false);
         }),
         takeUntilDestroyed(this._destroyRef),
       )
@@ -64,6 +76,7 @@ export class RandomPostsStateService {
 
   drop(): void {
     this._isLoading.set(false);
+    this._error.set(null);
     this._entries.set([]);
   }
 }
