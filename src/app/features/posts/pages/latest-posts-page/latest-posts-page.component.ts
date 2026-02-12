@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { tap } from 'rxjs';
+import { ErrorStubComponent } from '../../../../common/components/error-stub/error-stub.component';
 import { LoadingStubComponent } from '../../../../common/components/loading-stub/loading-stub.component';
 import { WindowScrollService } from '../../../../common/services/window-scroll.service';
 import { PostCardComponent } from '../../components/post-card/post-card.component';
@@ -16,6 +17,7 @@ import { LatestPostsStateService } from '../../services/latest-posts-state.servi
 @Component({
   imports: [
     // Internal Imports
+    ErrorStubComponent,
     LoadingStubComponent,
     PostCardComponent,
   ],
@@ -31,9 +33,11 @@ export class LatestPostsPageComponent implements OnInit {
 
   private _latestPostsStateService = inject(LatestPostsStateService);
 
-  posts = computed(() => this._latestPostsStateService.entries());
-
   isLoading = computed(() => this._latestPostsStateService.isLoading());
+
+  error = computed(() => this._latestPostsStateService.error());
+
+  posts = computed(() => this._latestPostsStateService.entries());
 
   ngOnInit(): void {
     this._windowScrollService.scrollToBottom$

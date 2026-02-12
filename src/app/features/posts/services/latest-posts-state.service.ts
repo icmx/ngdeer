@@ -1,6 +1,6 @@
 import { DestroyRef, inject, Injectable, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { concatMap, of, tap } from 'rxjs';
+import { catchError, concatMap, EMPTY, finalize, of, tap } from 'rxjs';
 import { WithFrom } from '../../../common/types/with-from.type';
 import { Post } from '../models/post.model';
 import { extractPostsFromReply } from '../operators/extract-posts-from-reply.operator';
@@ -19,9 +19,13 @@ export class LatestPostsStateService {
 
   private _isDone = signal(false);
 
+  private _error = signal<string | null>(null);
+
   private _entries = signal<Post[]>([]);
 
   isLoading = this._isLoading.asReadonly();
+
+  error = this._error.asReadonly();
 
   isDone = this._isDone.asReadonly();
 
@@ -52,6 +56,14 @@ export class LatestPostsStateService {
           this._isDone.set(entries.length === 0);
           this._entries.update((prevEntries) => [...prevEntries, ...entries]);
         }),
+        catchError((error) => {
+          this._error.set(error?.message || 'Failed while fetching posts');
+
+          return EMPTY;
+        }),
+        finalize(() => {
+          this._isLoading.set(false);
+        }),
         takeUntilDestroyed(this._destroyRef),
       )
       .subscribe();
@@ -76,6 +88,7 @@ export class LatestPostsStateService {
   drop(): void {
     this._isLoading.set(false);
     this._isDone.set(false);
+    this._error.set(null);
     this._entries.set([]);
   }
 }
