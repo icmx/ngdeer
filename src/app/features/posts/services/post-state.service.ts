@@ -22,7 +22,7 @@ export class PostStateService {
 
   isLoading = this._isLoading.asReadonly();
 
-  error = this._entry.asReadonly();
+  error = this._error.asReadonly();
 
   entry = this._entry.asReadonly();
 

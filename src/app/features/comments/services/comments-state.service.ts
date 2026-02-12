@@ -1,6 +1,6 @@
 import { DestroyRef, inject, Injectable, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { concatMap, of, tap } from 'rxjs';
+import { catchError, concatMap, EMPTY, finalize, of, tap } from 'rxjs';
 import { CommentsLoading } from '../enums/comments-loading.enum';
 import { Comment } from '../models/comment.model';
 import { extractCommentsFromReply } from '../operators/extract-comments-from-reply.operator';
@@ -25,11 +25,15 @@ export class CommentsStateService {
 
   private _isLoadingBy = signal<Record<string, boolean>>({});
 
+  private _error = signal<string | null>(null);
+
   private _isDoneBy = signal<Record<string, boolean>>({});
 
   private _entries = signal<Comment[]>([]);
 
   isLoadingBy = this._isLoadingBy.asReadonly();
+
+  error = this._error.asReadonly();
 
   isDoneBy = this._isDoneBy.asReadonly();
 
@@ -131,14 +135,20 @@ export class CommentsStateService {
             ...entries.slice(PREVIOUSLY_VISIBLE_COMMENTS_AMOUNT),
           ]);
 
-          this._isLoadingBy.update((isLoadingBy) => ({
-            ...isLoadingBy,
-            [rootCommentId]: false,
-          }));
-
           this._isDoneBy.update((isDoneBy) => ({
             ...isDoneBy,
             [rootCommentId]: entries.length < 30,
+          }));
+        }),
+        catchError((error) => {
+          this._error.set(error?.message || 'Failed while fetching comments');
+
+          return EMPTY;
+        }),
+        finalize(() => {
+          this._isLoadingBy.update((isLoadingBy) => ({
+            ...isLoadingBy,
+            [rootCommentId]: false,
           }));
         }),
         takeUntilDestroyed(this._destroyRef),

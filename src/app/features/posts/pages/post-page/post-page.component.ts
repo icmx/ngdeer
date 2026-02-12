@@ -53,7 +53,7 @@ export class PostPageComponent implements OnInit {
   });
 
   error = computed(() => {
-    return this._postStateService.error();
+    return this._postStateService.error() || this._commentsStateService.error();
   });
 
   post = computed(() => this._postStateService.entry());
