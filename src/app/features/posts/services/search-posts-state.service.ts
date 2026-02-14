@@ -3,6 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { catchError, concatMap, EMPTY, finalize, of, tap } from 'rxjs';
 import { WithCategoryId } from '../../../common/types/with-category-id.type';
 import { WithText } from '../../../common/types/with-text.type';
+import { toParams } from '../../../common/utils/to-params.util';
 import { Post } from '../models/post.model';
 import { extractPostsFromReply } from '../operators/extract-posts-from-reply.operator';
 import { POST_ENTRIES_CACHE_SERVICE } from '../providers/post-entries-cache-service.provider';
@@ -35,38 +36,14 @@ export class SearchPostsStateService {
 
   entries = this._entries.asReadonly();
 
-  private _load(params: WithText & WithCategoryId): void {
+  private _load(params: GetPostsRequestOptions['params']): void {
     of(null)
       .pipe(
         tap(() => {
           this._isLoading.set(true);
         }),
         concatMap(() => {
-          const options: GetPostsRequestOptions = {
-            params: {},
-          };
-
-          const from = this._entries().at(-1)?.id;
-
-          if (from) {
-            options.params = { ...options.params, from: from };
-          }
-
-          if (params.text) {
-            options.params = {
-              ...options.params,
-              search_criteria: params.text,
-            };
-          }
-
-          if (params.categoryId) {
-            options.params = {
-              ...options.params,
-              category_id: params.categoryId,
-            };
-          }
-
-          return this._postsApiService.getPosts(options);
+          return this._postsApiService.getPosts({ params });
         }),
         extractPostsFromReply(),
         tap((entries) => {
@@ -93,7 +70,12 @@ export class SearchPostsStateService {
       return;
     }
 
-    this._load(params);
+    this._load(
+      toParams({
+        search_criteria: params.text,
+        category_id: params.categoryId,
+      }),
+    );
   }
 
   loadMore(params: WithText & WithCategoryId): void {
@@ -101,7 +83,13 @@ export class SearchPostsStateService {
       return;
     }
 
-    return this._load(params);
+    return this._load(
+      toParams({
+        from: this._entries().at(-1)?.id || undefined,
+        search_criteria: params.text,
+        category_id: params.categoryId,
+      }),
+    );
   }
 
   drop(): void {

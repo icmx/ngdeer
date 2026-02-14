@@ -8,8 +8,8 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, Params, Router } from '@angular/router';
-import { debounceTime, map, Observable, tap } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
+import { debounceTime, Observable, tap } from 'rxjs';
 import { CaptionComponent } from '../../../../common/components/caption/caption.component';
 import { ControlComponent } from '../../../../common/components/control/control.component';
 import { ButtonComponent } from '../../../../common/components/button/button.component';
@@ -19,21 +19,10 @@ import { LoadingStubComponent } from '../../../../common/components/loading-stub
 import { WindowScrollService } from '../../../../common/services/window-scroll.service';
 import { WithCategoryId } from '../../../../common/types/with-category-id.type';
 import { WithText } from '../../../../common/types/with-text.type';
+import { toParams } from '../../../../common/utils/to-params.util';
 import { CategoriesStateService } from '../../../categories/services/categories-state.service';
 import { PostCardComponent } from '../../components/post-card/post-card.component';
 import { SearchPostsStateService } from '../../services/search-posts-state.service';
-
-export class SearchPostsPageComponentFormGroup extends FormGroup<{
-  text: FormControl<string>;
-  categoryId: FormControl<string>;
-}> {
-  constructor() {
-    super({
-      text: new FormControl('', { nonNullable: true }),
-      categoryId: new FormControl('', { nonNullable: true }),
-    });
-  }
-}
 
 @Component({
   imports: [
@@ -67,7 +56,13 @@ export class SearchPostsPageComponent implements OnInit {
 
   private _searchPostsStateService = inject(SearchPostsStateService);
 
-  formGroup = new SearchPostsPageComponentFormGroup();
+  formGroup = new FormGroup<{
+    text: FormControl<string>;
+    categoryId: FormControl<string>;
+  }>({
+    text: new FormControl('', { nonNullable: true }),
+    categoryId: new FormControl('', { nonNullable: true }),
+  });
 
   isLoading = computed(() => {
     return (
@@ -92,21 +87,21 @@ export class SearchPostsPageComponent implements OnInit {
 
   posts = computed(() => this._searchPostsStateService.entries());
 
-  private _formGroupValue$ = this.formGroup.valueChanges.pipe(
-    map((value) => {
-      const entries = Object.entries(value).filter(
-        ([, controlValue]) => !!controlValue,
-      );
-
-      return Object.fromEntries(entries) as WithText & WithCategoryId;
-    }),
-    debounceTime(300),
-  );
-
-  private _queryParams$: Observable<WithText & WithCategoryId> =
+  queryParams$: Observable<WithText & WithCategoryId> =
     this._activatedRoute.queryParams;
 
+  formGroupValue$: Observable<WithText & WithCategoryId> =
+    this.formGroup.valueChanges.pipe(debounceTime(300));
+
   ngOnInit(): void {
+    this._setupScrollToBottom();
+    this._setupFormGroupValue();
+    this._setupQueryParams();
+
+    this._categoriesStateService.load();
+  }
+
+  private _setupScrollToBottom(): void {
     this._windowScrollService.scrollToBottom$
       .pipe(
         tap(() => {
@@ -115,25 +110,28 @@ export class SearchPostsPageComponent implements OnInit {
         takeUntilDestroyed(this._destroyRef),
       )
       .subscribe();
+  }
 
-    this._formGroupValue$
+  private _setupFormGroupValue(): void {
+    this.formGroupValue$
       .pipe(
-        tap(() => {
-          this._searchPostsStateService.drop();
-        }),
         tap((value) => {
-          const queryParams: Params = this.formGroup.valid ? { ...value } : {};
-
-          this._router.navigate([], { queryParams });
+          this._searchPostsStateService.drop();
+          this._router.navigate([], { queryParams: toParams(value) });
         }),
         takeUntilDestroyed(this._destroyRef),
       )
       .subscribe();
+  }
 
-    this._queryParams$
+  private _setupQueryParams(): void {
+    this.queryParams$
       .pipe(
-        tap(({ text = '', categoryId = '' }) => {
-          this.formGroup.patchValue({ text, categoryId }, { emitEvent: false });
+        tap(({ text, categoryId }) => {
+          this.formGroup.setValue(
+            { text: text || '', categoryId: categoryId || '' },
+            { emitEvent: false },
+          );
 
           if (text || categoryId) {
             this._searchPostsStateService.load({ text, categoryId });
@@ -144,7 +142,5 @@ export class SearchPostsPageComponent implements OnInit {
         takeUntilDestroyed(this._destroyRef),
       )
       .subscribe();
-
-    this._categoriesStateService.load();
   }
 }
