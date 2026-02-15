@@ -45,6 +45,6 @@ export class AppComponent implements OnInit {
     this._latestPostsStateService.drop();
     this._randomPostsStateService.drop();
     this._categoryPostsStateService.drop();
-    this._searchPostsStateService.drop();
+    this._searchPostsStateService.reset();
   }
 }

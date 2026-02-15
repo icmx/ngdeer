@@ -80,7 +80,7 @@ export class SearchPostsPageComponent implements OnInit {
 
   categories = computed(() => {
     return [
-      { id: '', postsLink: '', text: 'Без категории' },
+      { id: '', text: 'Без категории' },
       ...this._categoriesStateService.entries(),
     ];
   });
@@ -116,7 +116,7 @@ export class SearchPostsPageComponent implements OnInit {
     this.formGroupValue$
       .pipe(
         tap((value) => {
-          this._searchPostsStateService.drop();
+          this._searchPostsStateService.reset();
           this._router.navigate([], { queryParams: toParams(value) });
         }),
         takeUntilDestroyed(this._destroyRef),
@@ -136,7 +136,7 @@ export class SearchPostsPageComponent implements OnInit {
           if (text || categoryId) {
             this._searchPostsStateService.load({ text, categoryId });
           } else {
-            this._searchPostsStateService.drop();
+            this._searchPostsStateService.reset();
           }
         }),
         takeUntilDestroyed(this._destroyRef),

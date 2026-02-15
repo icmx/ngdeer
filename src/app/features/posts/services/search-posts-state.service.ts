@@ -1,6 +1,15 @@
 import { DestroyRef, inject, Injectable, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { catchError, concatMap, EMPTY, finalize, of, tap } from 'rxjs';
+import {
+  catchError,
+  EMPTY,
+  exhaustMap,
+  finalize,
+  Observable,
+  Subject,
+  switchMap,
+  tap,
+} from 'rxjs';
 import { WithCategoryId } from '../../../common/types/with-category-id.type';
 import { WithText } from '../../../common/types/with-text.type';
 import { toParams } from '../../../common/utils/to-params.util';
@@ -20,6 +29,10 @@ export class SearchPostsStateService {
 
   private _postEntriesCacheService = inject(POST_ENTRIES_CACHE_SERVICE);
 
+  private _load$ = new Subject<GetPostsRequestOptions>();
+
+  private _loadMore$ = new Subject<GetPostsRequestOptions>();
+
   private _isLoading = signal(false);
 
   private _error = signal<string | null>(null);
@@ -36,33 +49,9 @@ export class SearchPostsStateService {
 
   entries = this._entries.asReadonly();
 
-  private _load(params: GetPostsRequestOptions['params']): void {
-    of(null)
-      .pipe(
-        tap(() => {
-          this._isLoading.set(true);
-        }),
-        concatMap(() => {
-          return this._postsApiService.getPosts({ params });
-        }),
-        extractPostsFromReply(),
-        tap((entries) => {
-          this._postEntriesCacheService.set(...entries);
-
-          this._isDone.set(entries.length === 0);
-          this._entries.update((prevEntries) => [...prevEntries, ...entries]);
-        }),
-        catchError((error) => {
-          this._error.set(error?.message || 'Failed while fetching posts');
-
-          return EMPTY;
-        }),
-        finalize(() => {
-          this._isLoading.set(false);
-        }),
-        takeUntilDestroyed(this._destroyRef),
-      )
-      .subscribe();
+  constructor() {
+    this._setupLoad();
+    this._setupLoadMore();
   }
 
   load(params: WithText & WithCategoryId): void {
@@ -70,32 +59,77 @@ export class SearchPostsStateService {
       return;
     }
 
-    this._load(
-      toParams({
+    this._load$.next({
+      params: toParams({
         search_criteria: params.text,
         category_id: params.categoryId,
       }),
-    );
+    });
   }
 
   loadMore(params: WithText & WithCategoryId): void {
-    if (this._isLoading() || this._isDone()) {
+    if (this._isDone() || this._isLoading()) {
       return;
     }
 
-    return this._load(
-      toParams({
+    this._loadMore$.next({
+      params: toParams({
         from: this._entries().at(-1)?.id || undefined,
         search_criteria: params.text,
         category_id: params.categoryId,
       }),
-    );
+    });
   }
 
-  drop(): void {
-    this._isLoading.set(false);
+  reset(): void {
     this._error.set(null);
     this._isDone.set(false);
     this._entries.set([]);
+  }
+
+  private _getEntries(options: GetPostsRequestOptions): Observable<Post[]> {
+    return this._postsApiService.getPosts(options).pipe(
+      tap(() => {
+        this._isLoading.set(true);
+        this._error.set(null);
+      }),
+      extractPostsFromReply(),
+      tap((entries) => {
+        this._postEntriesCacheService.set(...entries);
+
+        this._isDone.set(entries.length === 0);
+        this._entries.update((prev) => [...prev, ...entries]);
+      }),
+      catchError((error) => {
+        this._error.set(error?.message || 'Failed while fetching posts');
+
+        return EMPTY;
+      }),
+      finalize(() => {
+        this._isLoading.set(false);
+      }),
+    );
+  }
+
+  private _setupLoad(): void {
+    this._load$
+      .pipe(
+        switchMap((options) => {
+          return this._getEntries(options);
+        }),
+        takeUntilDestroyed(this._destroyRef),
+      )
+      .subscribe();
+  }
+
+  private _setupLoadMore(): void {
+    this._loadMore$
+      .pipe(
+        exhaustMap((options) => {
+          return this._getEntries(options);
+        }),
+        takeUntilDestroyed(this._destroyRef),
+      )
+      .subscribe();
   }
 }
