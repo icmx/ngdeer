@@ -1,6 +1,16 @@
 import { DestroyRef, inject, Injectable, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { catchError, concatMap, EMPTY, finalize, of, tap } from 'rxjs';
+import {
+  catchError,
+  defer,
+  EMPTY,
+  finalize,
+  Observable,
+  of,
+  Subject,
+  switchMap,
+  tap,
+} from 'rxjs';
 import { Post } from '../models/post.model';
 import { extractPostFromReply } from '../operators/extract-post-from-reply.operator';
 import { POST_ENTRIES_CACHE_SERVICE } from '../providers/post-entries-cache-service.provider';
@@ -14,6 +24,8 @@ export class PostStateService {
 
   private _postEntriesCacheService = inject(POST_ENTRIES_CACHE_SERVICE);
 
+  private _load$ = new Subject<string>();
+
   private _isLoading = signal(false);
 
   private _error = signal<string | null>(null);
@@ -26,35 +38,50 @@ export class PostStateService {
 
   entry = this._entry.asReadonly();
 
-  load(postId: string): void {
-    of(null)
+  constructor() {
+    this._setupLoad();
+  }
+
+  load(id: string): void {
+    this._load$.next(id);
+  }
+
+  private _getEntry(postId: string): Observable<Post> {
+    return defer(() => {
+      this._error.set(null);
+
+      const cached = this._postEntriesCacheService.get(postId);
+
+      if (cached) {
+        this._entry.set(cached);
+        return of(cached);
+      }
+
+      this._isLoading.set(true);
+      this._entry.set(null);
+
+      return this._postsApiService.getPost(postId).pipe(extractPostFromReply());
+    }).pipe(
+      tap((entry) => {
+        this._entry.set(entry);
+        this._postEntriesCacheService.set(entry);
+      }),
+      catchError((error) => {
+        this._error.set(error?.message || 'Failed while fetching posts');
+
+        return EMPTY;
+      }),
+      finalize(() => {
+        this._isLoading.set(false);
+      }),
+    );
+  }
+
+  private _setupLoad(): void {
+    this._load$
       .pipe(
-        tap(() => {
-          this._isLoading.set(true);
-          this._entry.set(null);
-        }),
-        concatMap(() => {
-          const cachedEntry = this._postEntriesCacheService.get(postId);
-
-          if (cachedEntry) {
-            return of(cachedEntry);
-          }
-
-          return this._postsApiService
-            .getPost(postId)
-            .pipe(extractPostFromReply());
-        }),
-        tap((entry) => {
-          this._isLoading.set(false);
-          this._entry.set(entry);
-        }),
-        catchError((error) => {
-          this._error.set(error?.message || 'Failed while fetching posts');
-
-          return EMPTY;
-        }),
-        finalize(() => {
-          this._isLoading.set(false);
+        switchMap((postId) => {
+          return this._getEntry(postId);
         }),
         takeUntilDestroyed(this._destroyRef),
       )
