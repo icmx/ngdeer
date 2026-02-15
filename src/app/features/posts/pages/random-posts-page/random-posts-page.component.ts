@@ -40,6 +40,12 @@ export class RandomPostsPageComponent implements OnInit {
   posts = computed(() => this._randomPostsStateService.entries());
 
   ngOnInit(): void {
+    this._setubScrollToBottom();
+
+    this._randomPostsStateService.load();
+  }
+
+  private _setubScrollToBottom(): void {
     this._windowScrollService.scrollToBottom$
       .pipe(
         tap(() => {
@@ -48,7 +54,5 @@ export class RandomPostsPageComponent implements OnInit {
         takeUntilDestroyed(this._destroyRef),
       )
       .subscribe();
-
-    this._randomPostsStateService.load();
   }
 }

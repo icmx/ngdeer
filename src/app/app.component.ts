@@ -43,7 +43,7 @@ export class AppComponent implements OnInit {
 
   handleHeaderLinkClick(): void {
     this._latestPostsStateService.drop();
-    this._randomPostsStateService.drop();
+    this._randomPostsStateService.reset();
     this._categoryPostsStateService.drop();
     this._searchPostsStateService.reset();
   }

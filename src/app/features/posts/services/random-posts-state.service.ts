@@ -1,6 +1,14 @@
 import { DestroyRef, inject, Injectable, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { catchError, concatMap, EMPTY, finalize, of, tap } from 'rxjs';
+import {
+  catchError,
+  EMPTY,
+  exhaustMap,
+  finalize,
+  Observable,
+  Subject,
+  tap,
+} from 'rxjs';
 import { toUnique } from '../../../common/utils/to-unique.util';
 import { Post } from '../models/post.model';
 import { extractPostsFromReply } from '../operators/extract-posts-from-reply.operator';
@@ -15,6 +23,8 @@ export class RandomPostsStateService {
 
   private _postEntriesCacheService = inject(POST_ENTRIES_CACHE_SERVICE);
 
+  private _load$ = new Subject<void>();
+
   private _isLoading = signal(false);
 
   private _error = signal<string | null>(null);
@@ -27,34 +37,8 @@ export class RandomPostsStateService {
 
   entries = this._entries.asReadonly();
 
-  private _load(): void {
-    of(null)
-      .pipe(
-        tap(() => {
-          this._isLoading.set(true);
-        }),
-        concatMap(() => {
-          return this._postsApiService.getPostsRandom();
-        }),
-        extractPostsFromReply(),
-        tap((entries) => {
-          this._postEntriesCacheService.set(...entries);
-
-          this._entries.update((prevEntries) =>
-            [...prevEntries, ...entries].filter(toUnique((entry) => entry.id)),
-          );
-        }),
-        catchError((error) => {
-          this._error.set(error?.message || 'Failed while fetching posts');
-
-          return EMPTY;
-        }),
-        finalize(() => {
-          this._isLoading.set(false);
-        }),
-        takeUntilDestroyed(this._destroyRef),
-      )
-      .subscribe();
+  constructor() {
+    this._setupLoad();
   }
 
   load(): void {
@@ -62,7 +46,7 @@ export class RandomPostsStateService {
       return;
     }
 
-    this._load();
+    this._load$.next();
   }
 
   loadMore(): void {
@@ -70,12 +54,47 @@ export class RandomPostsStateService {
       return;
     }
 
-    this._load();
+    this._load$.next();
   }
 
-  drop(): void {
+  reset(): void {
     this._isLoading.set(false);
     this._error.set(null);
     this._entries.set([]);
+  }
+
+  private _getEntries(): Observable<Post[]> {
+    this._isLoading.set(true);
+    this._error.set(null);
+
+    return this._postsApiService.getPostsRandom().pipe(
+      extractPostsFromReply(),
+      tap((entries) => {
+        this._postEntriesCacheService.set(...entries);
+
+        this._entries.update((prevEntries) =>
+          [...prevEntries, ...entries].filter(toUnique((entry) => entry.id)),
+        );
+      }),
+      catchError((error) => {
+        this._error.set(error?.message || 'Failed while fetching posts');
+
+        return EMPTY;
+      }),
+      finalize(() => {
+        this._isLoading.set(false);
+      }),
+    );
+  }
+
+  private _setupLoad(): void {
+    this._load$
+      .pipe(
+        exhaustMap(() => {
+          return this._getEntries();
+        }),
+        takeUntilDestroyed(this._destroyRef),
+      )
+      .subscribe();
   }
 }

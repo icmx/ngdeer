@@ -88,11 +88,10 @@ export class SearchPostsStateService {
   }
 
   private _getEntries(options: GetPostsRequestOptions): Observable<Post[]> {
+    this._isLoading.set(true);
+    this._error.set(null);
+
     return this._postsApiService.getPosts(options).pipe(
-      tap(() => {
-        this._isLoading.set(true);
-        this._error.set(null);
-      }),
       extractPostsFromReply(),
       tap((entries) => {
         this._postEntriesCacheService.set(...entries);
