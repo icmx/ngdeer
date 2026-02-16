@@ -40,6 +40,12 @@ export class LatestPostsPageComponent implements OnInit {
   posts = computed(() => this._latestPostsStateService.entries());
 
   ngOnInit(): void {
+    this._setupScrollToBottom();
+
+    this._latestPostsStateService.load();
+  }
+
+  private _setupScrollToBottom(): void {
     this._windowScrollService.scrollToBottom$
       .pipe(
         tap(() => {
@@ -48,7 +54,5 @@ export class LatestPostsPageComponent implements OnInit {
         takeUntilDestroyed(this._destroyRef),
       )
       .subscribe();
-
-    this._latestPostsStateService.load();
   }
 }

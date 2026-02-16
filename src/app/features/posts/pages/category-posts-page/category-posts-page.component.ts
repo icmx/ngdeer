@@ -43,17 +43,21 @@ export class CategoryPostsPageComponent implements OnInit {
   posts = computed(() => this._categoryPostsStateService.entries());
 
   ngOnInit(): void {
-    const categoryId = this.categoryId();
+    this._setupScrollToBottom();
 
+    this._categoryPostsStateService.load({ categoryId: this.categoryId() });
+  }
+
+  private _setupScrollToBottom(): void {
     this._windowScrollService.scrollToBottom$
       .pipe(
         tap(() => {
-          this._categoryPostsStateService.loadMore(categoryId);
+          this._categoryPostsStateService.loadMore({
+            categoryId: this.categoryId(),
+          });
         }),
         takeUntilDestroyed(this._destroyRef),
       )
       .subscribe();
-
-    this._categoryPostsStateService.load(categoryId);
   }
 }
