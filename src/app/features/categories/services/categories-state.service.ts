@@ -1,6 +1,14 @@
 import { DestroyRef, inject, Injectable, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { catchError, concatMap, EMPTY, finalize, of, tap } from 'rxjs';
+import {
+  catchError,
+  EMPTY,
+  finalize,
+  Observable,
+  Subject,
+  switchMap,
+  tap,
+} from 'rxjs';
 import { Category } from '../models/category.model';
 import { extractCategoriesFromReply } from '../operators/extract-categories-from-reply.operator';
 import { CategoriesApiService } from './categories-api.service';
@@ -10,6 +18,8 @@ export class CategoriesStateService {
   private _destroyRef = inject(DestroyRef);
 
   private _categoriesApiService = inject(CategoriesApiService);
+
+  private _load$ = new Subject<void>();
 
   private _isLoading = signal(false);
 
@@ -27,33 +37,8 @@ export class CategoriesStateService {
 
   entries = this._entries.asReadonly();
 
-  private _load(): void {
-    of(null)
-      .pipe(
-        tap(() => {
-          this._isLoading.set(true);
-          this._isDone.set(false);
-          this._entries.set([]);
-        }),
-        concatMap(() => {
-          return this._categoriesApiService.getCategories();
-        }),
-        extractCategoriesFromReply(),
-        tap((entries) => {
-          this._isDone.set(true);
-          this._entries.set(entries);
-        }),
-        catchError((error) => {
-          this._error.set(error?.message || 'Failed while fetching categories');
-
-          return EMPTY;
-        }),
-        finalize(() => {
-          this._isLoading.set(false);
-        }),
-        takeUntilDestroyed(this._destroyRef),
-      )
-      .subscribe();
+  constructor() {
+    this._setupLoad();
   }
 
   load(): void {
@@ -61,6 +46,39 @@ export class CategoriesStateService {
       return;
     }
 
-    this._load();
+    this._load$.next();
+  }
+
+  private _getEntries(): Observable<Category[]> {
+    this._isLoading.set(true);
+    this._isDone.set(false);
+    this._entries.set([]);
+
+    return this._categoriesApiService.getCategories().pipe(
+      extractCategoriesFromReply(),
+      tap((entries) => {
+        this._isDone.set(true);
+        this._entries.set(entries);
+      }),
+      catchError((error) => {
+        this._error.set(error?.message || 'Failed while fetching categories');
+
+        return EMPTY;
+      }),
+      finalize(() => {
+        this._isLoading.set(false);
+      }),
+    );
+  }
+
+  private _setupLoad(): void {
+    this._load$
+      .pipe(
+        switchMap(() => {
+          return this._getEntries();
+        }),
+        takeUntilDestroyed(this._destroyRef),
+      )
+      .subscribe();
   }
 }
