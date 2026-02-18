@@ -53,20 +53,20 @@ export class PostStateService {
       const cached = this._postEntriesCacheService.get(request.path.postId);
 
       if (cached) {
-        this._entry.set(cached);
         return of(cached);
       }
 
       this._isLoading.set(true);
-      this._entry.set(null);
 
-      return this._postsApiService
-        .getPost(request)
-        .pipe(extractPostFromReply());
+      return this._postsApiService.getPost(request).pipe(
+        extractPostFromReply(),
+        tap((entry) => {
+          this._postEntriesCacheService.set(entry);
+        }),
+      );
     }).pipe(
       tap((entry) => {
         this._entry.set(entry);
-        this._postEntriesCacheService.set(entry);
       }),
       catchError((error) => {
         this._error.set(error?.message || 'Failed while fetching posts');
