@@ -14,7 +14,7 @@ import {
 import { Post } from '../models/post.model';
 import { extractPostFromReply } from '../operators/extract-post-from-reply.operator';
 import { POST_ENTRIES_CACHE_SERVICE } from '../providers/post-entries-cache-service.provider';
-import { PostsApiService } from './posts-api.service';
+import { GetPostByPostIdRequest, PostsApiService } from './posts-api.service';
 
 @Injectable()
 export class PostStateService {
@@ -24,7 +24,7 @@ export class PostStateService {
 
   private _postEntriesCacheService = inject(POST_ENTRIES_CACHE_SERVICE);
 
-  private _load$ = new Subject<string>();
+  private _load$ = new Subject<GetPostByPostIdRequest>();
 
   private _isLoading = signal(false);
 
@@ -42,15 +42,15 @@ export class PostStateService {
     this._setupLoad();
   }
 
-  load(id: string): void {
-    this._load$.next(id);
+  load(postId: string): void {
+    this._load$.next({ path: { postId } });
   }
 
-  private _getEntry(postId: string): Observable<Post> {
+  private _getEntry(request: GetPostByPostIdRequest): Observable<Post> {
     return defer(() => {
       this._error.set(null);
 
-      const cached = this._postEntriesCacheService.get(postId);
+      const cached = this._postEntriesCacheService.get(request.path.postId);
 
       if (cached) {
         this._entry.set(cached);
@@ -60,7 +60,9 @@ export class PostStateService {
       this._isLoading.set(true);
       this._entry.set(null);
 
-      return this._postsApiService.getPost(postId).pipe(extractPostFromReply());
+      return this._postsApiService
+        .getPost(request)
+        .pipe(extractPostFromReply());
     }).pipe(
       tap((entry) => {
         this._entry.set(entry);
@@ -80,8 +82,8 @@ export class PostStateService {
   private _setupLoad(): void {
     this._load$
       .pipe(
-        switchMap((postId) => {
-          return this._getEntry(postId);
+        switchMap((request) => {
+          return this._getEntry(request);
         }),
         takeUntilDestroyed(this._destroyRef),
       )

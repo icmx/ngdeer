@@ -2,14 +2,21 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { BASE_URL } from '../../../common/providers/base-url.provider';
-import { RequestOptions } from '../../../common/types/request-options.type';
-import { Param } from '../../../common/types/param.type';
+import {
+  RequestWithParams,
+  RequestWithPath,
+} from '../../../common/types/request-options.type';
 import { WithApiComments } from '../types/with-api-comments.type';
 import { WithApiRootComment } from '../types/with-api-root-comment.type';
 
-export type GetPostCommentsOptions = RequestOptions<{
-  params: { earlier?: Param; later?: Param };
-}>;
+export type GetPostsCommentsByPostIdRequest = RequestWithPath<'postId'> &
+  RequestWithParams<{ earlier?: string; later?: string }>;
+
+export type GetCommentsBranchByRootCommentIdRequest =
+  RequestWithPath<'rootCommentId'> &
+    RequestWithParams<{ earlier?: string; later?: string }>;
+
+export type GetCommentsForUserByUserIdRequest = RequestWithPath<'userId'>;
 
 @Injectable({
   providedIn: 'root',
@@ -19,30 +26,36 @@ export class CommentsApiService {
 
   private _baseUrl = inject(BASE_URL);
 
-  getPostsCommentsByPostId(
-    postId: Param,
-    options?: GetPostCommentsOptions,
-  ): Observable<WithApiComments> {
+  getPostsCommentsByPostId({
+    path,
+    params,
+  }: GetPostsCommentsByPostIdRequest): Observable<WithApiComments> {
     return this._http.get<WithApiComments>(
-      `${this._baseUrl}/posts/${postId}/comments`,
-      options,
+      `${this._baseUrl}/posts/${path.postId}/comments`,
+      { params },
     );
   }
 
-  getCommentsBranchByRootCommentId(
-    rootCommentId: Param,
-  ): Observable<WithApiComments & WithApiRootComment> {
+  getCommentsBranchByRootCommentId({
+    path,
+    params,
+  }: GetCommentsBranchByRootCommentIdRequest): Observable<
+    WithApiComments & WithApiRootComment
+  > {
     return this._http.get<WithApiComments & WithApiRootComment>(
-      `${this._baseUrl}/comments/branch/${rootCommentId}`,
+      `${this._baseUrl}/comments/branch/${path.rootCommentId}`,
+      { params },
     );
   }
 
   /**
    * @todo This will be used later
    */
-  getCommentsForUserByUserId(userId: string): Observable<WithApiComments> {
+  getCommentsForUserByUserId({
+    path,
+  }: GetCommentsForUserByUserIdRequest): Observable<WithApiComments> {
     return this._http.get<WithApiComments>(
-      `${this._baseUrl}/comments/for_user/${userId}`,
+      `${this._baseUrl}/comments/for_user/${path.userId}`,
     );
   }
 }

@@ -14,7 +14,7 @@ import { toParams } from '../../../common/utils/to-params.util';
 import { Post } from '../models/post.model';
 import { extractPostsFromReply } from '../operators/extract-posts-from-reply.operator';
 import { POST_ENTRIES_CACHE_SERVICE } from '../providers/post-entries-cache-service.provider';
-import { GetPostsRequestOptions, PostsApiService } from './posts-api.service';
+import { GetPostsRequest, PostsApiService } from './posts-api.service';
 
 @Injectable()
 export class LatestPostsStateService {
@@ -24,9 +24,9 @@ export class LatestPostsStateService {
 
   private _postEntriesCacheService = inject(POST_ENTRIES_CACHE_SERVICE);
 
-  private _load$ = new Subject<GetPostsRequestOptions>();
+  private _load$ = new Subject<GetPostsRequest>();
 
-  private _loadMore$ = new Subject<GetPostsRequestOptions>();
+  private _loadMore$ = new Subject<GetPostsRequest>();
 
   private _isLoading = signal(false);
 
@@ -76,7 +76,7 @@ export class LatestPostsStateService {
     this._entries.set([]);
   }
 
-  private _getEntries(options: GetPostsRequestOptions): Observable<Post[]> {
+  private _getEntries(options: GetPostsRequest): Observable<Post[]> {
     this._isLoading.set(true);
     this._error.set(null);
 

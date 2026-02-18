@@ -2,28 +2,28 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { BASE_URL } from '../../../common/providers/base-url.provider';
-import { RequestOptions } from '../../../common/types/request-options.type';
-import { Param } from '../../../common/types/param.type';
+import {
+  RequestWithParams,
+  RequestWithPath,
+} from '../../../common/types/request-options.type';
 import { WithApiCategory } from '../../categories/types/with-api-category.type';
 import { WithApiPosts } from '../types/with-api-posts.type';
 import { WithApiPost } from '../types/with-api-post.type';
 
-export type GetPostsRequestOptions = RequestOptions<{
-  params: {
-    from?: Param;
-    search_criteria?: string;
-    category_id?: Param;
-    category_slug?: string;
-    earlier?: Param;
-    later?: Param;
-  };
+export type GetPostByPostIdRequest = RequestWithPath<'postId'>;
+
+export type GetPostsRequest = RequestWithParams<{
+  from?: string;
+  search_criteria?: string;
+  category_id?: string;
+  category_slug?: string;
+  earlier?: string;
+  later?: string;
 }>;
 
-export type GetPostsRandomRequestOptions = RequestOptions<{
-  params: {
-    category_id?: Param;
-    category_slug?: Param;
-  };
+export type GetPostsRandomRequest = RequestWithParams<{
+  category_id?: string;
+  category_slug?: string;
 }>;
 
 @Injectable({
@@ -34,25 +34,22 @@ export class PostsApiService {
 
   private _baseUrl = inject(BASE_URL);
 
-  getPost(postId: string): Observable<WithApiPost> {
-    return this._http.get<WithApiPost>(`${this._baseUrl}/posts/${postId}`);
+  getPost({ path }: GetPostByPostIdRequest): Observable<WithApiPost> {
+    return this._http.get<WithApiPost>(`${this._baseUrl}/posts/${path.postId}`);
   }
 
-  getPosts(
-    options?: GetPostsRequestOptions,
-  ): Observable<WithApiPosts & WithApiCategory> {
+  getPosts({
+    params,
+  }: GetPostsRequest): Observable<WithApiPosts & WithApiCategory> {
     return this._http.get<WithApiPosts & WithApiCategory>(
       `${this._baseUrl}/posts`,
-      options,
+      { params },
     );
   }
 
-  getPostsRandom(
-    options?: GetPostsRandomRequestOptions,
-  ): Observable<WithApiPosts> {
-    return this._http.get<WithApiPosts>(
-      `${this._baseUrl}/posts/random`,
-      options,
-    );
+  getPostsRandom({ params }: GetPostsRandomRequest): Observable<WithApiPosts> {
+    return this._http.get<WithApiPosts>(`${this._baseUrl}/posts/random`, {
+      params,
+    });
   }
 }

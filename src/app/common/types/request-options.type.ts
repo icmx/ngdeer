@@ -1,9 +1,9 @@
-import { Param } from './param.type';
+export type RequestWithPath<P extends string> = {
+  path: {
+    [key in P]: string;
+  };
+};
 
-export type RequestOptions<
-  T extends {
-    params?: { [key: string]: Param | Param[] };
-  },
-> = {
-  params?: T['params'];
+export type RequestWithParams<P extends Record<string, string[] | string>> = {
+  params?: P;
 };

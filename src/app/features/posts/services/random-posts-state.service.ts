@@ -67,7 +67,7 @@ export class RandomPostsStateService {
     this._isLoading.set(true);
     this._error.set(null);
 
-    return this._postsApiService.getPostsRandom().pipe(
+    return this._postsApiService.getPostsRandom({}).pipe(
       extractPostsFromReply(),
       tap((entries) => {
         this._postEntriesCacheService.set(...entries);

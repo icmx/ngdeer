@@ -1,18 +1,22 @@
 import { DestroyRef, inject, Injectable, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { catchError, concatMap, EMPTY, finalize, of, tap } from 'rxjs';
+import { toUser } from '../../users/mappers/to-user.mapper';
+import { USER_ENTRIES_CACHE_SERVICE } from '../../users/providers/user-entries-cache-service.provider';
 import { CommentsLoading } from '../enums/comments-loading.enum';
 import { Comment } from '../models/comment.model';
 import { extractCommentsFromReply } from '../operators/extract-comments-from-reply.operator';
-import { toUser } from '../../users/mappers/to-user.mapper';
-import { USER_ENTRIES_CACHE_SERVICE } from '../../users/providers/user-entries-cache-service.provider';
 import {
   CommentsApiService,
-  GetPostCommentsOptions,
+  GetPostsCommentsByPostIdRequest,
 } from './comments-api.service';
 
-// this amount of comments is already loaded and visible before user
-// decides to load a full branch (if any)
+/**
+ * Amount of comments already loaded and visible before user decides to
+ * load a full branch (if any)
+ *
+ * @todo Must be removed later
+ */
 export const PREVIOUSLY_VISIBLE_COMMENTS_AMOUNT = 2;
 
 @Injectable()
@@ -49,7 +53,8 @@ export class CommentsStateService {
           }));
         }),
         concatMap(() => {
-          const options: GetPostCommentsOptions = {
+          const request: GetPostsCommentsByPostIdRequest = {
+            path: { postId },
             params: {},
           };
 
@@ -58,13 +63,10 @@ export class CommentsStateService {
             .at(-1)?.id;
 
           if (later) {
-            options.params = { ...options.params, later };
+            request.params = { ...request.params, later };
           }
 
-          return this._commentsApiService.getPostsCommentsByPostId(
-            postId,
-            options,
-          );
+          return this._commentsApiService.getPostsCommentsByPostId(request);
         }),
         tap((reply) => {
           const entries = reply.comments
@@ -117,9 +119,9 @@ export class CommentsStateService {
           }));
         }),
         concatMap(() => {
-          return this._commentsApiService.getCommentsBranchByRootCommentId(
-            rootCommentId,
-          );
+          return this._commentsApiService.getCommentsBranchByRootCommentId({
+            path: { rootCommentId },
+          });
         }),
         tap((reply) => {
           const entries = reply.comments
