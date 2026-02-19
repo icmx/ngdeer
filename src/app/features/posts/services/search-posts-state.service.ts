@@ -87,11 +87,11 @@ export class SearchPostsStateService {
     this._entries.set([]);
   }
 
-  private _getEntries(options: GetPostsRequest): Observable<Post[]> {
+  private _getEntries(request: GetPostsRequest): Observable<Post[]> {
     this._isLoading.set(true);
     this._error.set(null);
 
-    return this._postsApiService.getPosts(options).pipe(
+    return this._postsApiService.getPosts(request).pipe(
       extractPostsFromReply(),
       tap((entries) => {
         this._postEntriesCacheService.set(...entries);
@@ -113,8 +113,8 @@ export class SearchPostsStateService {
   private _setupLoad(): void {
     this._load$
       .pipe(
-        switchMap((options) => {
-          return this._getEntries(options);
+        switchMap((request) => {
+          return this._getEntries(request);
         }),
         takeUntilDestroyed(this._destroyRef),
       )
