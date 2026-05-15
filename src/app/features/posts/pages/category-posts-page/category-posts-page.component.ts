@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  computed,
   DestroyRef,
   inject,
   input,
@@ -34,13 +33,13 @@ export class CategoryPostsPageComponent implements OnInit {
 
   private _categoryPostsStateService = inject(CategoryPostsStateService);
 
-  isLoading = computed(() => this._categoryPostsStateService.isLoading());
-
-  error = computed(() => this._categoryPostsStateService.error());
-
   categoryId = input.required<string>();
 
-  posts = computed(() => this._categoryPostsStateService.entries());
+  isLoading = this._categoryPostsStateService.isLoading;
+
+  error = this._categoryPostsStateService.error;
+
+  posts = this._categoryPostsStateService.entries;
 
   ngOnInit(): void {
     this._setupScrollToBottom();

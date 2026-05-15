@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  computed,
   DestroyRef,
   inject,
   OnInit,
@@ -33,11 +32,11 @@ export class RandomPostsPageComponent implements OnInit {
 
   private _randomPostsStateService = inject(RandomPostsStateService);
 
-  isLoading = computed(() => this._randomPostsStateService.isLoading());
+  isLoading = this._randomPostsStateService.isLoading;
 
-  error = computed(() => this._randomPostsStateService.error());
+  error = this._randomPostsStateService.error;
 
-  posts = computed(() => this._randomPostsStateService.entries());
+  posts = this._randomPostsStateService.entries;
 
   ngOnInit(): void {
     this._setubScrollToBottom();

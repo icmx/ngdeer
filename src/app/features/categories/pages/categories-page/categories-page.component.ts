@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  computed,
   inject,
   OnInit,
 } from '@angular/core';
@@ -25,11 +24,11 @@ import { CategoriesStateService } from '../../services/categories-state.service'
 export class CategoriesPageComponent implements OnInit {
   private _categoriesStateService = inject(CategoriesStateService);
 
-  isLoading = computed(() => this._categoriesStateService.isLoading());
+  isLoading = this._categoriesStateService.isLoading;
 
-  error = computed(() => this._categoriesStateService.error());
+  error = this._categoriesStateService.error;
 
-  categories = computed(() => this._categoriesStateService.entries());
+  categories = this._categoriesStateService.entries;
 
   ngOnInit(): void {
     this._categoriesStateService.load();

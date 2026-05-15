@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  computed,
   DestroyRef,
   inject,
   OnInit,
@@ -33,11 +32,11 @@ export class LatestPostsPageComponent implements OnInit {
 
   private _latestPostsStateService = inject(LatestPostsStateService);
 
-  isLoading = computed(() => this._latestPostsStateService.isLoading());
+  isLoading = this._latestPostsStateService.isLoading;
 
-  error = computed(() => this._latestPostsStateService.error());
+  error = this._latestPostsStateService.error;
 
-  posts = computed(() => this._latestPostsStateService.entries());
+  posts = this._latestPostsStateService.entries;
 
   ngOnInit(): void {
     this._setupScrollToBottom();
